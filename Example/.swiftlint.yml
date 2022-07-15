@@ -1,0 +1,11 @@
+
+included:
+  - Example
+  - ../KindeAuthSwift
+excluded:
+  - Pods
+
+disabled_rules:
+  # Match default XCode formatting
+  - trailing_whitespace
+  - line_length

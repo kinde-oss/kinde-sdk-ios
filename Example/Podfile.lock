@@ -1,0 +1,44 @@
+PODS:
+  - AppAuth (1.5.0):
+    - AppAuth/Core (= 1.5.0)
+    - AppAuth/ExternalUserAgent (= 1.5.0)
+  - AppAuth/Core (1.5.0)
+  - AppAuth/ExternalUserAgent (1.5.0):
+    - AppAuth/Core
+  - KindeAuthSwift (0.1.0):
+    - AppAuth
+    - SwiftKeychainWrapper
+  - Nimble (10.0.0)
+  - Quick (5.0.1)
+  - SwiftKeychainWrapper (4.0.1)
+  - SwiftLint (0.47.1)
+
+DEPENDENCIES:
+  - KindeAuthSwift (from `../`)
+  - Nimble
+  - Quick
+  - SwiftLint
+
+SPEC REPOS:
+  trunk:
+    - AppAuth
+    - Nimble
+    - Quick
+    - SwiftKeychainWrapper
+    - SwiftLint
+
+EXTERNAL SOURCES:
+  KindeAuthSwift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
+  KindeAuthSwift: 68065d66f0895fe4a323674a2939c6190db4465b
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
+  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
+  SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
+  SwiftLint: f80f1be7fa96d30e0aa68e58d45d4ea1ccaac519
+
+PODFILE CHECKSUM: fe3f348b2e364f196d2c9d5fee9225b6747017df
+
+COCOAPODS: 1.11.3

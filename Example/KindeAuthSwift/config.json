@@ -1,0 +1,7 @@
+{
+  "issuer": "https://{your-business}.kinde.com",
+  "clientId": "{your-client-id}",
+  "redirectUri": "{your-app-bundle-id}://callback",
+  "postLogoutRedirectUri": "{your-app-bundle-id}://logoutcallback",
+  "scope": "offline openid"
+}
