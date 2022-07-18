@@ -39,12 +39,10 @@ The Kinde `AuthService` is configured with an instance of the `Config` class. Th
 }
 ```
 
-TODO: test. OpenUrl handler for older iOS?
-
 ## Author
 
 Kinde, kinde.com
 
 ## License
 
-KindeAuthSwift is available under the MIT license. See the LICENSE file for more info.
+KindeAuthSwift is available under the Apache-2.0 license. See the LICENSE file for more info.

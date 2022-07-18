@@ -7,11 +7,10 @@ Pod::Spec.new do |s|
                        Kinde SDK for authentication on iOS.
                        DESC
 
-  s.homepage         = 'https://github.com/todo/KindeAuthSwift'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'todo' => 'todo@adapptor.com.au' }
-  s.source           = { :git => 'https://github.com/todo/KindeAuthSwift.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TODO>'
+  s.homepage         = 'https://github.com/kinde-oss/kinde-auth-swift'
+  s.license          = { :type => 'Apache-2.0', :file => 'LICENSE' }
+  s.author           = { 'Kinde' => 'engineering@kinde.com' }
+  s.source           = { :git => 'https://github.com/kinde-oss/kinde-auth-swift.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '10.0'
 
