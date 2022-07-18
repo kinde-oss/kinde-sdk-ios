@@ -140,6 +140,7 @@ public class AuthService: NSObject {
                 return completion(.failure(AuthError.failedToSaveState))
             }
             
+            self.currentAuthorizationFlow = nil
             completion(.success(()))
         }
     }

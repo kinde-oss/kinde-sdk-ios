@@ -33,11 +33,13 @@ The Kinde `AuthService` is configured with an instance of the `Config` class. Th
 {
   "issuer": "https://{your-business}.kinde.com",
   "clientId": "{your-client-id}",
-  "redirectUri": "{your-app-bundle-id}://callback",
-  "postLogoutRedirectUri": "{your-app-bundle-id}://logoutcallback",
+  "redirectUri": "{your-url-scheme}://kinde_callback",
+  "postLogoutRedirectUri": "{your-url-scheme}://kinde_logoutcallback",
   "scope": "offline openid"
 }
 ```
+
+Note: `your_url_scheme` can be any valid custom URL scheme, such as your app's bundle ID or an abbreviation.
 
 ## Author
 
