@@ -22,3 +22,4 @@ DerivedData
 *.xcuserstate
 Pods
 Example/Pods
+MockingbirdCache/
