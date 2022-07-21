@@ -47,6 +47,8 @@ class ViewControllerTests: XCTestCase {
         let continueLoginButton = app.webViews.buttons.element(matching: NSPredicate(format: "label CONTAINS '\(Config.signInContinueButtonLabel)'"))
         continueLoginButton.tap()
         
+        // TODO: test the user profile has been fetched (pending inclusion in ID token)
+        
         // Sign out
         waitThenTapButton(button: Config.signOutButtonLabel)
     }

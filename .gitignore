@@ -23,3 +23,6 @@ DerivedData
 Pods
 Example/Pods
 MockingbirdCache/
+
+# NPM / Yarn
+node_modules/

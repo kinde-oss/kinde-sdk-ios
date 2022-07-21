@@ -2,7 +2,8 @@ import UIKit
 import KindeAuthSwift
 
 struct KindeAuth {
-    static let auth = AuthService(config: ConfigLoader.load()!, logger: Logger())
+    static let logger = Logger()
+    static let auth = AuthService(config: ConfigLoader.load()!, logger: logger)
 }
 
 class ViewController: UIViewController {
@@ -104,9 +105,18 @@ class ViewController: UIViewController {
         KindeAuth.auth.performWithFreshTokens { tokenResult in
             switch tokenResult {
             case let .failure(error):
-                print("Failed to make API call: \(error.localizedDescription)")
+                KindeAuth.logger.error(message: "Failed to get auth token: \(error.localizedDescription)")
             case let .success(accessToken):
-                print("Making authenticated API call with access token: \(accessToken.dropLast(accessToken.count - 10))...")
+                OpenAPIClientAPI.customHeaders = [ "Authorization": "Bearer \(accessToken)" ]
+                
+                KindeManagementApiClient.getUser { (userProfile, error) in
+                    if let userProfile = userProfile {
+                        KindeAuth.logger.info(message: "Got profile for user \(userProfile.firstName ?? "") \(userProfile.lastName ?? "")")
+                    }
+                    if let error = error {
+                        KindeAuth.logger.error(message: "Failed to get user profile: \(error.localizedDescription)")
+                    }
+                }
             }
         }
     }
