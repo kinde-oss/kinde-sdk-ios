@@ -2,7 +2,7 @@ import UIKit
 import KindeAuthSwift
 
 struct KindeAuth {
-    static let auth = AuthService(config: AuthConfigLoader.load()!, logger: Logger())
+    static let auth = AuthService(config: ConfigLoader.load()!, logger: Logger())
 }
 
 class ViewController: UIViewController {

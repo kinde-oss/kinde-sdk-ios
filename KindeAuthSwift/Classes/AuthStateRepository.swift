@@ -3,18 +3,18 @@ import SwiftKeychainWrapper
 
 /// A repository for caching the current authentication state, and
 /// storing it securely on the device keychain
-class AuthStateRepository: NSObject {
+public class AuthStateRepository: NSObject {
     private let key: String
     private let logger: Logger?
     private var cachedState: OIDAuthState?
     
-    init(key: String, logger: Logger?) {
+    public init(key: String, logger: Logger?) {
         self.key = key
         self.logger = logger
     }
     
     /// The current authentication state
-    var state: OIDAuthState? {
+    public var state: OIDAuthState? {
         if let state = cachedState {
             return state
         }
@@ -35,7 +35,7 @@ class AuthStateRepository: NSObject {
     }
     
     /// Set the current authentication state
-    func setState(_ state: OIDAuthState) -> Bool {
+    public func setState(_ state: OIDAuthState) -> Bool {
         cachedState = state
         
         // Register handlers for changes to authState (e.g., token refresh)
@@ -46,7 +46,7 @@ class AuthStateRepository: NSObject {
     }
     
     /// Clear the current authentication state
-    func clear() -> Bool {
+    public func clear() -> Bool {
         cachedState = nil
         return removeFromKeychain()
     }

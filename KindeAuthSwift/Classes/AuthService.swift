@@ -81,8 +81,11 @@ public class AuthService: NSObject {
                 return completion(.failure(AuthError.configuration))
             }
             
-            // TODO: force re-login; server doesn't yet support ["prompt" : "login"]
-            let additionalParameters = ["start_page": signUp ? "registration" : "login", "is_skip_sso": "true"]
+            let additionalParameters = [
+                "start_page": signUp ? "registration" : "login",
+                // Force fresh login
+                "prompt" : "login"
+            ]
             
 //            let scopes = self.config.scope.components(separatedBy: " ")
 //            let request = OIDAuthorizationRequest(configuration: configuration,

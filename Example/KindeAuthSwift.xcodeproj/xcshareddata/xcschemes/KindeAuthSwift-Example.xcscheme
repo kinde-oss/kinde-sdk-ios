@@ -61,6 +61,16 @@
                ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "05E70F622887FCDE004FFF0F"
+               BuildableName = "KindeAuthSwift_ExampleUITests.xctest"
+               BlueprintName = "KindeAuthSwift_ExampleUITests"
+               ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

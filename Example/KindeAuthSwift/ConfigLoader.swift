@@ -1,9 +1,9 @@
 import Foundation
 import KindeAuthSwift
 
-struct AuthConfigLoader {
+public struct ConfigLoader {
     /// Load Kinde authentication configuration from bundled `config.json`
-    static func load() -> Config? {
+    static public func load() -> Config? {
         do {
             let configFilePath = Bundle.main.path(forResource: "config", ofType: "json")
             let jsonString = try String(contentsOfFile: configFilePath!)
