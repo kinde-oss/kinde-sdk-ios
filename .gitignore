@@ -24,5 +24,5 @@ Pods
 Example/Pods
 MockingbirdCache/
 
-# NPM / Yarn
+# Node.js
 node_modules/

@@ -107,9 +107,7 @@ class ViewController: UIViewController {
             case let .failure(error):
                 KindeAuth.logger.error(message: "Failed to get auth token: \(error.localizedDescription)")
             case let .success(accessToken):
-                OpenAPIClientAPI.customHeaders = [ "Authorization": "Bearer \(accessToken)" ]
-                
-                KindeManagementApiClient.getUser { (userProfile, error) in
+                KindeManagementApiClient.getUser(accessToken: accessToken) { (userProfile, error) in
                     if let userProfile = userProfile {
                         KindeAuth.logger.info(message: "Got profile for user \(userProfile.firstName ?? "") \(userProfile.lastName ?? "")")
                     }
