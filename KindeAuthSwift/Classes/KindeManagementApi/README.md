@@ -22,7 +22,7 @@ Run `pod install`
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://adapptor.kinde.com*
+All URIs are relative to *https://app.kinde.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------

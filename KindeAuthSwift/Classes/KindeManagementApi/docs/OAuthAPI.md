@@ -1,6 +1,6 @@
 # OAuthAPI
 
-All URIs are relative to *https://adapptor.kinde.com*
+All URIs are relative to *https://app.kinde.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

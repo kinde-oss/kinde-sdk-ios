@@ -5,16 +5,15 @@ import KindeAuthSwift
 import AppAuth
 import KindeAuthSwift_Example
 
-class AuthServiceSpec: QuickSpec {
+class AuthSpec: QuickSpec {
     override func spec() {
         let logger = Logger()
-        let config = ConfigLoader.load()!
         
-        describe("AuthServiceSpec") {
+        describe("AuthSpec") {
             
             it("is unauthorised after initialisation") {
-                let authService = AuthService(config: config, logger: logger)
-                expect(authService.isAuthorized) == false
+                Auth.configure(logger: logger)
+                expect(Auth.isAuthorized) == false
             }
         }
     }

@@ -9,12 +9,11 @@
 /* Begin PBXBuildFile section */
 		009A3CA92C836AF7988DC7B1 /* Pods_KindeAuthSwift_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D11AFBC371093AEF1753A4F /* Pods_KindeAuthSwift_Tests.framework */; };
 		021093B79EEDDFBEBE2ACA6C /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4909B4C22E89D95E624189 /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift */; };
-		05236773288924F700ECC1D2 /* ConfigLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD27AF287FAE0200DC35D0 /* ConfigLoader.swift */; };
 		05BD27AE287EC52E00DC35D0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD27AD287EC52E00DC35D0 /* Logger.swift */; };
-		05BD27B0287FAE0200DC35D0 /* ConfigLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD27AF287FAE0200DC35D0 /* ConfigLoader.swift */; };
-		05BD27B2287FAF3800DC35D0 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = 05BD27B1287FAF3800DC35D0 /* config.json */; };
+		05BD27B2287FAF3800DC35D0 /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 05BD27B1287FAF3800DC35D0 /* kinde-auth.json */; };
+		05CA7FED288E7CA1008FFDD1 /* KindeAuth.plist in Resources */ = {isa = PBXBuildFile; fileRef = 05CA7FEC288E7CA0008FFDD1 /* KindeAuth.plist */; };
 		05E70F4F28854C0F004FFF0F /* AuthStateRepositorySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E70F4E28854C0F004FFF0F /* AuthStateRepositorySpec.swift */; };
-		05E70F512887DA93004FFF0F /* AuthServiceSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E70F502887DA92004FFF0F /* AuthServiceSpec.swift */; };
+		05E70F512887DA93004FFF0F /* AuthSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E70F502887DA92004FFF0F /* AuthSpec.swift */; };
 		05E70F542887E255004FFF0F /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD27AD287EC52E00DC35D0 /* Logger.swift */; };
 		05E70F662887FCDE004FFF0F /* KindeAuthSwift_ExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E70F652887FCDE004FFF0F /* KindeAuthSwift_ExampleUITests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -46,10 +45,10 @@
 /* Begin PBXFileReference section */
 		039188C3D0625F9592F7BC2E /* KindeAuthSwift.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = KindeAuthSwift.podspec; path = ../KindeAuthSwift.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		05BD27AD287EC52E00DC35D0 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		05BD27AF287FAE0200DC35D0 /* ConfigLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigLoader.swift; sourceTree = "<group>"; };
-		05BD27B1287FAF3800DC35D0 /* config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = config.json; sourceTree = "<group>"; };
+		05BD27B1287FAF3800DC35D0 /* kinde-auth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kinde-auth.json"; sourceTree = "<group>"; };
+		05CA7FEC288E7CA0008FFDD1 /* KindeAuth.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = KindeAuth.plist; sourceTree = "<group>"; };
 		05E70F4E28854C0F004FFF0F /* AuthStateRepositorySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStateRepositorySpec.swift; sourceTree = "<group>"; };
-		05E70F502887DA92004FFF0F /* AuthServiceSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthServiceSpec.swift; sourceTree = "<group>"; };
+		05E70F502887DA92004FFF0F /* AuthSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSpec.swift; sourceTree = "<group>"; };
 		05E70F632887FCDE004FFF0F /* KindeAuthSwift_ExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KindeAuthSwift_ExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		05E70F652887FCDE004FFF0F /* KindeAuthSwift_ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindeAuthSwift_ExampleUITests.swift; sourceTree = "<group>"; };
 		0B4909B4C22E89D95E624189 /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = "KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift"; path = "MockingbirdMocks/KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift"; sourceTree = "<group>"; };
@@ -144,14 +143,14 @@
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				05BD27AF287FAE0200DC35D0 /* ConfigLoader.swift */,
-				05BD27B1287FAF3800DC35D0 /* config.json */,
 				05BD27AD287EC52E00DC35D0 /* Logger.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				05BD27B1287FAF3800DC35D0 /* kinde-auth.json */,
+				05CA7FEC288E7CA0008FFDD1 /* KindeAuth.plist */,
 			);
 			name = "Example for KindeAuthSwift";
 			path = KindeAuthSwift;
@@ -168,7 +167,7 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				05E70F502887DA92004FFF0F /* AuthServiceSpec.swift */,
+				05E70F502887DA92004FFF0F /* AuthSpec.swift */,
 				05E70F4E28854C0F004FFF0F /* AuthStateRepositorySpec.swift */,
 				607FACEB1AFB9204008FA782 /* ConfigSpec.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
@@ -334,8 +333,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05CA7FED288E7CA1008FFDD1 /* KindeAuth.plist in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
-				05BD27B2287FAF3800DC35D0 /* config.json in Resources */,
+				05BD27B2287FAF3800DC35D0 /* kinde-auth.json in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
@@ -489,7 +489,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05BD27B0287FAE0200DC35D0 /* ConfigLoader.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				05BD27AE287EC52E00DC35D0 /* Logger.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
@@ -503,8 +502,7 @@
 				05E70F542887E255004FFF0F /* Logger.swift in Sources */,
 				05E70F4F28854C0F004FFF0F /* AuthStateRepositorySpec.swift in Sources */,
 				607FACEC1AFB9204008FA782 /* ConfigSpec.swift in Sources */,
-				05E70F512887DA93004FFF0F /* AuthServiceSpec.swift in Sources */,
-				05236773288924F700ECC1D2 /* ConfigLoader.swift in Sources */,
+				05E70F512887DA93004FFF0F /* AuthSpec.swift in Sources */,
 				021093B79EEDDFBEBE2ACA6C /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

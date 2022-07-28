@@ -3,12 +3,15 @@ import XCTest
 // Test configuration
 struct Config {
     // Add credentials for a registered user
-    static let userId = "<test-user@example.com>"
-    static let password = "<test-user-password>"
+    static let userId = "test_user@example.com"
+    static let password = "P@ssword"
 
     // App
     static let signInButtonLabel = "Sign in"
     static let signOutButtonLabel = "Sign out"
+    static let makeAuthenticatedRequesButtonLabel = "Fetch user (authenticated request)"
+    static let userLabel = "User"
+    static let userFetchSuccessText = "fetched:"
     static let signInContinueAlertButtonLabel = "Continue"
 
     // OpenID Connect User Agent
@@ -64,6 +67,39 @@ class ViewControllerTests: XCTestCase {
     
     func testConcurrentSignInAttempts() {
         // TODO
+    }
+    
+    func testMakeAuthenticatedRequest() {
+        // Sign in
+        waitThenTapButton(button: Config.signInButtonLabel)
+        waitThenTapAlertButton(button: Config.signInContinueAlertButtonLabel)
+        
+        let app = XCUIApplication()
+        // User ID is assumed to be the first text field
+        let userIdInput = app.webViews.textFields.firstMatch
+        XCTAssertTrue(userIdInput.waitForExistence(timeout: Config.uiElementWaitTimeout))
+        userIdInput.tap()
+        userIdInput.typeText("\(Config.userId)\n")
+        
+        // Password is assumed to be the first text field
+        let passwordInput = app.webViews.secureTextFields.firstMatch
+        passwordInput.tap()
+        passwordInput.typeText(Config.password)
+        
+        // Complete login
+        let continueLoginButton = app.webViews.buttons.element(matching: NSPredicate(format: "label CONTAINS '\(Config.signInContinueButtonLabel)'"))
+        continueLoginButton.tap()
+        
+        // Make authenticated request
+        waitThenTapButton(button: Config.makeAuthenticatedRequesButtonLabel)
+
+        // Check that user details were successfully fetched
+        let userLabel = app.staticTexts[Config.userLabel]
+        XCTAssertTrue(userLabel.waitForExistence(timeout: Config.uiElementWaitTimeout))
+        XCTAssertTrue(userLabel.label.contains(Config.userFetchSuccessText))
+        
+        // Sign out
+        waitThenTapButton(button: Config.signOutButtonLabel)
     }
 }
 

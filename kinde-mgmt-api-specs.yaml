@@ -9,7 +9,7 @@ info:
     email: support@kinde.com
     url: https://kinde.com/docs
 servers:
-  - url: https://adapptor.kinde.com
+  - url: https://{businessName}.kinde.com
     variables:
       businessName:
         description: Business Name created in the Kinde Console
