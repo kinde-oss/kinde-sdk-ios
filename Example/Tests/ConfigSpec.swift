@@ -21,8 +21,6 @@ class ConfigSpec: QuickSpec {
                 
                 expect(issuerUrl) == nil
             }
-            
-            // TODO: increase test coverage
         }
     }
 }

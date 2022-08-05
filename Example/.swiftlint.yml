@@ -3,7 +3,10 @@ included:
   - Example
   - ../KindeAuthSwift
 excluded:
+  # Third-party
   - Pods
+  # Generated
+  - ../KindeAuthSwift/Classes/KindeManagementApi
 
 disabled_rules:
   # Match default XCode formatting

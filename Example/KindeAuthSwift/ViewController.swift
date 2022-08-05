@@ -1,12 +1,8 @@
 import UIKit
 import KindeAuthSwift
 
-struct KindeAuth {
-    static let auth = AuthService(config: AuthConfigLoader.load()!, logger: Logger())
-}
-
 class ViewController: UIViewController {
-
+    
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20)
@@ -27,8 +23,15 @@ class ViewController: UIViewController {
     
     private let makeAuthenticatedRequestButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Make authenticated request", for: .normal)
+        button.setTitle("Fetch user (authenticated request)", for: .normal)
         return button
+    }()
+    
+    private let userLabel: UILabel = {
+        let label = UILabel()
+        label.accessibilityIdentifier = "User"
+        label.font = .systemFont(ofSize: 16)
+        return label
     }()
     
     override func viewDidLoad() {
@@ -39,6 +42,7 @@ class ViewController: UIViewController {
         view.addSubview(signInSignOutButton)
         view.addSubview(signUpButton)
         view.addSubview(makeAuthenticatedRequestButton)
+        view.addSubview(userLabel)
         
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         headerLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
@@ -59,7 +63,11 @@ class ViewController: UIViewController {
         makeAuthenticatedRequestButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         makeAuthenticatedRequestButton.addTarget(self, action: #selector(makeAuthenticatedRequest), for: .primaryActionTriggered)
         
-        isAuthenticated = KindeAuth.auth.isAuthorized()
+        userLabel.translatesAutoresizingMaskIntoConstraints = false
+        userLabel.topAnchor.constraint(equalTo: makeAuthenticatedRequestButton.bottomAnchor).isActive = true
+        userLabel.centerXAnchor.constraint(equalTo: makeAuthenticatedRequestButton.centerXAnchor).isActive = true
+        
+        isAuthenticated = Auth.isAuthorized()
     }
     
     private var isAuthenticated = false {
@@ -72,13 +80,14 @@ class ViewController: UIViewController {
 
     @objc private func signInOrSignOut(_ target: UIButton) {
         if isAuthenticated {
-            KindeAuth.auth.logout(viewController: self) { result in
+            Auth.logout(viewController: self) { result in
                 if result {
                     self.isAuthenticated = false
+                    self.userLabel.text = ""
                 }
             }
         } else {
-            KindeAuth.auth.login(viewController: self) { result in
+            Auth.login(viewController: self) { result in
                 switch result {
                 case let .failure(error):
                     print("Login failed: \(error.localizedDescription)")
@@ -90,7 +99,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func register(_ target: UIButton) {
-        KindeAuth.auth.register(viewController: self) { result in
+        Auth.register(viewController: self) { result in
             switch result {
             case let .failure(error):
                 print("Registration failed: \(error.localizedDescription)")
@@ -101,12 +110,23 @@ class ViewController: UIViewController {
     }
     
     @objc private func makeAuthenticatedRequest(_ target: UIButton) {
-        KindeAuth.auth.performWithFreshTokens { tokenResult in
-            switch tokenResult {
+        Auth.performWithFreshTokens { tokens in
+            switch tokens {
             case let .failure(error):
-                print("Failed to make API call: \(error.localizedDescription)")
-            case let .success(accessToken):
-                print("Making authenticated API call with access token: \(accessToken.dropLast(accessToken.count - 10))...")
+                print("Failed to get auth token: \(error.localizedDescription)")
+            case let .success(tokens):
+                let accessToken = tokens.accessToken
+                print("Calling API with accessToken: \(accessToken)")
+                KindeManagementApiClient.getUser(accessToken: accessToken) { (userProfile, error) in
+                    if let userProfile = userProfile {
+                        let userName = "\(userProfile.firstName ?? "") \(userProfile.lastName ?? "")"
+                        print("Got profile for user \(userName)")
+                        self.userLabel.text = "User fetched: \(userName)"
+                    }
+                    if let error = error {
+                        print("Failed to get user profile: \(error.localizedDescription)")
+                    }
+                }
             }
         }
     }

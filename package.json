@@ -1,0 +1,23 @@
+{
+  "name": "@kinde-oss/ios-swift-kinde-auth-starter",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Kinde",
+    "email": "engineering@kinde.com",
+    "url": "https://kinde.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kinde-oss/kinde-auth-swift"
+  },
+  "bugs": "https://github.com/kinde-oss/kinde-auth-swift/issues",
+  "homepage": "https://kinde.com",
+  "scripts": {
+    "generate-api": "npx rimraf KindeAuthSwift/Classes/KindeManagementApi && npx @openapitools/openapi-generator-cli generate -i kinde-mgmt-api-specs.yaml -g swift5 -o KindeAuthSwift/Classes/KindeManagementApi"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.5.1",
+    "rimraf": "^3.0.2"
+  }
+}

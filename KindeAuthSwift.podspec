@@ -14,8 +14,9 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '10.0'
 
-  s.source_files = 'KindeAuthSwift/Classes/**/*'
+  s.source_files = ['KindeAuthSwift/Classes/*.swift', 'KindeAuthSwift/Classes/KindeManagementApi/OpenAPIClient/**/*']
   
   s.dependency 'AppAuth'
   s.dependency 'SwiftKeychainWrapper'
+  s.dependency 'AnyCodable-FlightSchool', '~> 0.6.1' # Required by KindeManagementApi
 end
