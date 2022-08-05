@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/cocoapods/l/KindeAuthSwift.svg?style=flat)](https://cocoapods.org/pods/KindeAuthSwift)
 [![Platform](https://img.shields.io/cocoapods/p/KindeAuthSwift.svg?style=flat)](https://cocoapods.org/pods/KindeAuthSwift)
 
-Integrate Kinde authentication with your iOS app. **register**, **login**, **logout**, and securely store authentication state on the iOS keychain.
+Integrate Kinde authentication with your iOS app. Simply **configure**, **register**, **login**, and **logout**, and authentication state is securely stored on the iOS keychain across app restarts.
 
 ## Example
 
