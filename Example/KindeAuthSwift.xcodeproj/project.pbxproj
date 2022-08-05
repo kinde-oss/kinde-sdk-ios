@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		009A3CA92C836AF7988DC7B1 /* Pods_KindeAuthSwift_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D11AFBC371093AEF1753A4F /* Pods_KindeAuthSwift_Tests.framework */; };
 		021093B79EEDDFBEBE2ACA6C /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4909B4C22E89D95E624189 /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift */; };
 		05BD27AE287EC52E00DC35D0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD27AD287EC52E00DC35D0 /* Logger.swift */; };
 		05BD27B2287FAF3800DC35D0 /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 05BD27B1287FAF3800DC35D0 /* kinde-auth.json */; };
@@ -22,7 +21,8 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* ConfigSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* ConfigSpec.swift */; };
-		CF390305A8E9DA4A38AE830C /* Pods_KindeAuthSwift_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F125F7FC9AE519B908D378AD /* Pods_KindeAuthSwift_Example.framework */; };
+		B920245BF672DBB127F2CE66 /* Pods_KindeAuthSwift_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEDAE0E3A68BD29992642F03 /* Pods_KindeAuthSwift_Tests.framework */; };
+		FF8FFE795D1F84AD7281FF69 /* Pods_KindeAuthSwift_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 595BBD25546F69E8C17E8F84 /* Pods_KindeAuthSwift_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +53,7 @@
 		05E70F652887FCDE004FFF0F /* KindeAuthSwift_ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindeAuthSwift_ExampleUITests.swift; sourceTree = "<group>"; };
 		0B4909B4C22E89D95E624189 /* KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = "KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift"; path = "MockingbirdMocks/KindeAuthSwift_Tests-KindeAuthSwift_ExampleMocks.generated.swift"; sourceTree = "<group>"; };
 		47E4D429566C3BCBB5C71D2E /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		5D11AFBC371093AEF1753A4F /* Pods_KindeAuthSwift_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KindeAuthSwift_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		595BBD25546F69E8C17E8F84 /* Pods_KindeAuthSwift_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KindeAuthSwift_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD01AFB9204008FA782 /* KindeAuthSwift_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KindeAuthSwift_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 		AE24CFFD2DD735869F7A0828 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		B5D401588BEF5EE3F2CF70C9 /* Pods-KindeAuthSwift_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KindeAuthSwift_Tests.debug.xcconfig"; path = "Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		BBE1E9A6A87093BAB93EC41B /* Pods-KindeAuthSwift_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KindeAuthSwift_Tests.release.xcconfig"; path = "Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		F125F7FC9AE519B908D378AD /* Pods_KindeAuthSwift_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KindeAuthSwift_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEDAE0E3A68BD29992642F03 /* Pods_KindeAuthSwift_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KindeAuthSwift_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF390305A8E9DA4A38AE830C /* Pods_KindeAuthSwift_Example.framework in Frameworks */,
+				FF8FFE795D1F84AD7281FF69 /* Pods_KindeAuthSwift_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				009A3CA92C836AF7988DC7B1 /* Pods_KindeAuthSwift_Tests.framework in Frameworks */,
+				B920245BF672DBB127F2CE66 /* Pods_KindeAuthSwift_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,8 +207,8 @@
 		DD311FEF8AA2E25A8275E916 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F125F7FC9AE519B908D378AD /* Pods_KindeAuthSwift_Example.framework */,
-				5D11AFBC371093AEF1753A4F /* Pods_KindeAuthSwift_Tests.framework */,
+				595BBD25546F69E8C17E8F84 /* Pods_KindeAuthSwift_Example.framework */,
+				DEDAE0E3A68BD29992642F03 /* Pods_KindeAuthSwift_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -243,7 +243,7 @@
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				0534B335287FEDEB00BA450B /* ShellScript */,
-				C89898FD85F0B36E6AA764E6 /* [CP] Embed Pods Frameworks */,
+				7B347652948B8D0EEC7C4217 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -263,7 +263,7 @@
 				607FACE11AFB9204008FA782 /* Sources */,
 				607FACE21AFB9204008FA782 /* Frameworks */,
 				607FACE31AFB9204008FA782 /* Resources */,
-				7AAA258470DE017657E62B0D /* [CP] Embed Pods Frameworks */,
+				F2FB91FB9FC127A8C9D2E90F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -428,29 +428,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7AAA258470DE017657E62B0D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/MockingbirdFramework/Mockingbird.framework",
-				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
-				"${BUILT_PRODUCTS_DIR}/Quick/Quick.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mockingbird.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C89898FD85F0B36E6AA764E6 /* [CP] Embed Pods Frameworks */ = {
+		7B347652948B8D0EEC7C4217 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -472,6 +450,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KindeAuthSwift_Example/Pods-KindeAuthSwift_Example-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F2FB91FB9FC127A8C9D2E90F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MockingbirdFramework/Mockingbird.framework",
+				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
+				"${BUILT_PRODUCTS_DIR}/Quick/Quick.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mockingbird.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KindeAuthSwift_Tests/Pods-KindeAuthSwift_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -646,6 +646,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -692,6 +693,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;

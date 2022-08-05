@@ -150,15 +150,15 @@ public class Auth: NSObject {
         }
     }
     
-    /// Perform an action, such as an API call, with a valid access token
+    /// Perform an action, such as an API call, with a valid access token and ID token
     /// Failure to get a valid access token may require reauthentication
-    public static func performWithFreshTokens(_ action: @escaping (Result<String, Error>) -> Void) {
+    public static func performWithFreshTokens(_ action: @escaping (Result<Tokens, Error>) -> Void) {
         guard let authState = authStateRepository?.state else {
             logger?.error(message: "Failed to get authentication state")
             return action(.failure(AuthError.notAuthenticated))
         }
         
-        authState.performAction {(accessToken, _, error) in
+        authState.performAction {(accessToken, idToken, error) in
             if let error = error {
                 logger?.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
                 return action(.failure(error))
@@ -168,10 +168,18 @@ public class Auth: NSObject {
                 logger?.error(message: "Failed to get access token")
                 return action(.failure(AuthError.notAuthenticated))
             }
-                        
-            action(.success(accessToken))
+
+            action(.success(Tokens(accessToken: accessToken, idToken: idToken)))
         }
     }
+}
+
+/// Authentication and identity tokens from the Kinde service
+public struct Tokens {
+    /// A bearer token for making authenticated calls to Kinde endpoints
+    public var accessToken: String
+    /// An ID token for the subject of the `accessToken`
+    public var idToken: String?
 }
 
 enum AuthError: Error {

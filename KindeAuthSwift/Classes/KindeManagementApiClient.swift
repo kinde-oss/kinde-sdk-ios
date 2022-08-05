@@ -5,7 +5,7 @@
   not being exposed as a parameter in the OpenAPI generatated requests (an apparent bug).
  */
 public class KindeManagementApiClient {
-    private static let config: Config? = Config.from()
+    private static var config: Config?
     
     /**
      `configure` must be called before `KindeManagementApiClient` is used.
@@ -13,7 +13,9 @@ public class KindeManagementApiClient {
      Set the host of the base URL of the client to the business name extracted from the
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.
      */
-    public static func configure() {
+    public static func configure(from source: Config.Source = .plist) {
+        config = Config.from(source)
+        
         if let issuer = config?.issuer,
            let urlComponents = URLComponents(string: issuer),
            let host = urlComponents.host,

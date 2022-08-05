@@ -49,7 +49,11 @@ public struct Config: Decodable {
                     return nil
                 }
             
-            guard let issuer = values["Issuer"] as? String, let clientId = values["ClientId"] as? String, let redirectUri = values["RedirectUri"] as? String, let postLogoutRedirectUri = values["PostLogoutRedirectUri"] as? String, let scope = values["Scope"] as? String else {
+            guard let issuer = values["Issuer"] as? String,
+                  let clientId = values["ClientId"] as? String,
+                  let redirectUri = values["RedirectUri"] as? String,
+                  let postLogoutRedirectUri = values["PostLogoutRedirectUri"] as? String,
+                  let scope = values["Scope"] as? String else {
                     return nil
                 }
             

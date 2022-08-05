@@ -110,11 +110,13 @@ class ViewController: UIViewController {
     }
     
     @objc private func makeAuthenticatedRequest(_ target: UIButton) {
-        Auth.performWithFreshTokens { tokenResult in
-            switch tokenResult {
+        Auth.performWithFreshTokens { tokens in
+            switch tokens {
             case let .failure(error):
                 print("Failed to get auth token: \(error.localizedDescription)")
-            case let .success(accessToken):
+            case let .success(tokens):
+                let accessToken = tokens.accessToken
+                print("Calling API with accessToken: \(accessToken)")
                 KindeManagementApiClient.getUser(accessToken: accessToken) { (userProfile, error) in
                     if let userProfile = userProfile {
                         let userName = "\(userProfile.firstName ?? "") \(userProfile.lastName ?? "")"

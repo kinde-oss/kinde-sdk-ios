@@ -41,7 +41,7 @@ class ViewControllerTests: XCTestCase {
         userIdInput.tap()
         userIdInput.typeText("\(Config.userId)\n")
         
-        // Password is assumed to be the first text field
+        // Password is assumed to be the first secure text field
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText(Config.password)
@@ -81,7 +81,7 @@ class ViewControllerTests: XCTestCase {
         userIdInput.tap()
         userIdInput.typeText("\(Config.userId)\n")
         
-        // Password is assumed to be the first text field
+        // Password is assumed to be the first secure text field
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText(Config.password)
