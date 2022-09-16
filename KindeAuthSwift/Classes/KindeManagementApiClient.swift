@@ -36,7 +36,7 @@ public class KindeManagementApiClient {
     }
     
     /**
-     Get the current use associated with the provided `accessToken`.
+     Get the current user associated with the provided `accessToken`.
      */
     public static func getUser(accessToken: String, then completion: @escaping ((_ data: UserProfile?, _ error: Error?) -> Void)) {
         OpenAPIClientAPI.customHeaders = [ "Authorization": "Bearer \(accessToken)" ]

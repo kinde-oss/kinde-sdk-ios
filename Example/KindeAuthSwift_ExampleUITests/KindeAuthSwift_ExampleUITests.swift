@@ -83,6 +83,7 @@ class ViewControllerTests: XCTestCase {
         
         // Password is assumed to be the first secure text field
         let passwordInput = app.webViews.secureTextFields.firstMatch
+        XCTAssertTrue(passwordInput.waitForExistence(timeout: Config.uiElementWaitTimeout))
         passwordInput.tap()
         passwordInput.typeText(Config.password)
         
