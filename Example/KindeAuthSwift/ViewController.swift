@@ -90,7 +90,9 @@ class ViewController: UIViewController {
             Auth.login(viewController: self) { result in
                 switch result {
                 case let .failure(error):
-                    print("Login failed: \(error.localizedDescription)")
+                    if (!Auth.isUserCancellationErrorCode(error)) {
+                        self.alert("Login failed: \(error.localizedDescription)")
+                    }
                 case .success:
                     self.isAuthenticated = true
                 }
@@ -102,7 +104,9 @@ class ViewController: UIViewController {
         Auth.register(viewController: self) { result in
             switch result {
             case let .failure(error):
-                print("Registration failed: \(error.localizedDescription)")
+                if (!Auth.isUserCancellationErrorCode(error)) {
+                    self.alert("Registration failed: \(error.localizedDescription)")
+                }
             case .success:
                 self.isAuthenticated = true
             }
@@ -113,7 +117,7 @@ class ViewController: UIViewController {
         Auth.performWithFreshTokens { tokens in
             switch tokens {
             case let .failure(error):
-                print("Failed to get auth token: \(error.localizedDescription)")
+                self.alert("Failed to get auth token: \(error.localizedDescription)")
             case let .success(tokens):
                 let accessToken = tokens.accessToken
                 print("Calling API with accessToken: \(accessToken)")
@@ -124,11 +128,25 @@ class ViewController: UIViewController {
                         self.userLabel.text = "User fetched: \(userName)"
                     }
                     if let error = error {
-                        print("Failed to get user profile: \(error.localizedDescription)")
+                        self.alert("Failed to get user profile: \(error.localizedDescription)")
                     }
                 }
             }
         }
+    }
+    
+    /// Present an error alert with the given message and print it to the console
+    @objc private func alert(_ message: String) {
+        let defaultAction = UIAlertAction(title: "OK",
+                                style: .default)
+        
+        let alert = UIAlertController(title: "Error",
+                 message: message,
+                 preferredStyle: .alert)
+        alert.addAction(defaultAction)
+        
+        print(message)
+        self.present(alert, animated: true)
     }
 }
 

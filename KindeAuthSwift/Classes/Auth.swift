@@ -150,6 +150,12 @@ public class Auth: NSObject {
         }
     }
     
+    /// Is the given error the result of user cancellation of an authorization flow
+    public static func isUserCancellationErrorCode(_ error: Error) -> Bool {
+        let error = error as NSError
+        return error.domain == OIDGeneralErrorDomain && error.code == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
+    }
+    
     /// Perform an action, such as an API call, with a valid access token and ID token
     /// Failure to get a valid access token may require reauthentication
     public static func performWithFreshTokens(_ action: @escaping (Result<Tokens, Error>) -> Void) {
@@ -182,9 +188,12 @@ public struct Tokens {
     public var idToken: String?
 }
 
-enum AuthError: Error {
+public enum AuthError: Error {
+    /// Failed to retrieve local or remote configuration
     case configuration
+    /// Failed to obtain valid authentication state
     case notAuthenticated
+    /// Failed to save authentication state on device
     case failedToSaveState
 }
 
