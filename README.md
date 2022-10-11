@@ -58,8 +58,12 @@ you configure in your [App Keys](https://kinde.com/docs/the-basics/getting-app-k
 }
 ```
 
-Before `Auth` can be used, a call to `Auth.configure()` must be made, typically in `AppDelegate` as part of `application(launchOptions)` for a UIKit app,
-or the `@main` initialization logic for a SwiftUI app. Likewise, if the Kinde Management API client is used, `KindeManagementApiClient.configure()` must be called prior to use.
+Before `Auth` or any Kinde Management APIs can be used, a call to `Auth.configure()` must be made, typically in `AppDelegate`
+as part of `application(launchOptions)` for a UIKit app, or the `@main` initialization logic for a SwiftUI app.
+
+## Kinde Management API
+
+[Kinde Management API](./KindeAuthSwift/Classes/KindeManagementAPI/README.md)
 
 ## Development
 
@@ -72,6 +76,8 @@ To update the client update the OpenAPI specification `kinde-mgmt-api-specs.yaml
 
 - [Install](https://classic.yarnpkg.com/en/docs/install) and run `yarn`
 - Generate the API client `yarn generate-api`
+
+Support for bearer token authentication is implemented by classes with the naming convention `Bearer`\*, according to the OpenAPI Generator [recommendation](https://github.com/OpenAPITools/openapi-generator/wiki/FAQ#how-do-i-implement-bearer-token-authentication-with-urlsession-on-the-swift-api-client).
 
 ### Tests
 

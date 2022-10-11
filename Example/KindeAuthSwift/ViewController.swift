@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         return button
     }()
     
-    private let makeAuthenticatedRequestButton: UIButton = {
+    private let getUserButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Fetch user (authenticated request)", for: .normal)
         return button
@@ -41,7 +41,7 @@ class ViewController: UIViewController {
         view.addSubview(headerLabel)
         view.addSubview(signInSignOutButton)
         view.addSubview(signUpButton)
-        view.addSubview(makeAuthenticatedRequestButton)
+        view.addSubview(getUserButton)
         view.addSubview(userLabel)
         
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -58,14 +58,14 @@ class ViewController: UIViewController {
         signUpButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         signUpButton.addTarget(self, action: #selector(register), for: .primaryActionTriggered)
         
-        makeAuthenticatedRequestButton.translatesAutoresizingMaskIntoConstraints = false
-        makeAuthenticatedRequestButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor).isActive = true
-        makeAuthenticatedRequestButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
-        makeAuthenticatedRequestButton.addTarget(self, action: #selector(makeAuthenticatedRequest), for: .primaryActionTriggered)
+        getUserButton.translatesAutoresizingMaskIntoConstraints = false
+        getUserButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor).isActive = true
+        getUserButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        getUserButton.addTarget(self, action: #selector(getUser), for: .primaryActionTriggered)
         
         userLabel.translatesAutoresizingMaskIntoConstraints = false
-        userLabel.topAnchor.constraint(equalTo: makeAuthenticatedRequestButton.bottomAnchor).isActive = true
-        userLabel.centerXAnchor.constraint(equalTo: makeAuthenticatedRequestButton.centerXAnchor).isActive = true
+        userLabel.topAnchor.constraint(equalTo: getUserButton.bottomAnchor).isActive = true
+        userLabel.centerXAnchor.constraint(equalTo: getUserButton.centerXAnchor).isActive = true
         
         isAuthenticated = Auth.isAuthorized()
     }
@@ -74,7 +74,7 @@ class ViewController: UIViewController {
         didSet {
             signInSignOutButton.setTitle(isAuthenticated ? "Sign out" : "Sign in", for: .normal)
             signUpButton.isHidden = isAuthenticated
-            makeAuthenticatedRequestButton.isHidden = !isAuthenticated
+            getUserButton.isHidden = !isAuthenticated
         }
     }
 
@@ -113,23 +113,36 @@ class ViewController: UIViewController {
         }
     }
     
-    @objc private func makeAuthenticatedRequest(_ target: UIButton) {
-        Auth.performWithFreshTokens { tokens in
-            switch tokens {
-            case let .failure(error):
-                self.alert("Failed to get auth token: \(error.localizedDescription)")
-            case let .success(tokens):
-                let accessToken = tokens.accessToken
-                print("Calling API with accessToken: \(accessToken)")
-                KindeManagementApiClient.getUser(accessToken: accessToken) { (userProfile, error) in
-                    if let userProfile = userProfile {
-                        let userName = "\(userProfile.firstName ?? "") \(userProfile.lastName ?? "")"
-                        print("Got profile for user \(userName)")
-                        self.userLabel.text = "User fetched: \(userName)"
+    /// Get the current user's profile. A successful response confirms that valid authentication
+    /// tokens are available.
+    ///
+    /// If the request fails due to stale authentication, the current user is logged out.
+    @objc private func getUser(_ target: UIButton) {
+        
+        OAuthAPI.getUser { (userProfile, error) in
+            if let userProfile = userProfile {
+                let userName = "\(userProfile.firstName ?? "") \(userProfile.lastName ?? "")"
+                print("Got profile for user \(userName)")
+                self.userLabel.text = "User fetched: \(userName)"
+            }
+            if let error = error {
+                if let errorResponse = error as? ErrorResponse {
+                    switch errorResponse {
+                    case .error(let code, _, _, let error):
+                        if code == BearerTokenHandler.notAuthenticatedCode {
+                            self.alert("Your session has expired. Please login again.")
+                            Auth.logout(viewController: self) { result in
+                                if result {
+                                    self.isAuthenticated = false
+                                    self.userLabel.text = ""
+                                }
+                            }
+                        } else {
+                            self.alert("Failed to get user profile: \(error.localizedDescription)")
+                        }
                     }
-                    if let error = error {
-                        self.alert("Failed to get user profile: \(error.localizedDescription)")
-                    }
+                } else {
+                    self.alert("Failed to get user profile: \(error.localizedDescription)")
                 }
             }
         }
