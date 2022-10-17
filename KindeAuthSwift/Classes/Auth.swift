@@ -8,6 +8,12 @@ public class Auth: NSObject {
     private static var authStateRepository: AuthStateRepository?
     private static var logger: Logger?
 
+    /**
+     `configure` must be called before `Auth` or any Kinde Management APIs are used.
+     
+     Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the
+     configured `issuer`. E.g., `https://example.kinde.com` -> `example`.
+     */
     public static func configure(from source: Config.Source = .plist, logger: Logger?) {
         self.config = Config.from(source)
         guard self.config != nil else {
@@ -15,6 +21,20 @@ public class Auth: NSObject {
         }
         self.logger = logger
         self.authStateRepository = AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger)
+        
+        // Configure the Kinde Management API
+        if let issuer = config?.issuer,
+           let urlComponents = URLComponents(string: issuer),
+           let host = urlComponents.host,
+           let businessName = host.split(separator: ".").first {
+            OpenAPIClientAPI.basePath = OpenAPIClientAPI.basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
+            
+            // Use Bearer authentication subclass of RequestBuilderFactory
+            OpenAPIClientAPI.requestBuilderFactory = BearerRequestBuilderFactory()
+        } else {
+            preconditionFailure("Failed to parse Business Name from configured issuer \(config?.issuer ?? "")")
+        }
+        
     }
     
     /// Is the user authenticated as of the last use of authentication state?
@@ -163,13 +183,13 @@ public class Auth: NSObject {
             logger?.error(message: "Failed to get authentication state")
             return action(.failure(AuthError.notAuthenticated))
         }
-        
+
         authState.performAction {(accessToken, idToken, error) in
             if let error = error {
                 logger?.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
                 return action(.failure(error))
             }
-            
+
             guard let accessToken = accessToken else {
                 logger?.error(message: "Failed to get access token")
                 return action(.failure(AuthError.notAuthenticated))
@@ -195,6 +215,28 @@ public enum AuthError: Error {
     case notAuthenticated
     /// Failed to save authentication state on device
     case failedToSaveState
+}
+
+extension AuthError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .configuration:
+            return NSLocalizedString(
+                "Failed to retrieve local or remote configuration.",
+                comment: "Invalid Configuration"
+            )
+        case .notAuthenticated:
+            return NSLocalizedString(
+                "Failed to obtain valid authentication state.",
+                comment: "Not Authenticated"
+            )
+        case .failedToSaveState:
+            return NSLocalizedString(
+                "Failed to save authentication state on device.",
+                comment: "Failed State Persistence"
+            )
+        }
+    }
 }
 
 /// A simple logging protocol with levels

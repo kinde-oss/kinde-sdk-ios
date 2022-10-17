@@ -9,7 +9,7 @@ struct Config {
     // App
     static let signInButtonLabel = "Sign in"
     static let signOutButtonLabel = "Sign out"
-    static let makeAuthenticatedRequesButtonLabel = "Fetch user (authenticated request)"
+    static let getUserButtonLabel = "Fetch user (authenticated request)"
     static let userLabel = "User"
     static let userFetchSuccessText = "fetched:"
     static let signInContinueAlertButtonLabel = "Continue"
@@ -92,7 +92,7 @@ class ViewControllerTests: XCTestCase {
         continueLoginButton.tap()
         
         // Make authenticated request
-        waitThenTapButton(button: Config.makeAuthenticatedRequesButtonLabel)
+        waitThenTapButton(button: Config.getUserButtonLabel)
 
         // Check that user details were successfully fetched
         let userLabel = app.staticTexts[Config.userLabel]

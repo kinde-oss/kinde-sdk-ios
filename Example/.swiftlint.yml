@@ -6,7 +6,7 @@ excluded:
   # Third-party
   - Pods
   # Generated
-  - ../KindeAuthSwift/Classes/KindeManagementApi
+  - ../KindeAuthSwift/Classes/KindeManagementAPI
 
 disabled_rules:
   # Match default XCode formatting
