@@ -5,14 +5,7 @@ class BearerDecodableRequestBuilder<T: Decodable>: URLSessionDecodableRequestBui
         BearerTokenHandler.setBearerToken { error in
 
             if let error = error {
-                switch error {
-                case AuthError.notAuthenticated:
-                    // Indicate a bearer token could not be set due to an authentication error; likely due to an expired refresh token
-                    completion(Result.failure(ErrorResponse.error(BearerTokenHandler.notAuthenticatedCode, nil, nil, error)))
-                default:
-                    completion(Result.failure(ErrorResponse.error(-1, nil, nil, error)))
-                }
-                
+                BearerTokenHandler.handleSetBearerTokenError(error: error, completion: completion)
             } else {
                 super.execute(apiResponseQueue) { result in
                     completion(result)
