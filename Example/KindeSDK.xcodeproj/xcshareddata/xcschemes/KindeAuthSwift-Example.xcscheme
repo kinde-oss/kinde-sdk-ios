@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "KindeAuthSwift_Example.app"
-               BlueprintName = "KindeAuthSwift_Example"
-               ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+               BuildableName = "KindeSDK_Example.app"
+               BlueprintName = "KindeSDK_Example"
+               ReferencedContainer = "container:KindeSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "KindeAuthSwift_Tests.xctest"
-               BlueprintName = "KindeAuthSwift_Tests"
-               ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+               BuildableName = "KindeSDK_Tests.xctest"
+               BlueprintName = "KindeSDK_Tests"
+               ReferencedContainer = "container:KindeSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KindeAuthSwift_Example.app"
-            BlueprintName = "KindeAuthSwift_Example"
-            ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+            BuildableName = "KindeSDK_Example.app"
+            BlueprintName = "KindeSDK_Example"
+            ReferencedContainer = "container:KindeSDK.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -56,9 +56,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "KindeAuthSwift_Tests.xctest"
-               BlueprintName = "KindeAuthSwift_Tests"
-               ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+               BuildableName = "KindeSDK_Tests.xctest"
+               BlueprintName = "KindeSDK_Tests"
+               ReferencedContainer = "container:KindeSDK.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -66,9 +66,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "05E70F622887FCDE004FFF0F"
-               BuildableName = "KindeAuthSwift_ExampleUITests.xctest"
-               BlueprintName = "KindeAuthSwift_ExampleUITests"
-               ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+               BuildableName = "KindeSDK_ExampleUITests.xctest"
+               BlueprintName = "KindeSDK_ExampleUITests"
+               ReferencedContainer = "container:KindeSDK.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -88,9 +88,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KindeAuthSwift_Example.app"
-            BlueprintName = "KindeAuthSwift_Example"
-            ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+            BuildableName = "KindeSDK_Example.app"
+            BlueprintName = "KindeSDK_Example"
+            ReferencedContainer = "container:KindeSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -105,9 +105,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KindeAuthSwift_Example.app"
-            BlueprintName = "KindeAuthSwift_Example"
-            ReferencedContainer = "container:KindeAuthSwift.xcodeproj">
+            BuildableName = "KindeSDK_Example.app"
+            BlueprintName = "KindeSDK_Example"
+            ReferencedContainer = "container:KindeSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

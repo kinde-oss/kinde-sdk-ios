@@ -1,7 +1,7 @@
 import Quick
 import Nimble
 import Mockingbird
-import KindeAuthSwift
+import KindeSDK
 import AppAuth
 
 class AuthStateRepositorySpec: QuickSpec {

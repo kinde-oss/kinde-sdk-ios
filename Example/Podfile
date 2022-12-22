@@ -2,12 +2,12 @@ use_frameworks!
 
 platform :ios, '10.0'
 
-target 'KindeAuthSwift_Example' do
-  pod 'KindeAuthSwift', :path => '../'
+target 'KindeSDK_Example' do
+  pod 'KindeSDK', :path => '../'
 
   pod 'SwiftLint'
 
-  target 'KindeAuthSwift_Tests' do
+  target 'KindeSDK_Tests' do
     inherit! :search_paths
 
     pod 'Quick'
