@@ -1,6 +1,6 @@
 import Quick
 import Nimble
-import KindeAuthSwift
+import KindeSDK
 
 class ConfigSpec: QuickSpec {
     override func spec() {

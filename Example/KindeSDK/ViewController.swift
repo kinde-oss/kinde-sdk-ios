@@ -1,12 +1,12 @@
 import UIKit
-import KindeAuthSwift
+import KindeSDK
 
 class ViewController: UIViewController {
     
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20)
-        label.text = "KindeAuthSwift Example"
+        label.text = "KindeSDK Example"
         return label
     }()
     

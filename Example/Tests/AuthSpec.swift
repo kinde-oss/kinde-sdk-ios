@@ -1,9 +1,9 @@
 import Quick
 import Nimble
 import Mockingbird
-import KindeAuthSwift
+import KindeSDK
 import AppAuth
-import KindeAuthSwift_Example
+import KindeSDK_Example
 
 class AuthSpec: QuickSpec {
     override func spec() {
