@@ -21,6 +21,12 @@ class ViewController: UIViewController {
         return button
     }()
     
+    private let createOrgButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Create Organization", for: .normal)
+        return button
+    }()
+    
     private let getUserButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Fetch user (authenticated request)", for: .normal)
@@ -41,6 +47,7 @@ class ViewController: UIViewController {
         view.addSubview(headerLabel)
         view.addSubview(signInSignOutButton)
         view.addSubview(signUpButton)
+        view.addSubview(createOrgButton)
         view.addSubview(getUserButton)
         view.addSubview(userLabel)
         
@@ -58,8 +65,13 @@ class ViewController: UIViewController {
         signUpButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         signUpButton.addTarget(self, action: #selector(register), for: .primaryActionTriggered)
         
+        createOrgButton.translatesAutoresizingMaskIntoConstraints = false
+        createOrgButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor).isActive = true
+        createOrgButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        createOrgButton.addTarget(self, action: #selector(registerOrganization), for: .primaryActionTriggered)
+        
         getUserButton.translatesAutoresizingMaskIntoConstraints = false
-        getUserButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor).isActive = true
+        getUserButton.topAnchor.constraint(equalTo: createOrgButton.bottomAnchor).isActive = true
         getUserButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         getUserButton.addTarget(self, action: #selector(getUser), for: .primaryActionTriggered)
         
@@ -67,13 +79,14 @@ class ViewController: UIViewController {
         userLabel.topAnchor.constraint(equalTo: getUserButton.bottomAnchor).isActive = true
         userLabel.centerXAnchor.constraint(equalTo: getUserButton.centerXAnchor).isActive = true
         
-        isAuthenticated = Auth.isAuthorized()
+        isAuthenticated = Auth.isAuthenticated()
     }
     
     private var isAuthenticated = false {
         didSet {
             signInSignOutButton.setTitle(isAuthenticated ? "Sign out" : "Sign in", for: .normal)
             signUpButton.isHidden = isAuthenticated
+            createOrgButton.isHidden = isAuthenticated
             getUserButton.isHidden = !isAuthenticated
         }
     }
@@ -113,6 +126,19 @@ class ViewController: UIViewController {
         }
     }
     
+    @objc private func registerOrganization(_ target: UIButton) {
+        Auth.createOrg(viewController: self) { result in
+            switch result {
+            case let .failure(error):
+                if (!Auth.isUserCancellationErrorCode(error)) {
+                    self.alert("Registration failed: \(error.localizedDescription)")
+                }
+            case .success:
+                self.isAuthenticated = true
+            }
+        }
+    }
+    
     /// Get the current user's profile. A successful response confirms that valid authentication
     /// tokens are available.
     ///
@@ -121,7 +147,7 @@ class ViewController: UIViewController {
         
         OAuthAPI.getUser { (userProfile, error) in
             if let userProfile = userProfile {
-                let userName = "\(userProfile.firstName ?? "") \(userProfile.lastName ?? "")"
+                let userName = "\(userProfile.familyName ?? "") \(userProfile.givenName ?? "")"
                 print("Got profile for user \(userName)")
                 self.userLabel.text = "User fetched: \(userName)"
             }
@@ -162,4 +188,3 @@ class ViewController: UIViewController {
         self.present(alert, animated: true)
     }
 }
-

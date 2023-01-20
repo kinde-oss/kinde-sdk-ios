@@ -34,7 +34,6 @@ public class Auth: NSObject {
         } else {
             preconditionFailure("Failed to parse Business Name from configured issuer \(config?.issuer ?? "")")
         }
-        
     }
     
     /// Is the user authenticated as of the last use of authentication state?
@@ -42,9 +41,86 @@ public class Auth: NSObject {
         return authStateRepository?.state?.isAuthorized ?? false
     }
     
+    public static func isAuthenticated() -> Bool {
+        let isAuthorized = authStateRepository?.state?.isAuthorized
+        guard let lastTokenResponse = authStateRepository?.state?.lastTokenResponse else {
+            return false
+        }
+        guard let accessTokenExpirationDate = lastTokenResponse.accessTokenExpirationDate else {
+            return false
+        }        
+        return lastTokenResponse.accessToken != nil &&
+               isAuthorized == true &&
+               accessTokenExpirationDate > Date()
+    }
+    
+    public static func getUserDetails() -> [String: Any?] {
+        guard let params = authStateRepository?.state?.lastTokenResponse?.idToken?.parsedJWT else {
+            return [:]
+        }
+        return [idDetailsKey: params[subDetailsKey] as Any?,
+                givenNameDetailsKey: params[givenNameDetailsKey] as Any?,
+                familyNameDetailsKey: params[familyNameDetailsKey] as Any?,
+                emailDetailsKey: params[emailDetailsKey] as Any?]
+    }
+    
+    public static func getClaim(key: String, token: TokenType = .accessToken) -> Any? {
+        let lastTokenResponse = authStateRepository?.state?.lastTokenResponse
+        let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
+        guard let params = tokenToParse?.parsedJWT else {
+            return nil
+        }
+        return params[key] ?? nil
+    }
+    
+    public static func getPermissions() -> [String: Any?] {
+        let permissions = getClaim(key: permissionsClaimKey)
+        let orgCode = getClaim(key: orgCodeClaimKey)
+        return ["orgCode": orgCode,
+                "permissions": permissions]
+    }
+    
+    public static func getPermission(name: String) -> [String: Any?] {
+        let permissions = getClaim(key: permissionsClaimKey) as? [String] ?? []
+        let orgCode = getClaim(key: orgCodeClaimKey)
+        return ["orgCode": orgCode,
+                "isGranted": permissions.contains(name)]
+    }
+    
+    public static func getOrganization() -> [String: Any?] {
+        let orgCode = getClaim(key: orgCodeClaimKey)
+        return ["orgCode": orgCode]
+    }
+    
+    public static func getUserOrganizations() -> [String: Any?] {
+        let userOrgs = getClaim(key: orgCodesClaimKey,
+                                token: .idToken)
+        return ["orgCodes": userOrgs]
+    }
+    
     /// Register a new user
-    public static func register(viewController: UIViewController, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        getAuthorizationRequest(signUp: true, then: { result in
+    public static func register(orgCode: String = "",
+                                viewController: UIViewController, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        getAuthorizationRequest(signUp: true,
+                                orgCode: orgCode,
+                                then: { result in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success(let request):
+                currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
+                                                                  presenting: viewController,
+                                                                  callback: authorizationFlowCallback(then: completion))
+            }
+        })
+    }
+     
+    /// Login an existing user
+    public static func login(orgCode: String = "",
+                             viewController: UIViewController, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        getAuthorizationRequest(signUp: false,
+                                orgCode: orgCode,
+                                then: { result in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -56,9 +132,9 @@ public class Auth: NSObject {
         })
     }
     
-    /// Login an existing user
-    public static func login(viewController: UIViewController, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        getAuthorizationRequest(signUp: false, then: { result in
+    /// Register a new organization
+    public static func createOrg(viewController: UIViewController, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        getAuthorizationRequest(signUp: true, createOrg: true, then: { result in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -79,7 +155,12 @@ public class Auth: NSObject {
     
     /// Create an Authorization Request using the configured Issuer and Redirect URLs,
     /// and OpenIDConnect configuration discovery
-    private static func getAuthorizationRequest(signUp: Bool, usePKCE: Bool = true, useNonce: Bool = false, then completion: @escaping (Result<OIDAuthorizationRequest, Error>) -> Void) {
+    private static func getAuthorizationRequest(signUp: Bool,
+                                                createOrg: Bool = false,
+                                                orgCode: String = "",
+                                                usePKCE: Bool = true,
+                                                useNonce: Bool = false,
+                                                then completion: @escaping (Result<OIDAuthorizationRequest, Error>) -> Void) {
         let issuerUrl = config?.getIssuerUrl()
         guard let issuerUrl = issuerUrl else {
             logger?.error(message: "Failed to get issuer URL")
@@ -103,20 +184,24 @@ public class Auth: NSObject {
                 return completion(.failure(AuthError.configuration))
             }
             
-            let additionalParameters = [
-                "start_page": signUp ? "registration" : "login",
+            var additionalParameters = [
+                startPageParamName: signUp ? "registration" : "login",
                 // Force fresh login
-                "prompt": "login"
+                promptParamName: "login"
             ]
             
-//            let scopes = self.config.scope.components(separatedBy: " ")
-//            let request = OIDAuthorizationRequest(configuration: configuration,
-//                                                  clientId: self.config.clientId,
-//                                                  clientSecret: nil, // Only required for Client Credentials Flow
-//                                                  scopes: scopes,
-//                                                  redirectURL: redirectUrl,
-//                                                  responseType: OIDResponseTypeCode,
-//
+            if createOrg {
+                additionalParameters[isCreateOrgParamName] = "true"
+            }
+            
+            if let audience = config?.audience, !audience.isEmpty {
+               additionalParameters[audienceParamName] = audience
+            }
+            
+            if !orgCode.isEmpty {
+                additionalParameters[orgCodeParamName] = orgCode
+            }
+            
             // TODO: prefer using the opinionated request builder above
             // if/when the API supports nonce validation
             let codeChallengeMethod = usePKCE ? OIDOAuthorizationRequestCodeChallengeMethodS256 : nil
@@ -239,10 +324,75 @@ extension AuthError: LocalizedError {
     }
 }
 
+public enum TokenType: String {
+    case idToken
+    case accessToken
+}
+
+private let idDetailsKey = "id"
+private let subDetailsKey = "sub"
+private let givenNameDetailsKey = "given_name"
+private let familyNameDetailsKey = "family_name"
+private let emailDetailsKey = "email"
+
+private let permissionsClaimKey = "permissions"
+private let orgCodeClaimKey = "org_code"
+private let orgCodesClaimKey = "org_codes"
+
+private let audienceParamName = "audience"
+private let isCreateOrgParamName = "is_create_org"
+private let orgCodeParamName = "org_code"
+private let startPageParamName = "start_page"
+private let promptParamName = "prompt"
+
 /// A simple logging protocol with levels
 public protocol Logger {
     func debug(message: String)
     func info(message: String)
     func error(message: String)
     func fault(message: String)
+}
+
+extension String {
+    var parsedJWT: [String: Any?] {
+        let tokenString = self
+        var params: [String: Any?] = [:]
+        do {
+            let data = try decode(jwtToken: tokenString)
+            params = data
+        } catch {
+            preconditionFailure("\(error.localizedDescription)")
+        }
+        return params
+    }
+    
+    func decode(jwtToken jwt: String) throws -> [String: Any] {
+        enum DecodeErrors: Error {
+            case badToken
+            case other
+        }
+
+        func base64Decode(_ base64: String) throws -> Data {
+            let base64 = base64
+                .replacingOccurrences(of: "-", with: "+")
+                .replacingOccurrences(of: "_", with: "/")
+            let padded = base64.padding(toLength: ((base64.count + 3) / 4) * 4, withPad: "=", startingAt: 0)
+            guard let decoded = Data(base64Encoded: padded) else {
+                throw DecodeErrors.badToken
+            }
+            return decoded
+        }
+
+        func decodeJWTPart(_ value: String) throws -> [String: Any] {
+            let bodyData = try base64Decode(value)
+            let json = try JSONSerialization.jsonObject(with: bodyData, options: [])
+            guard let payload = json as? [String: Any] else {
+                throw DecodeErrors.other
+            }
+            return payload
+        }
+
+        let segments = jwt.components(separatedBy: ".")
+        return try decodeJWTPart(segments[1])
+    }
 }

@@ -7,13 +7,16 @@ public struct Config: Decodable {
     let redirectUri: String
     let postLogoutRedirectUri: String
     let scope: String
+    let audience: String
     
-    public init(issuer: String, clientId: String, redirectUri: String, postLogoutRedirectUri: String, scope: String) {
+    public init(issuer: String, clientId: String, redirectUri: String,
+                postLogoutRedirectUri: String, scope: String, audience: String) {
         self.issuer = issuer
         self.clientId = clientId
         self.redirectUri = redirectUri
         self.postLogoutRedirectUri = postLogoutRedirectUri
         self.scope = scope
+        self.audience = audience
     }
     
     /// Get the configured Issuer URL, or `nil` if it is missing or malformed
@@ -53,11 +56,13 @@ public struct Config: Decodable {
                   let clientId = values["ClientId"] as? String,
                   let redirectUri = values["RedirectUri"] as? String,
                   let postLogoutRedirectUri = values["PostLogoutRedirectUri"] as? String,
-                  let scope = values["Scope"] as? String else {
+                  let scope = values["Scope"] as? String,
+                  let audience = values["Audience"] as? String else {
                     return nil
                 }
             
-            return Config(issuer: issuer, clientId: clientId, redirectUri: redirectUri, postLogoutRedirectUri: postLogoutRedirectUri, scope: scope)
+            return Config(issuer: issuer, clientId: clientId, redirectUri: redirectUri,
+                          postLogoutRedirectUri: postLogoutRedirectUri, scope: scope, audience: audience)
             
         case .json:
             do {

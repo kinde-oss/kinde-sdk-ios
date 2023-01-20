@@ -32,7 +32,7 @@ open class OAuthAPI {
 
     /**
      Returns the details of the currently logged in user
-     - GET /oauth2/user_profile
+     - GET /oauth2/v2/user_profile
      - Contains the id, names and email of the currently logged in user 
      - BASIC:
        - type: http
@@ -40,7 +40,7 @@ open class OAuthAPI {
      - returns: RequestBuilder<UserProfile> 
      */
     open class func getUserWithRequestBuilder() -> RequestBuilder<UserProfile> {
-        let localVariablePath = "/oauth2/user_profile"
+        let localVariablePath = "/oauth2/v2/user_profile"
         let localVariableURLString = OpenAPIClientAPI.basePath + localVariablePath
         let localVariableParameters: [String: Any]? = nil
 

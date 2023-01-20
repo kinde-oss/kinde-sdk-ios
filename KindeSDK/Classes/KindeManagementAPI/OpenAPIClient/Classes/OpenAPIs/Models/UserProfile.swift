@@ -13,22 +13,28 @@ import AnyCodable
 public struct UserProfile: Codable, JSONEncodable, Hashable {
 
     public var id: String?
-    public var preferredEmail: String?
-    public var lastName: String?
-    public var firstName: String?
+    public var providedId: String?
+    public var name: String?
+    public var givenName: String?
+    public var familyName: String?
+    public var updatedAt: String?
 
-    public init(id: String? = nil, preferredEmail: String? = nil, lastName: String? = nil, firstName: String? = nil) {
+    public init(id: String? = nil, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: String? = nil) {
         self.id = id
-        self.preferredEmail = preferredEmail
-        self.lastName = lastName
-        self.firstName = firstName
+        self.providedId = providedId
+        self.name = name
+        self.givenName = givenName
+        self.familyName = familyName
+        self.updatedAt = updatedAt
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case id
-        case preferredEmail = "preferred_email"
-        case lastName = "last_name"
-        case firstName = "first_name"
+        case providedId = "provided_id"
+        case name
+        case givenName = "given_name"
+        case familyName = "family_name"
+        case updatedAt = "updated_at"
     }
 
     // Encodable protocol methods
@@ -36,9 +42,11 @@ public struct UserProfile: Codable, JSONEncodable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encodeIfPresent(preferredEmail, forKey: .preferredEmail)
-        try container.encodeIfPresent(lastName, forKey: .lastName)
-        try container.encodeIfPresent(firstName, forKey: .firstName)
+        try container.encodeIfPresent(providedId, forKey: .providedId)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(givenName, forKey: .givenName)
+        try container.encodeIfPresent(familyName, forKey: .familyName)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
     }
 }
 
