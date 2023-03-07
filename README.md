@@ -6,10 +6,6 @@
 
 Integrate Kinde authentication with your iOS app. Simply **configure**, **register**, **login**, and **logout**, and authentication state is securely stored on the iOS keychain across app restarts.
 
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
 ## Requirements
 
 - iOS 12.4+
@@ -30,8 +26,8 @@ If integrating with other pods that require static linking, follow the instructi
 
 ## Configuration
 
-The Kinde `Auth` service is configured with an instance of the `Config` class. The example project uses the bundled `KindeAuth.plist` for configuration.
-Alternatively, configuration can be supplied in JSON format with the bundled `kinde-auth.json`.
+The Kinde `Auth` service is configured with an instance of the `Config` class. The example project uses the bundled `kinde-auth.json` for configuration.
+Alternatively, configuration can be supplied in JSON format with the bundled `KindeAuth.plist`.
 Enter the values from the [App Keys](https://kinde.com/docs/the-basics/getting-app-keys) page for your Kinde business: E.g.,
 
 ```
@@ -40,7 +36,8 @@ Enter the values from the [App Keys](https://kinde.com/docs/the-basics/getting-a
   "clientId": "{your-client-id}",
   "redirectUri": "{your-url-scheme}://kinde_callback",
   "postLogoutRedirectUri": "{your-url-scheme}://kinde_logoutcallback",
-  "scope": "openid profile email offline"
+  "scope": "openid profile email offline",
+  "audience": "{your-audience}"
 }
 ```
 
@@ -55,11 +52,12 @@ you configure in your [App Keys](https://kinde.com/docs/the-basics/getting-app-k
   "redirectUri": "com.example.App://kinde_callback",
   "postLogoutRedirectUri": "com.example.App://kinde_logoutcallback",
   "scope": "openid profile email offline"
+  "audience": "https://app.example.com"
 }
 ```
-
 Before `Auth` or any Kinde Management APIs can be used, a call to `Auth.configure()` must be made, typically in `AppDelegate`
 as part of `application(launchOptions)` for a UIKit app, or the `@main` initialization logic for a SwiftUI app.
+Note: `audience` can be optional
 
 ## Kinde Management API
 

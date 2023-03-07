@@ -6,20 +6,18 @@
 //
 
 import Foundation
-#if canImport(AnyCodable)
-import AnyCodable
-#endif
+
 
 public struct UserProfile: Codable, JSONEncodable, Hashable {
 
-    public var id: String?
-    public var providedId: String?
-    public var name: String?
-    public var givenName: String?
-    public var familyName: String?
-    public var updatedAt: String?
+    public private(set) var id: String?
+    public private(set) var providedId: String?
+    public private(set) var name: String?
+    public private(set) var givenName: String?
+    public private(set) var familyName: String?
+    public private(set) var updatedAt: Int?
 
-    public init(id: String? = nil, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: String? = nil) {
+    public init(id: String? = nil, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int? = nil) {
         self.id = id
         self.providedId = providedId
         self.name = name

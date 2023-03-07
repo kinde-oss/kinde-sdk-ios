@@ -1,7 +1,6 @@
 import os.log
-import KindeSDK
 
-struct Logger: KindeSDK.Logger {
+struct DefaultLogger: Logger {
     func debug(message: String) {
         os_log("%s", type: .debug, message)
     }

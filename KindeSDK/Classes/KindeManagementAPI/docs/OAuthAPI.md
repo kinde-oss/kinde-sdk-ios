@@ -4,7 +4,7 @@ All URIs are relative to *https://app.kinde.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getUser**](OAuthAPI.md#getuser) | **GET** /oauth2/user_profile | Returns the details of the currently logged in user
+[**getUser**](OAuthAPI.md#getuser) | **GET** /oauth2/v2/user_profile | Returns the details of the currently logged in user
 
 
 # **getUser**

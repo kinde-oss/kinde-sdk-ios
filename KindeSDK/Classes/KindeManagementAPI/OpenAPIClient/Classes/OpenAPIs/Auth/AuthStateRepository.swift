@@ -6,7 +6,7 @@ import SwiftKeychainWrapper
 public class AuthStateRepository: NSObject {
     private let key: String
     private let logger: Logger?
-    private var cachedState: OIDAuthState?
+    @Atomic private var cachedState: OIDAuthState?
     
     public init(key: String, logger: Logger?) {
         self.key = key
@@ -14,7 +14,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// The current authentication state
-    public var state: OIDAuthState? {
+    var state: OIDAuthState? {
         if let state = cachedState {
             return state
         }
@@ -35,7 +35,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// Set the current authentication state
-    public func setState(_ state: OIDAuthState) -> Bool {
+    func setState(_ state: OIDAuthState) -> Bool {
         cachedState = state
         
         // Register handlers for changes to authState (e.g., token refresh)
@@ -46,7 +46,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// Clear the current authentication state
-    public func clear() -> Bool {
+    func clear() -> Bool {
         cachedState = nil
         return removeFromKeychain()
     }

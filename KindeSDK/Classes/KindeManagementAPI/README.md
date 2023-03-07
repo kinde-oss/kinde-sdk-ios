@@ -26,7 +26,7 @@ All URIs are relative to *https://app.kinde.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*OAuthAPI* | [**getUser**](docs/OAuthAPI.md#getuser) | **GET** /oauth2/user_profile | Returns the details of the currently logged in user
+*OAuthAPI* | [**getUser**](docs/OAuthAPI.md#getuser) | **GET** /oauth2/v2/user_profile | Returns the details of the currently logged in user
 *UsersAPI* | [**getUsers**](docs/UsersAPI.md#getusers) | **GET** /users | Returns a paginated list of end-user records for a business
 
 

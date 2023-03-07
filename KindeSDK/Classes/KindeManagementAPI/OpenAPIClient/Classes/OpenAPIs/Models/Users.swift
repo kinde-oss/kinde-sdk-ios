@@ -6,14 +6,12 @@
 //
 
 import Foundation
-#if canImport(AnyCodable)
-import AnyCodable
-#endif
+
 
 public struct Users: Codable, JSONEncodable, Hashable {
 
-    public var users: [User]?
-    public var nextToken: String?
+    public private(set) var users: [User]?
+    public private(set) var nextToken: String?
 
     public init(users: [User]? = nil, nextToken: String? = nil) {
         self.users = users

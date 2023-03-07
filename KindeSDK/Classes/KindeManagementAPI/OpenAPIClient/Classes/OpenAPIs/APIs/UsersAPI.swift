@@ -6,9 +6,7 @@
 //
 
 import Foundation
-#if canImport(AnyCodable)
-import AnyCodable
-#endif
+
 
 open class UsersAPI {
 
@@ -29,19 +27,11 @@ open class UsersAPI {
      - parameter pageSize: (query) The number of items to return (optional)
      - parameter userId: (query) The id of the user to filter by (optional)
      - parameter nextToken: (query) A string to get the next page of results if there are more results (optional)
-     - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
+     - returns: Users
      */
-    @discardableResult
-    open class func getUsers(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: Users?, _ error: Error?) -> Void)) -> RequestTask {
-        return getUsersWithRequestBuilder(sort: sort, pageSize: pageSize, userId: userId, nextToken: nextToken).execute(apiResponseQueue) { result in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
-            }
-        }
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+    open class func getUsers(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil) async throws -> Users {
+        return try await getUsersWithRequestBuilder(sort: sort, pageSize: pageSize, userId: userId, nextToken: nextToken).execute().body
     }
 
     /**
@@ -64,10 +54,10 @@ open class UsersAPI {
 
         var localVariableUrlComponents = URLComponents(string: localVariableURLString)
         localVariableUrlComponents?.queryItems = APIHelper.mapValuesToQueryItems([
-            "sort": sort?.encodeToJSON(),
-            "page_size": pageSize?.encodeToJSON(),
-            "user_id": userId?.encodeToJSON(),
-            "next_token": nextToken?.encodeToJSON(),
+            "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
+            "page_size": (wrappedValue: pageSize?.encodeToJSON(), isExplode: true),
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+            "next_token": (wrappedValue: nextToken?.encodeToJSON(), isExplode: true),
         ])
 
         let localVariableNillableHeaders: [String: Any?] = [
@@ -78,6 +68,6 @@ open class UsersAPI {
 
         let localVariableRequestBuilder: RequestBuilder<Users>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: (localVariableUrlComponents?.string ?? localVariableURLString), parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: (localVariableUrlComponents?.string ?? localVariableURLString), parameters: localVariableParameters, headers: localVariableHeaderParameters, requiresAuthentication: true)
     }
 }
