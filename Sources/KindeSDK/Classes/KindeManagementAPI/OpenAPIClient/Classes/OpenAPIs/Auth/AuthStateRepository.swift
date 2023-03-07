@@ -14,7 +14,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// The current authentication state
-    var state: OIDAuthState? {
+    public var state: OIDAuthState? {
         if let state = cachedState {
             return state
         }
