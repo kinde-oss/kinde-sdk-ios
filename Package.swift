@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -11,21 +11,21 @@ let package = Package(
         .watchOS(.v3),
     ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "KindeSDK",
-            targets: ["KindeSDK"]),
+            targets: ["KindeSDK"]
+        ),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
+        .package(url: "https://github.com/openid/AppAuth-iOS.git", .upToNextMajor(from: "1.3.0")),
+        .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", .upToNextMajor(from: "3.0.1"))        
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "KindeSDK",
-            dependencies: []),
+            dependencies: [],
             path: "Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/"
+        ),
     ],
     swiftLanguageVersions: [.v5]
 )
