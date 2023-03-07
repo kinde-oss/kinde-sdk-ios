@@ -14,9 +14,9 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '13.0'
 
-  s.preserve_paths = ['KindeSDK/Classes/KindeManagementAPI/README.md', 'KindeSDK/Classes/KindeManagementAPI/docs/*.md']
+  s.preserve_paths = ['Sources/KindeSDK/Classes/KindeManagementAPI/README.md', 'Sources/KindeSDK/Classes/KindeManagementAPI/docs/*.md']
   
-  s.source_files = ['KindeSDK/Classes/*.swift', 'KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/**/*']
+  s.source_files = ['Sources/KindeSDK/Classes/*.swift', 'Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/**/*']
   
   s.dependency 'AppAuth'
   s.dependency 'SwiftKeychainWrapper'
