@@ -1,3 +1,5 @@
+import Foundation
+
 class BearerRequestBuilder<T>: URLSessionRequestBuilder<T> {
     @discardableResult
     override func execute(_ apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, _ completion: @escaping (Result<Response<T>, ErrorResponse>) -> Void) -> RequestTask {

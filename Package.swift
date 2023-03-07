@@ -17,13 +17,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/openid/AppAuth-iOS.git", .upToNextMajor(from: "1.3.0")),
-        .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", .upToNextMajor(from: "3.0.1"))        
+        .package(name: "AppAuth", url: "https://github.com/openid/AppAuth-iOS.git", from: "1.6.0"),
+        .package(name: "SwiftKeychainWrapper", url: "https://github.com/jrendel/SwiftKeychainWrapper.git", from: "4.0.1"),
     ],
     targets: [
         .target(
             name: "KindeSDK",
-            dependencies: ["AppAuth-iOS", "SwiftKeychainWrapper"],
+            dependencies: ["AppAuth", "SwiftKeychainWrapper"],
             path: "Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/"
         ),
     ],
