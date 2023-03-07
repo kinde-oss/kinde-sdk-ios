@@ -23,6 +23,7 @@ let package = Package(
         .target(
             name: "KindeSDK",
             dependencies: []),
+            path: "Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/"
     ],
     swiftLanguageVersions: [.v5]
 )
