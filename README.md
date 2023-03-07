@@ -8,11 +8,13 @@ Integrate Kinde authentication with your iOS app. Simply **configure**, **regist
 
 ## Requirements
 
-- iOS 12.4+
+- iOS 13+
 - Xcode 12+
 - Swift 5+
 
 ## Installation
+
+### Cocoapods
 
 KindeSDK is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
@@ -23,6 +25,17 @@ pod 'KindeSDK'
 
 Please note that `KindeSDK` is typically used with Cocoapods dynamic linking (`use_frameworks!`), as it takes a dependency on `AppAuth`.
 If integrating with other pods that require static linking, follow the instructions provided by Cocoapods.
+
+### Swift Package Manager
+
+With [Swift Package Manager](https://swift.org/package-manager), 
+add the following `dependency` to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/kinde-oss/kinde-sdk-ios.git", from: "1.1")
+]
+```
 
 ## Configuration
 
