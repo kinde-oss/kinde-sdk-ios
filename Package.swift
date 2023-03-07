@@ -23,7 +23,7 @@ let package = Package(
     targets: [
         .target(
             name: "KindeSDK",
-            dependencies: [],
+            dependencies: ["AppAuth-iOS", "SwiftKeychainWrapper"],
             path: "Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/"
         ),
     ],
