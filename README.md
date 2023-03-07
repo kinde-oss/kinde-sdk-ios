@@ -85,11 +85,6 @@ Functions/methods targeting the Management API can only be accessed with tokens 
 
 Observe [Swift conventions](https://www.swift.org/documentation/api-design-guidelines/) where possible.
 
-## Tests
-
-The UI tests implemented in KindeAuthUITests require a test user to have been created for your organization.
-Search for `test_user@example.com` and replace this and the associated password with the credentials of your test user.
-
 ## Author
 
 Kinde, kinde.com
