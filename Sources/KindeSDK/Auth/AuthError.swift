@@ -1,3 +1,4 @@
+import Foundation
 
 public enum AuthError: Error {
     /// Failed to retrieve local or remote configuration
