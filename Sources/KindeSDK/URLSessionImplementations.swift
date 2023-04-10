@@ -25,7 +25,7 @@ class URLSessionRequestBuilderFactory: RequestBuilderFactory {
     }
 }
 
-public typealias OpenAPIClientAPIChallengeHandler = ((URLSession, URLSessionTask, URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?))
+public typealias KindeSDKAPIChallengeHandler = ((URLSession, URLSessionTask, URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?))
 
 // Store the URLSession's delegate to retain its reference
 private let sessionDelegate = SessionDelegate()
@@ -33,18 +33,48 @@ private let sessionDelegate = SessionDelegate()
 // Store the URLSession to retain its reference
 private let defaultURLSession = URLSession(configuration: .default, delegate: sessionDelegate, delegateQueue: nil)
 
-// Store current taskDidReceiveChallenge for every URLSessionTask
-private var challengeHandlerStore = SynchronizedDictionary<Int, OpenAPIClientAPIChallengeHandler>()
+public class HandlerImplementation {	
+    // Store current taskDidReceiveChallenge for every URLSessionTask	
+    @Atomic private var challengeHandlerStore: Dictionary<Int, KindeSDKAPIChallengeHandler>	
+    // Store current URLCredential for every URLSessionTask	
+    @Atomic private var credentialStore: [Int: URLCredential]	
+    	
+    init(challengeHandlerStore: Dictionary<Int, KindeSDKAPIChallengeHandler>, credentialStore: [Int : URLCredential]) {	
+        self.challengeHandlerStore = challengeHandlerStore	
+        self.credentialStore = credentialStore	
+    }	
+    	
+    public func updateChallengeHandlerStore(taskIdentifier: Int, handler: KindeSDKAPIChallengeHandler?) {	
+        _challengeHandlerStore.mutate {	
+            $0[taskIdentifier] = handler	
+        }	
+    }	
+    	
+    public func updateCredentialStore(taskIdentifier: Int, handler: URLCredential?) {	
+        _credentialStore.mutate {	
+            $0[taskIdentifier] = handler	
+        }	
+    }	
+    	
+    public func getChallengeHandlerStoreItem(byIdentifier identifier: Int) -> KindeSDKAPIChallengeHandler? {	
+        return challengeHandlerStore[identifier]	
+    }	
+    	
+    public func getCredentialStoreItem(byIdentifier identifier: Int) -> URLCredential? {	
+        return credentialStore[identifier]	
+    }	
+}	
 
-// Store current URLCredential for every URLSessionTask
-private var credentialStore = SynchronizedDictionary<Int, URLCredential>()
+var stores: HandlerImplementation = HandlerImplementation(challengeHandlerStore: [:],	
+                                                          credentialStore: [:])	
+
 
 open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
     /**
      May be assigned if you want to control the authentication challenges.
      */
-    public var taskDidReceiveChallenge: OpenAPIClientAPIChallengeHandler?
+    public var taskDidReceiveChallenge: KindeSDKAPIChallengeHandler?
 
     /**
      May be assigned if you want to do any of those things:
@@ -106,7 +136,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
     }
 
     @discardableResult
-    override open func execute(_ apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, _ completion: @escaping (_ result: Swift.Result<Response<T>, ErrorResponse>) -> Void) -> RequestTask {
+    override open func execute(_ apiResponseQueue: DispatchQueue = KindeSDKAPI.apiResponseQueue, _ completion: @escaping (_ result: Swift.Result<Response<T>, ErrorResponse>) -> Void) -> RequestTask {
         let urlSession = createURLSession()
 
         guard let xMethod = HTTPMethod(rawValue: method) else {
@@ -139,8 +169,10 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
             var taskIdentifier: Int?
              let cleanupRequest = {
                  if let taskIdentifier = taskIdentifier {
-                     challengeHandlerStore[taskIdentifier] = nil
-                     credentialStore[taskIdentifier] = nil
+                     stores.updateChallengeHandlerStore(taskIdentifier: taskIdentifier,	
+                                                        handler: nil)	
+                     stores.updateCredentialStore(taskIdentifier: taskIdentifier,	
+                                                  handler: nil)
                  }
              }
 
@@ -173,8 +205,10 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
             }
 
             taskIdentifier = dataTask.taskIdentifier
-            challengeHandlerStore[dataTask.taskIdentifier] = taskDidReceiveChallenge
-            credentialStore[dataTask.taskIdentifier] = credential
+            stores.updateChallengeHandlerStore(taskIdentifier: dataTask.taskIdentifier,	
+                                               handler: taskDidReceiveChallenge)	
+            stores.updateCredentialStore(taskIdentifier: dataTask.taskIdentifier,	
+                                         handler: credential)
 
             dataTask.resume()
 
@@ -221,7 +255,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
         for (key, value) in headers {
             httpHeaders[key] = value
         }
-        for (key, value) in OpenAPIClientAPI.customHeaders {
+        for (key, value) in KindeSDKAPI.customHeaders {
             httpHeaders[key] = value
         }
         return httpHeaders
@@ -325,7 +359,7 @@ open class URLSessionDecodableRequestBuilder<T: Decodable>: URLSessionRequestBui
                 if let headerFileName = getFileName(fromContentDisposition: httpResponse.allHeaderFields["Content-Disposition"] as? String) {
                     requestPath = requestPath.appending("/\(headerFileName)")
                 } else {
-                    requestPath = requestPath.appending("/tmp.OpenAPIClient.\(UUID().uuidString)")
+                    requestPath = requestPath.appending("/tmp.KindeSDK.\(UUID().uuidString)")
                 }
 
                 let filePath = cachesDirectory.appendingPathComponent(requestPath)
@@ -380,13 +414,13 @@ private class SessionDelegate: NSObject, URLSessionTaskDelegate {
 
         var credential: URLCredential?
 
-        if let taskDidReceiveChallenge = challengeHandlerStore[task.taskIdentifier] {
+        if let taskDidReceiveChallenge = stores.getChallengeHandlerStoreItem(byIdentifier: task.taskIdentifier) {
             (disposition, credential) = taskDidReceiveChallenge(session, task, challenge)
         } else {
             if challenge.previousFailureCount > 0 {
                 disposition = .rejectProtectionSpace
             } else {
-                credential = credentialStore[task.taskIdentifier] ?? session.configuration.urlCredentialStorage?.defaultCredential(for: challenge.protectionSpace)
+                credential = stores.getCredentialStoreItem(byIdentifier: task.taskIdentifier) ?? session.configuration.urlCredentialStorage?.defaultCredential(for: challenge.protectionSpace)
 
                 if credential != nil {
                     disposition = .useCredential

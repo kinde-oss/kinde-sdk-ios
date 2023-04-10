@@ -1,4 +1,4 @@
-# Swift5 API client for OpenAPIClient
+# Swift5 API client for KindeSDK
 
 Provides endpoints to manage your Kinde Businesses
 

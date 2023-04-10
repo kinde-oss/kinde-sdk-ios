@@ -1,6 +1,4 @@
 import AppAuth
-import SwiftKeychainWrapper
-
 /// A repository for caching the current authentication state, and
 /// storing it securely on the device keychain
 public class AuthStateRepository: NSObject {
@@ -19,7 +17,7 @@ public class AuthStateRepository: NSObject {
             return state
         }
         
-        if let authState = KeychainWrapper.standard.object(forKey: self.key) {
+        if let authState = Keychain.get(self.key) {
             self.logger?.debug(message: "Loaded authState from the keychain")
             cachedState = authState as? OIDAuthState
             
@@ -46,13 +44,13 @@ public class AuthStateRepository: NSObject {
     }
     
     /// Clear the current authentication state
-    func clear() -> Bool {
+    public func clear() -> Bool {
         cachedState = nil
         return removeFromKeychain()
     }
     
     private func persistToKeychain(state: OIDAuthState) -> Bool {
-        let persisted = KeychainWrapper.standard.set(state, forKey: self.key)
+        let persisted = Keychain.set(state: state, service: self.key)
         if !persisted {
             self.logger?.error(message: "Failed to persist authState to the keychain")
             return false
@@ -62,8 +60,8 @@ public class AuthStateRepository: NSObject {
     }
     
     private func removeFromKeychain() -> Bool {
-        if KeychainWrapper.standard.hasValue(forKey: self.key) {
-            let cleared = KeychainWrapper.standard.removeObject(forKey: self.key)
+        if Keychain.get(self.key) != nil {
+            let cleared = Keychain.delete(service: self.key) == errSecSuccess
             if !cleared {
                 self.logger?.error(message: "Failed to remove authState from the keychain")
                 return false

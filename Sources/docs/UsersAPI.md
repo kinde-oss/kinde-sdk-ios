@@ -19,7 +19,7 @@ The returned list can be sorted by full name or email address in ascending or de
 ### Example
 ```swift
 // The following code samples are still beta. For any issue, please report via http://github.com/OpenAPITools/openapi-generator/issues/new
-import OpenAPIClient
+import KindeSDK
 
 let sort = "sort_example" // String | Describes the field and order to sort the result by (optional)
 let pageSize = 987 // Int | The number of items to return (optional)

@@ -32,21 +32,6 @@ public struct APIHelper {
         }
     }
 
-    public static func convertBoolToString(_ source: [String: Any]?) -> [String: Any]? {
-        guard let source = source else {
-            return nil
-        }
-
-        return source.reduce(into: [String: Any]()) { result, item in
-            switch item.value {
-            case let x as Bool:
-                result[item.key] = x.description
-            default:
-                result[item.key] = item.value
-            }
-        }
-    }
-
     public static func convertAnyToString(_ value: Any?) -> String? {
         guard let value = value else { return nil }
         if let value = value as? any RawRepresentable {
@@ -54,15 +39,6 @@ public struct APIHelper {
         } else {
             return "\(value)"
         }
-    }
-
-    public static func mapValueToPathItem(_ source: Any) -> Any {
-        if let collection = source as? [Any?] {
-            return collection
-                .compactMap { value in convertAnyToString(value) }
-                .joined(separator: ",")
-        }
-        return source
     }
 
     /// maps all values from source to query parameters

@@ -6,9 +6,6 @@ let package = Package(
     name: "KindeSDK",
     platforms: [
         .iOS(.v13),
-        .macOS(.v10_11),
-        .tvOS(.v9),
-        .watchOS(.v3),
     ],
     products: [
         .library(
@@ -17,14 +14,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "AppAuth", url: "https://github.com/openid/AppAuth-iOS.git", from: "1.6.0"),
-        .package(name: "SwiftKeychainWrapper", url: "https://github.com/jrendel/SwiftKeychainWrapper.git", from: "4.0.1"),
+        .package(name: "AppAuth", url: "https://github.com/openid/AppAuth-iOS.git", from: "1.6.0")
     ],
     targets: [
         .target(
             name: "KindeSDK",
-            dependencies: ["AppAuth", "SwiftKeychainWrapper"],
-            path: "Sources/KindeSDK/Classes/KindeManagementAPI/OpenAPIClient/"
+            dependencies: ["AppAuth"],
+            path: "Sources/KindeSDK/"
         ),
     ],
     swiftLanguageVersions: [.v5]

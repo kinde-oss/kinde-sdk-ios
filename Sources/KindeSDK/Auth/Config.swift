@@ -46,9 +46,9 @@ public struct Config: Decodable {
     /// Load configuration from bundled source file: (default) `KindeAuth.plist` or `kinde-auth.json`
     static func initialize() -> Config? {
         do {
-            let configFilePath = Bundle.main.path(forResource: "kinde-auth", ofType: "json")
-            let jsonString = try String(contentsOfFile: configFilePath!)
-            let jsonData = jsonString.data(using: .utf8)!
+            let configFilePath = Bundle.main.path(forResource: "kinde-auth", ofType: "json") ?? ""
+            let jsonString = try String(contentsOfFile: configFilePath)
+            let jsonData = jsonString.data(using: .utf8) ?? Data()
             let decoder = JSONDecoder()
             let config = try decoder.decode(Config.self, from: jsonData)
             if URLComponents(string: config.issuer) != nil {
