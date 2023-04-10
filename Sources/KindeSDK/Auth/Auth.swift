@@ -6,7 +6,7 @@ public class Auth {
     
     @Atomic private static var config: Config?
     @Atomic private static var authStateRepository: AuthStateRepository?
-    @Atomic private static var logger: Logger?
+    @Atomic private static var logger: LoggerProtocol?
 
     /**
      `configure` must be called before `Auth` or any Kinde Management APIs are used.
@@ -14,12 +14,12 @@ public class Auth {
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.
      */
-    public static func configure(_ logger: Logger? = nil) {
+    public static func configure(_ logger: LoggerProtocol? = nil) {
         self.config = Config.initialize()
         guard self.config != nil else {
             preconditionFailure("Failed to load configuration")
         }
-        var loggerValue: Logger?
+        var loggerValue: LoggerProtocol?
         if logger == nil {
             loggerValue = DefaultLogger()
         }
@@ -31,10 +31,10 @@ public class Auth {
            let urlComponents = URLComponents(string: issuer),
            let host = urlComponents.host,
            let businessName = host.split(separator: ".").first {
-            OpenAPIClientAPI.basePath = OpenAPIClientAPI.basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
+            KindeSDKAPI.basePath = KindeSDKAPI.basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
             
             // Use Bearer authentication subclass of RequestBuilderFactory
-            OpenAPIClientAPI.requestBuilderFactory = BearerRequestBuilderFactory()
+            KindeSDKAPI.requestBuilderFactory = BearerRequestBuilderFactory()
         } else {
             preconditionFailure("Failed to parse Business Name from configured issuer \(config?.issuer ?? "")")
         }

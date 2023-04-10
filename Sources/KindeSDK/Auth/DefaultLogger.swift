@@ -1,14 +1,14 @@
 import os.log
 
 /// A simple logging protocol with levels
-public protocol Logger {
+public protocol LoggerProtocol {
     func debug(message: String)
     func info(message: String)
     func error(message: String)
     func fault(message: String)
 }
 
-public struct DefaultLogger: Logger {
+public struct DefaultLogger: LoggerProtocol {
     
     public init() {}
     

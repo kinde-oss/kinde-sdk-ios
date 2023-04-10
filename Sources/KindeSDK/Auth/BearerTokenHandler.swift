@@ -26,7 +26,7 @@ public class BearerTokenHandler {
     func setBearerToken() async throws {
         do {
             if let tokens = try await Auth.performWithFreshTokens() {
-                OpenAPIClientAPI.customHeaders["Authorization"] = "Bearer \(tokens.accessToken)"
+                KindeSDKAPI.customHeaders["Authorization"] = "Bearer \(tokens.accessToken)"
             }
             return
         } catch let error {

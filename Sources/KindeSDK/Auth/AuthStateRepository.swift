@@ -3,10 +3,10 @@ import AppAuth
 /// storing it securely on the device keychain
 public class AuthStateRepository: NSObject {
     private let key: String
-    private let logger: Logger?
+    private let logger: LoggerProtocol?
     @Atomic private var cachedState: OIDAuthState?
     
-    public init(key: String, logger: Logger?) {
+    public init(key: String, logger: LoggerProtocol?) {
         self.key = key
         self.logger = logger
     }
