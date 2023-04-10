@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = ['Sources/KindeSDK/README.md', 'Sources/docs/*.md']
   
-  s.source_files = 'Sources/KindeSDK/**/*'
+  s.source_files = 'Sources/KindeSDK/'
   
   s.dependency 'AppAuth'
 end
