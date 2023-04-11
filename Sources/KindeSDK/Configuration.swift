@@ -10,5 +10,5 @@ open class Configuration {
     
     
     /// If a HTTP status code is outside of this range the response will be interpreted as failed.
-    public static var successfulStatusCodeRange: Range = 200..<300
+    static var successfulStatusCodeRange: Range = 200..<300
 }

@@ -50,7 +50,7 @@ public class Keychain {
     }
     
     @discardableResult
-    public static func update(service: String, value: Data) -> OSStatus {
+    static func update(service: String, value: Data) -> OSStatus {
         var keychainQueryDictionary = addQuery(service: service, password: value)
         keychainQueryDictionary[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlocked
         
@@ -58,22 +58,22 @@ public class Keychain {
         
         if status == errSecSuccess {
             return errSecSuccess
-//        } else if status == errSecDuplicateItem {
-//            return update(value, forKey: key, withAccessibility: accessibility, isSynchronizable: isSynchronizable)
+        } else if status == errSecDuplicateItem {
+            return update(service: service, value: value)
         } else {
             return status
         }
     }
     
     @discardableResult
-    public static func delete(service: String) -> OSStatus {
+    static func delete(service: String) -> OSStatus {
         let keychainQueryDictionary = searchQuery(service: service) as CFDictionary
         let status: OSStatus = SecItemDelete(keychainQueryDictionary)
 
         return status
     }
     
-    public static func set(state: NSCoding?, service: String) -> Bool {
+    static func set(state: NSCoding?, service: String) -> Bool {
         if let state = state {
             let data = NSKeyedArchiver.archivedData(withRootObject: state)
             return update(service: service, value: data) == errSecSuccess
@@ -82,7 +82,7 @@ public class Keychain {
         }
     }
     
-    public static func get(_ service: String) -> NSCoding? {
+    static func get(_ service: String) -> NSCoding? {
         var result: AnyObject?
 
         let status = SecItemCopyMatching(retrieveQuery(service: service) as CFDictionary, &result)

@@ -12,7 +12,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// The current authentication state
-    public var state: OIDAuthState? {
+    var state: OIDAuthState? {
         if let state = cachedState {
             return state
         }
@@ -44,7 +44,7 @@ public class AuthStateRepository: NSObject {
     }
     
     /// Clear the current authentication state
-    public func clear() -> Bool {
+    func clear() -> Bool {
         cachedState = nil
         return removeFromKeychain()
     }

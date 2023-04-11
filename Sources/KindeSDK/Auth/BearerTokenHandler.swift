@@ -1,7 +1,7 @@
 import AppAuth
 
 public class BearerTokenHandler {
-    public static let notAuthenticatedCode = 401
+    static let notAuthenticatedCode = 401
     
     /// Ensure a valid Bearer token is present.
     ///

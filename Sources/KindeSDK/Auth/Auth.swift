@@ -7,7 +7,6 @@ public class Auth {
     @Atomic private static var config: Config?
     @Atomic private static var authStateRepository: AuthStateRepository?
     @Atomic private static var logger: LoggerProtocol?
-
     /**
      `configure` must be called before `Auth` or any Kinde Management APIs are used.
      
@@ -152,7 +151,7 @@ public class Auth {
     ///
     @available(*, renamed: "login")
     public static func login(orgCode: String = "",
-                      _ completion: @escaping (Result<Bool, Error>) -> Void) {
+                             _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             let result = await login(orgCode: orgCode)
             await MainActor.run {
@@ -165,7 +164,7 @@ public class Auth {
         }
     }
 
-    public static func login(orgCode: String = "") async -> (Error?) {
+   public static func login(orgCode: String = "") async -> (Error?) {
         guard let viewController = await getViewController() else {
             return AuthError.notAuthenticated
         }

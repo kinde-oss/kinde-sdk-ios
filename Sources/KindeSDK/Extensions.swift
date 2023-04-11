@@ -124,36 +124,36 @@ extension String: CodingKey {
 
 extension KeyedEncodingContainerProtocol {
 
-    public mutating func encodeArray<T>(_ values: [T], forKey key: Self.Key) throws where T: Encodable {
+    mutating func encodeArray<T>(_ values: [T], forKey key: Self.Key) throws where T: Encodable {
         var arrayContainer = nestedUnkeyedContainer(forKey: key)
         try arrayContainer.encode(contentsOf: values)
     }
 
-    public mutating func encodeArrayIfPresent<T>(_ values: [T]?, forKey key: Self.Key) throws where T: Encodable {
+    mutating func encodeArrayIfPresent<T>(_ values: [T]?, forKey key: Self.Key) throws where T: Encodable {
         if let values = values {
             try encodeArray(values, forKey: key)
         }
     }
 
-    public mutating func encodeMap<T>(_ pairs: [Self.Key: T]) throws where T: Encodable {
+    mutating func encodeMap<T>(_ pairs: [Self.Key: T]) throws where T: Encodable {
         for (key, value) in pairs {
             try encode(value, forKey: key)
         }
     }
 
-    public mutating func encodeMapIfPresent<T>(_ pairs: [Self.Key: T]?) throws where T: Encodable {
+    mutating func encodeMapIfPresent<T>(_ pairs: [Self.Key: T]?) throws where T: Encodable {
         if let pairs = pairs {
             try encodeMap(pairs)
         }
     }
 
-    public mutating func encode(_ value: Decimal, forKey key: Self.Key) throws {
+    mutating func encode(_ value: Decimal, forKey key: Self.Key) throws {
         var mutableValue = value
         let stringValue = NSDecimalString(&mutableValue, Locale(identifier: "en_US"))
         try encode(stringValue, forKey: key)
     }
 
-    public mutating func encodeIfPresent(_ value: Decimal?, forKey key: Self.Key) throws {
+    mutating func encodeIfPresent(_ value: Decimal?, forKey key: Self.Key) throws {
         if let value = value {
             try encode(value, forKey: key)
         }

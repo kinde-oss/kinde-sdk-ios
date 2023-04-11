@@ -26,7 +26,7 @@ public struct Atomic<Value> {
         value = newValue
     }
     
-    mutating public func mutate(_ mutation: (inout Value) -> Void) {
+    mutating func mutate(_ mutation: (inout Value) -> Void) {
         lock.lock()
         defer { lock.unlock() }
         mutation(&value)
