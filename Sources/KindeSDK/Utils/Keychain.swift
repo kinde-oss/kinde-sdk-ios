@@ -1,8 +1,8 @@
 
 import Foundation
+import AppAuth
 
-public class Keychain {
-    
+class Keychain {
     private static func addQuery(service: String, password: Data) -> [String: Any] {
         guard let encodedIdentifier: Data = service.data(using: String.Encoding.utf8) else {
             return [:]
@@ -58,8 +58,6 @@ public class Keychain {
         
         if status == errSecSuccess {
             return errSecSuccess
-        } else if status == errSecDuplicateItem {
-            return update(service: service, value: value)
         } else {
             return status
         }
@@ -75,8 +73,13 @@ public class Keychain {
     
     static func set(state: NSCoding?, service: String) -> Bool {
         if let state = state {
-            let data = NSKeyedArchiver.archivedData(withRootObject: state)
-            return update(service: service, value: data) == errSecSuccess
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: state,
+                                                            requiringSecureCoding: true)
+                return update(service: service, value: data) == errSecSuccess
+            } catch {
+                return false
+            }
         } else {
             return delete(service: service) == errSecSuccess
         }
@@ -89,7 +92,12 @@ public class Keychain {
         
         if status == noErr,
            let data = result as? Data {
-           return NSKeyedUnarchiver.unarchiveObject(with: data) as? NSCoding
+            do {
+                let unarchivedObject = try NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: data)
+                return unarchivedObject
+            } catch {
+                return nil
+            }
         }
         return nil
     }

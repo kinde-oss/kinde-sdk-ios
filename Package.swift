@@ -14,12 +14,14 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "AppAuth", url: "https://github.com/openid/AppAuth-iOS.git", from: "1.6.0")
+        .package(url: "https://github.com/openid/AppAuth-iOS.git", from: "1.6.0")
     ],
     targets: [
         .target(
             name: "KindeSDK",
-            dependencies: ["AppAuth"],
+            dependencies: [
+                .product(name: "AppAuth", package: "AppAuth-iOS")
+            ],
             path: "Sources/KindeSDK/"
         ),
     ],

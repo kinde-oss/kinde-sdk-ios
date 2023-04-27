@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct APIHelper {
+struct APIHelper {
     static func rejectNil(_ source: [String: Any?]) -> [String: Any]? {
         let destination = source.reduce(into: [String: Any]()) { result, item in
             if let value = item.value {

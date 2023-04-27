@@ -223,6 +223,7 @@ extension KeyedDecodingContainerProtocol {
 
 extension HTTPURLResponse {
     var isStatusCodeSuccessful: Bool {
-        return Configuration.successfulStatusCodeRange.contains(statusCode)
+	let successfulStatusCodeRange: Range = 200..<300
+        return successfulStatusCodeRange.contains(statusCode)
     }
 }

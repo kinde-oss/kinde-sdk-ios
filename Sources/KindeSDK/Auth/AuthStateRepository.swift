@@ -1,12 +1,12 @@
 import AppAuth
 /// A repository for caching the current authentication state, and
 /// storing it securely on the device keychain
-public class AuthStateRepository: NSObject {
+class AuthStateRepository: NSObject {
     private let key: String
     private let logger: LoggerProtocol?
     @Atomic private var cachedState: OIDAuthState?
     
-    public init(key: String, logger: LoggerProtocol?) {
+    init(key: String, logger: LoggerProtocol?) {
         self.key = key
         self.logger = logger
     }

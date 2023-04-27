@@ -108,8 +108,10 @@ open class Response<T> {
 }
 
 public final class RequestTask: @unchecked Sendable {
-    private var lock = NSRecursiveLock()
-    private var task: URLSessionTask?
+    @Atomic private var lock = NSRecursiveLock()
+    @Atomic private var task: URLSessionTask?
+    @Atomic var isCancelled: Bool = false	
+
 
     internal func set(task: URLSessionTask) {
         lock.lock()
@@ -122,5 +124,6 @@ public final class RequestTask: @unchecked Sendable {
         defer { lock.unlock() }
         task?.cancel()
         task = nil
+        isCancelled = true
     }
 }

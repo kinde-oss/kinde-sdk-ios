@@ -69,7 +69,7 @@ var stores: HandlerImplementation = HandlerImplementation(challengeHandlerStore:
                                                           credentialStore: [:])	
 
 
-open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
+class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
     /**
      May be assigned if you want to control the authentication challenges.
@@ -93,7 +93,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
      May be overridden by a subclass if you want to control the URLSession
      configuration.
      */
-    open func createURLSession() -> URLSessionProtocol {
+    func createURLSession() -> URLSessionProtocol {
         return defaultURLSession
     }
 
@@ -104,7 +104,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
      Return nil to use the default behavior (inferring the Content-Type from
      the file extension).  Return the desired Content-Type otherwise.
      */
-    open func contentTypeForFormPart(fileURL: URL) -> String? {
+    func contentTypeForFormPart(fileURL: URL) -> String? {
         return nil
     }
 
@@ -112,7 +112,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
      May be overridden by a subclass if you want to control the URLRequest
      configuration (e.g. to override the cache policy).
      */
-    open func createURLRequest(urlSession: URLSessionProtocol, method: HTTPMethod, encoding: ParameterEncoding, headers: [String: String]) throws -> URLRequest {
+    func createURLRequest(urlSession: URLSessionProtocol, method: HTTPMethod, encoding: ParameterEncoding, headers: [String: String]) throws -> URLRequest {
 
         guard let url = URL(string: URLString) else {
             throw DownloadException.requestMissingURL
@@ -141,6 +141,11 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
         guard let xMethod = HTTPMethod(rawValue: method) else {
             fatalError("Unsupported Http method - \(method)")
+        }
+        
+        guard requestTask.isCancelled == false else {
+            completion(.failure(ErrorResponse.error(415, nil, nil, DecodableRequestBuilderError.unsuccessfulHTTPStatusCode)))
+            return requestTask
         }
 
         let encoding: ParameterEncoding
@@ -250,7 +255,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
     }
 
-    open func buildHeaders() -> [String: String] {
+    func buildHeaders() -> [String: String] {
         var httpHeaders: [String: String] = [:]
         for (key, value) in headers {
             httpHeaders[key] = value
@@ -314,7 +319,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
 }
 
-open class URLSessionDecodableRequestBuilder<T: Decodable>: URLSessionRequestBuilder<T> {
+class URLSessionDecodableRequestBuilder<T: Decodable>: URLSessionRequestBuilder<T> {
     override fileprivate func processRequestResponse(urlRequest: URLRequest, data: Data?, response: URLResponse?, error: Error?, completion: @escaping (_ result: Swift.Result<Response<T>, ErrorResponse>) -> Void) {
 
         if let error = error {

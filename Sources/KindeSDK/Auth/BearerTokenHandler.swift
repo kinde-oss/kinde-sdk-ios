@@ -1,7 +1,8 @@
 import AppAuth
 
 public class BearerTokenHandler {
-    static let notAuthenticatedCode = 401
+    private let auth: Auth = KindeSDKAPI.auth
+    let notAuthenticatedCode = 401
     
     /// Ensure a valid Bearer token is present.
     ///
@@ -25,7 +26,7 @@ public class BearerTokenHandler {
     
     func setBearerToken() async throws {
         do {
-            if let tokens = try await Auth.performWithFreshTokens() {
+            if let tokens = try await auth.performWithFreshTokens() {
                 KindeSDKAPI.customHeaders["Authorization"] = "Bearer \(tokens.accessToken)"
             }
             return
@@ -56,7 +57,7 @@ public class BearerTokenHandler {
         switch error {
         case AuthError.notAuthenticated:
             // Indicate a bearer token could not be set due to an authentication error; likely due to an expired refresh token
-            throw ErrorResponse.error(BearerTokenHandler.notAuthenticatedCode, nil, nil, error)
+            throw ErrorResponse.error(notAuthenticatedCode, nil, nil, error)
         default:
             throw ErrorResponse.error(-1, nil, nil, error)
         }

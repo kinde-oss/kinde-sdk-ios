@@ -1,4 +1,5 @@
 class BearerRequestBuilderFactory: RequestBuilderFactory {
+    
     func getNonDecodableBuilder<T>() -> RequestBuilder<T>.Type {
         BearerRequestBuilder<T>.self
     }
