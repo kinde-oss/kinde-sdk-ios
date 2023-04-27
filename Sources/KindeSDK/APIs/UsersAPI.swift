@@ -8,7 +8,7 @@
 import Foundation
 
 
-final class UsersAPI {
+final public class UsersAPI {
 
     /**
      * enum for parameter sort
@@ -30,7 +30,7 @@ final class UsersAPI {
      - returns: Users
      */
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    final class func getUsers(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil) async throws -> Users {
+    final public class func getUsers(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil) async throws -> Users {
         return try await getUsersWithRequestBuilder(sort: sort, pageSize: pageSize, userId: userId, nextToken: nextToken).execute().body
     }
 
@@ -47,7 +47,7 @@ final class UsersAPI {
      - parameter nextToken: (query) A string to get the next page of results if there are more results (optional)
      - returns: RequestBuilder<Users> 
      */
-    final class func getUsersWithRequestBuilder(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil) -> RequestBuilder<Users> {
+    final public class func getUsersWithRequestBuilder(sort: Sort_getUsers? = nil, pageSize: Int? = nil, userId: Int? = nil, nextToken: String? = nil) -> RequestBuilder<Users> {
         let localVariablePath = "/users"
         let localVariableURLString = KindeSDKAPI.basePath + localVariablePath
         let localVariableParameters: [String: Any]? = nil

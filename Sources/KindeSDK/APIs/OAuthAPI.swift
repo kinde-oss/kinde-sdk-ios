@@ -8,7 +8,7 @@
 import Foundation
 
 
-final class OAuthAPI {
+final public class OAuthAPI {
 
     /**
      Returns the details of the currently logged in user
@@ -16,7 +16,7 @@ final class OAuthAPI {
      - returns: UserProfile
      */
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    final class func getUser() async throws -> UserProfile {
+    final public class func getUser() async throws -> UserProfile {
         return try await getUserWithRequestBuilder().execute().body
     }
 
@@ -29,7 +29,7 @@ final class OAuthAPI {
        - name: kindeBearerAuth
      - returns: RequestBuilder<UserProfile> 
      */
-    final class func getUserWithRequestBuilder() -> RequestBuilder<UserProfile> {
+    final public class func getUserWithRequestBuilder() -> RequestBuilder<UserProfile> {
         let localVariablePath = "/oauth2/v2/user_profile"
         let localVariableURLString = KindeSDKAPI.basePath + localVariablePath
         let localVariableParameters: [String: Any]? = nil
