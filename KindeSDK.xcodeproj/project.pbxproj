@@ -52,6 +52,7 @@
 		3B641BDC29FAF01400D79AD5 /* Users.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B641BBC29FAF01400D79AD5 /* Users.md */; };
 		3B641BDD29FAF01400D79AD5 /* UserProfile.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B641BBD29FAF01400D79AD5 /* UserProfile.md */; };
 		3B641BDE29FAF01400D79AD5 /* User.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B641BBE29FAF01400D79AD5 /* User.md */; };
+		3B641BE929FB0F6300D79AD5 /* AuthSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B641BE829FB0F6300D79AD5 /* AuthSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		3B641BBC29FAF01400D79AD5 /* Users.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = Users.md; sourceTree = "<group>"; };
 		3B641BBD29FAF01400D79AD5 /* UserProfile.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = UserProfile.md; sourceTree = "<group>"; };
 		3B641BBE29FAF01400D79AD5 /* User.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = User.md; sourceTree = "<group>"; };
+		3B641BE829FB0F6300D79AD5 /* AuthSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +163,7 @@
 				3B1EBAEA29F9472300444EEB /* ConfigSpec.swift */,
 				3B1EBAED29F9472300444EEB /* DefaultLoggerSpec.swift */,
 				3B1EBAEB29F9472300444EEB /* StringJWTTokenDecodeSpec.swift */,
+				3B641BE829FB0F6300D79AD5 /* AuthSpec.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -430,6 +433,7 @@
 				3B1EBAF329F9472300444EEB /* DefaultLoggerSpec.swift in Sources */,
 				3B1EBAF129F9472300444EEB /* StringJWTTokenDecodeSpec.swift in Sources */,
 				3B1EBAEF29F9472300444EEB /* AuthErrorSpec.swift in Sources */,
+				3B641BE929FB0F6300D79AD5 /* AuthSpec.swift in Sources */,
 				3B1EBAF029F9472300444EEB /* ConfigSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
