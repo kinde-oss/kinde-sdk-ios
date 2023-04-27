@@ -68,7 +68,7 @@ you configure in your [App Keys](https://kinde.com/docs/the-basics/getting-app-k
   "audience": "https://app.example.com"
 }
 ```
-Before `Auth` or any Kinde Management APIs can be used, a call to `Auth.configure()` must be made, typically in `AppDelegate`
+Before `Auth` or any Kinde Management APIs can be used, a call to `KindeSDKAPI.configure()` must be made, typically in `AppDelegate`
 as part of `application(launchOptions)` for a UIKit app, or the `@main` initialization logic for a SwiftUI app.
 Note: `audience` can be optional
 
