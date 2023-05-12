@@ -26,7 +26,7 @@ public struct Config: Decodable {
         }
         return url
     }
-    
+     
     /// Get the configured Redirect URL, or `nil` if it is missing or malformed
     func getRedirectUrl() -> URL? {
         guard let url = URL(string: self.redirectUri) else {
@@ -46,7 +46,13 @@ public struct Config: Decodable {
     /// Load configuration from bundled source file: (default) `KindeAuth.plist` or `kinde-auth.json`
     static func initialize() -> Config? {
         do {
-            let configFilePath = Bundle.main.path(forResource: "kinde-auth", ofType: "json") ?? ""
+            var configFilePath: String = ""
+            for bundle in Bundle.allBundles {
+                if let resourcePath = bundle.path(forResource: "kinde-auth", ofType: "json") {
+                    configFilePath = resourcePath
+                    break
+                }
+            }
             let jsonString = try String(contentsOfFile: configFilePath)
             let jsonData = jsonString.data(using: .utf8) ?? Data()
             let decoder = JSONDecoder()
@@ -62,8 +68,15 @@ public struct Config: Decodable {
     }
     
     private static func loadFromPlist() -> Config? {
-        guard let path = Bundle.main.path(forResource: "KindeAuth", ofType: "plist"),
-              let values = NSDictionary(contentsOfFile: path) as? [String: Any] else {
+        var configFilePath: String = ""
+        for bundle in Bundle.allBundles {
+            if let resourcePath = bundle.path(forResource: "KindeAuth", ofType: "plist") {
+                configFilePath = resourcePath
+                break
+            }
+        }
+        guard configFilePath.count > 0,
+              let values = NSDictionary(contentsOfFile: configFilePath) as? [String: Any] else {
                 return nil
         }
         

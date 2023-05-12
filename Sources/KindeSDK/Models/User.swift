@@ -10,12 +10,12 @@ import Foundation
 
 public struct User: Codable, JSONEncodable, Hashable {
 
-    public private(set) var id: Int?
-    public private(set) var email: String?
-    public private(set) var fullName: String?
-    public private(set) var lastName: String?
-    public private(set) var firstName: String?
-    public private(set) var isSuspended: Bool?
+    public let id: Int?
+    public let email: String?
+    public let fullName: String?
+    public let lastName: String?
+    public let firstName: String?
+    public let isSuspended: Bool?
 
     public init(id: Int? = nil, email: String? = nil, fullName: String? = nil, lastName: String? = nil, firstName: String? = nil, isSuspended: Bool? = nil) {
         self.id = id

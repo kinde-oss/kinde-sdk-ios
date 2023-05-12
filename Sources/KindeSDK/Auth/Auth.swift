@@ -1,11 +1,18 @@
 import AppAuth
 
 /// The Kinde authentication service
-public class Auth {
+public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
-    @Atomic var config: Config?
-    @Atomic var authStateRepository: AuthStateRepository?
-    @Atomic var logger: LoggerProtocol?
+    
+    private let config: Config?
+    private let authStateRepository: AuthStateRepository?
+    private let logger: LoggerProtocol?
+    
+    init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
+        self.config = config
+        self.authStateRepository = authStateRepository
+        self.logger = logger
+    }
     
     /// Is the user authenticated as of the last use of authentication state?
     public func isAuthorized() -> Bool {
@@ -29,13 +36,11 @@ public class Auth {
         guard let params = authStateRepository?.state?.lastTokenResponse?.idToken?.parsedJWT else {
             return nil
         }
-        if let idValue = params["sub"] as? Int,
-           let email = params["email"] as? String,
-           let givenName = params["given_name"] as? String,
-           let familyName = params["family_name"] as? String {
-            return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
-        }
-        return nil
+        let idValue = params["sub"] as? Int
+        let email = params["email"] as? String
+        let givenName = params["given_name"] as? String
+        let familyName = params["family_name"] as? String
+        return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
     }
     
     public func getClaim(key: String, token: TokenType = .accessToken) -> Any? {

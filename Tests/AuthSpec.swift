@@ -1,6 +1,7 @@
 import Quick
 import Nimble
 import KindeSDK
+import Foundation
 
 class AuthSpec: QuickSpec {
     override func spec() {        
@@ -11,6 +12,8 @@ class AuthSpec: QuickSpec {
             }
             
             it("check helper functions") {
+
+                KindeSDKAPI.configure()
                 let auth: Auth = KindeSDKAPI.auth
                 guard auth.isAuthorized() == true else { return }
                 let userDetails: User? = auth.getUserDetails()

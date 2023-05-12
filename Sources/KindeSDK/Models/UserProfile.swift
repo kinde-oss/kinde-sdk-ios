@@ -10,12 +10,12 @@ import Foundation
 
 public struct UserProfile: Codable, JSONEncodable, Hashable {
 
-    public private(set) var id: String?
-    public private(set) var providedId: String?
-    public private(set) var name: String?
-    public private(set) var givenName: String?
-    public private(set) var familyName: String?
-    public private(set) var updatedAt: Int?
+    public let id: String?
+    public let providedId: String?
+    public let name: String?
+    public let givenName: String?
+    public let familyName: String?
+    public let updatedAt: Int?
 
     public init(id: String? = nil, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int? = nil) {
         self.id = id

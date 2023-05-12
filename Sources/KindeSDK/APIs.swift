@@ -107,26 +107,23 @@ public extension KindeSDKAPI {
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	
      */	
-    static func configure(_ logger: LoggerProtocol? = DefaultLogger()) {	
-        auth = Auth()	
-        auth.config = Config.initialize()	
-        guard auth.config != nil else {	
-            preconditionFailure("Failed to load configuration")	
-        }	
-        auth.logger = logger	
-        auth.authStateRepository = AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger)	
-        	
-        // Configure the Kinde Management API	
-        if let issuer = auth.config?.issuer,	
-           let urlComponents = URLComponents(string: issuer),	
-           let host = urlComponents.host,	
-           let businessName = host.split(separator: ".").first {	
-            basePath = basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")	
-            	
-            // Use Bearer authentication subclass of RequestBuilderFactory	
-            requestBuilderFactory = BearerRequestBuilderFactory()	
-        } else {	
-            preconditionFailure("Failed to parse Business Name from configured issuer \(auth.config?.issuer ?? "")")	
-        }	
-    }	
+    static func configure(_ logger: LoggerProtocol = DefaultLogger()) {
+        guard let config = Config.initialize() else {
+            preconditionFailure("Failed to load configuration")
+        }
+        
+        guard let urlComponents = URLComponents(string: config.issuer),
+           let host = urlComponents.host,
+           let businessName = host.split(separator: ".").first else {
+            preconditionFailure("Failed to parse Business Name from configured issuer \(config.issuer)")
+        }
+        
+        basePath = basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
+        // Use Bearer authentication subclass of RequestBuilderFactory
+        requestBuilderFactory = BearerRequestBuilderFactory()
+        
+        auth = Auth(config: config,
+                    authStateRepository: AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger),
+                    logger: logger)
+    }
 }
