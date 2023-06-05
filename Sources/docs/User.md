@@ -3,8 +3,8 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **Int** |  | [optional] 
-**email** | **String** |  | [optional] 
+**id** | **String** |  | 
+**email** | **String** |  | 
 **fullName** | **String** |  | [optional] 
 **lastName** | **String** |  | [optional] 
 **firstName** | **String** |  | [optional] 

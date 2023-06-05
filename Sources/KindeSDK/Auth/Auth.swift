@@ -4,9 +4,9 @@ import AppAuth
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
     
-    private let config: Config?
-    private let authStateRepository: AuthStateRepository?
-    private let logger: LoggerProtocol?
+    private let config: Config
+    private let authStateRepository: AuthStateRepository
+    private let logger: LoggerProtocol
     
     init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
         self.config = config
@@ -16,12 +16,12 @@ public final class Auth {
     
     /// Is the user authenticated as of the last use of authentication state?
     public func isAuthorized() -> Bool {
-        return authStateRepository?.state?.isAuthorized ?? false
+        return authStateRepository.state?.isAuthorized ?? false
     }
     
     public func isAuthenticated() -> Bool {
-        let isAuthorized = authStateRepository?.state?.isAuthorized
-        guard let lastTokenResponse = authStateRepository?.state?.lastTokenResponse else {
+        let isAuthorized = authStateRepository.state?.isAuthorized
+        guard let lastTokenResponse = authStateRepository.state?.lastTokenResponse else {
             return false
         }
         guard let accessTokenExpirationDate = lastTokenResponse.accessTokenExpirationDate else {
@@ -33,18 +33,20 @@ public final class Auth {
     }
     
     public func getUserDetails() -> User? {
-        guard let params = authStateRepository?.state?.lastTokenResponse?.idToken?.parsedJWT else {
+        guard let params = authStateRepository.state?.lastTokenResponse?.idToken?.parsedJWT else {
             return nil
         }
-        let idValue = params["sub"] as? Int
-        let email = params["email"] as? String
-        let givenName = params["given_name"] as? String
-        let familyName = params["family_name"] as? String
-        return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
+        if let idValue = params["sub"] as? String,
+           let email = params["email"] as? String {
+            let givenName = params["given_name"] as? String
+            let familyName = params["family_name"] as? String
+            return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
+        }
+        return nil
     }
     
     public func getClaim(key: String, token: TokenType = .accessToken) -> Any? {
-        let lastTokenResponse = authStateRepository?.state?.lastTokenResponse
+        let lastTokenResponse = authStateRepository.state?.lastTokenResponse
         let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
         guard let params = tokenToParse?.parsedJWT else {
             return nil
@@ -226,7 +228,7 @@ public final class Auth {
     
     public func logout() async -> Bool {
         // There is no logout endpoint configured; simply clear the local auth state
-        let cleared = authStateRepository?.clear() ?? false
+        let cleared = authStateRepository.clear()
         return cleared
     }
     
@@ -256,9 +258,9 @@ public final class Auth {
                                          useNonce: Bool = false) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                let issuerUrl = config?.getIssuerUrl()
+                let issuerUrl = config.getIssuerUrl()
                 guard let issuerUrl = issuerUrl else {
-                    logger?.error(message: "Failed to get issuer URL")
+                    logger.error(message: "Failed to get issuer URL")
                     continuation.resume(throwing: AuthError.configuration)
                     return
                 }
@@ -305,19 +307,19 @@ public final class Auth {
         return try await withCheckedThrowingContinuation { continuation in
             OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl) { configuration, error in
                 if let error = error {
-                    self.logger?.error(message: "Failed to discover OpenID configuration: \(error.localizedDescription)")
+                    self.logger.error(message: "Failed to discover OpenID configuration: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 }
                 
                 guard let configuration = configuration else {
-                    self.logger?.error(message: "Failed to discover OpenID configuration")
+                    self.logger.error(message: "Failed to discover OpenID configuration")
                     continuation.resume(throwing: AuthError.configuration)
                     return
                 }
                 
-                let redirectUrl = self.config?.getRedirectUrl()
+                let redirectUrl = self.config.getRedirectUrl()
                 guard let redirectUrl = redirectUrl else {
-                    self.logger?.error(message: "Failed to get redirect URL")
+                    self.logger.error(message: "Failed to get redirect URL")
                     continuation.resume(throwing: AuthError.configuration)
                     return
                 }
@@ -332,7 +334,7 @@ public final class Auth {
                     additionalParameters["is_create_org"] = "true"
                 }
                 
-                if let audience = self.config?.audience, !audience.isEmpty {
+                if let audience = self.config.audience, !audience.isEmpty {
                    additionalParameters["audience"] = audience
                 }
                 
@@ -348,9 +350,9 @@ public final class Auth {
                 let nonce = useNonce ? OIDTokenUtilities.randomURLSafeString(withSize: 32) : nil
 
                 let request = OIDAuthorizationRequest(configuration: configuration,
-                                                      clientId: self.config?.clientId ?? "",
+                                                      clientId: self.config.clientId,
                                                       clientSecret: nil, // Only required for Client Credentials Flow
-                                                      scope: self.config?.scope ?? "",
+                                                      scope: self.config.scope,
                                                       redirectURL: redirectUrl,
                                                       responseType: OIDResponseTypeCode,
                                                       state: state,
@@ -369,21 +371,21 @@ public final class Auth {
     private func authorizationFlowCallback(then completion: @escaping (Result<Bool, Error>) -> Void) -> (OIDAuthState?, Error?) -> Void {
         return { authState, error in
             if let error = error {
-                self.logger?.error(message: "Failed to finish authentication flow: \(error.localizedDescription)")
-                _ = self.authStateRepository?.clear()
+                self.logger.error(message: "Failed to finish authentication flow: \(error.localizedDescription)")
+                _ = self.authStateRepository.clear()
                 return completion(.failure(error))
             }
             
             guard let authState = authState else {
-                self.logger?.error(message: "Failed to get authentication state")
-                _ = self.authStateRepository?.clear()
+                self.logger.error(message: "Failed to get authentication state")
+                _ = self.authStateRepository.clear()
                 return completion(.failure(AuthError.notAuthenticated))
             }
             
-            self.logger?.debug(message: "Got authorization tokens. Access token: " +
+            self.logger.debug(message: "Got authorization tokens. Access token: " +
                           "\(authState.lastTokenResponse?.accessToken ?? "nil")")
             
-            let saved = self.authStateRepository?.setState(authState) ?? false
+            let saved = self.authStateRepository.setState(authState)
             if !saved {
                 return completion(.failure(AuthError.failedToSaveState))
             }
@@ -417,20 +419,20 @@ public final class Auth {
     }
 
     func performWithFreshTokens() async throws -> Tokens? {
-        guard let authState = authStateRepository?.state else {
-            self.logger?.error(message: "Failed to get authentication state")
+        guard let authState = authStateRepository.state else {
+            self.logger.error(message: "Failed to get authentication state")
             return nil
         }
         
         return try await withCheckedThrowingContinuation { continuation in
             authState.performAction {(accessToken, idToken, error1) in
                 if let error = error1 {
-                    self.logger?.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
+                    self.logger.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
                     return continuation.resume(with: .failure(error))
                 }
                 
                 guard let accessToken1 = accessToken else {
-                    self.logger?.error(message: "Failed to get access token")
+                    self.logger.error(message: "Failed to get access token")
                     return continuation.resume(with: .failure(AuthError.notAuthenticated))
                 }
                 let tokens = Tokens(accessToken: accessToken1, idToken: idToken)

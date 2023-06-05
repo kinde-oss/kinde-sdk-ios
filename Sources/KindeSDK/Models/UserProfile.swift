@@ -10,14 +10,14 @@ import Foundation
 
 public struct UserProfile: Codable, JSONEncodable, Hashable {
 
-    public let id: String?
+    public let id: String
     public let providedId: String?
     public let name: String?
     public let givenName: String?
     public let familyName: String?
-    public let updatedAt: Int?
+    public let updatedAt: Int
 
-    public init(id: String? = nil, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int? = nil) {
+    public init(id: String, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int) {
         self.id = id
         self.providedId = providedId
         self.name = name
@@ -39,12 +39,12 @@ public struct UserProfile: Codable, JSONEncodable, Hashable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(id, forKey: .id)
         try container.encodeIfPresent(providedId, forKey: .providedId)
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(givenName, forKey: .givenName)
         try container.encodeIfPresent(familyName, forKey: .familyName)
-        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 
