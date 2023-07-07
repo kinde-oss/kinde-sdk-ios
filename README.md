@@ -128,36 +128,37 @@ Once a user has been verified, your application will be returned the JWT token w
 ````
 
 ## Audience
-An `audience` is the intended recipient of an access token - for example the API for your application. 
-The audience argument can be passed to the `kinde-auth.json` or `KindeAuth.plist` configuration files to request an audience be added to the provided token.
 
-The audience of a token is the intended recipient of the token.
-````
-  ...
-  {
-    "issuer": "https://{your-business}.kinde.com",
-    "clientId": "{your-client-id}",
-    "redirectUri": "{your-url-scheme}://kinde_callback",
-    "postLogoutRedirectUri": "{your-url-scheme}://kinde_logoutcallback",
-    "scope": "openid profile email offline",
-    "audience": "{your-audience}" 
-  }
-  ...
-  
-````
+An `audience` is the intended recipient of an access token.
+
+When the request is received, Kinde will check that an API with a matching audience has been registered and is enabled for the application with the requested clientId. If there is a match it will return the `aud` claim as part of the access token.
+
+When you use this access token in your product and send it to your product’s API, you can check for the audience in the token as part of your verification checks. You can find an audience on the details page of the API:
+
+> Your profile on [Kinde.com](http://kinde.com/) -> Settings -> APIs -> View details of your API
+> 
+
+Please, make sure that you have enabled app and [registered an API](https://kinde.com/docs/build/register-an-api/) when using `audience`, you can do this here:
+
+> Your profile on [Kinde.com](http://kinde.com/) -> Settings -> APIs -> View details of your API -> Applications (Side Panel) -> Your app (Front-end app by default) Switch enabled
+> 
+
+The `audience` argument must be an URL and can be passed to the `kinde-auth.json` or `KindeAuth.plist` configuration files.
+
 Configuration example:
-````
-  ...
-  {
-    "issuer": "https://app.kinde.com",
-    "clientId": "client_id",
-    "redirectUri": "com.kinde.app://kinde_callback",
-    "postLogoutRedirectUri": "com.kinde.app://kinde_logoutcallback",
-    "scope": "openid profile email offline",
-    "audience": "https://app.kinde.com/api" 
-  }
-  ...
-````
+
+```swift
+...
+{
+    “issuer”: “https://app.kinde.com”,
+     “clientId”: “client_id”,
+     “redirectUri”:“com.kinde.app://kinde_callback”,
+     “postLogoutRedirectUri”: “com.kinde.app://kinde_logoutcallback”,
+     “scope”: “openid profile email offline”,
+     “audience”: “https://app.kinde.com/api”
+}
+...
+```
 
 ## Getting claims
 We have provided a helper to grab any claim from your id or access tokens. The helper defaults to access tokens:
