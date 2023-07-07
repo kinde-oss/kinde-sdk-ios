@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'KindeSDK'
-  s.version          = '1.1'
+  s.version          = '1.1.0'
   s.swift_version    = '5.6.1'
   s.summary          = 'Kinde SDK for Swift iOS.'
   s.description      = <<-DESC
