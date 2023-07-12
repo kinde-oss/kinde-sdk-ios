@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "3d36a58a2b736f7bc499453e996a704929b25080",
-        "version" : "1.6.0"
+        "revision" : "71cde449f13d453227e687458144bde372d30fc7",
+        "version" : "1.6.2"
       }
     },
     {
@@ -33,7 +33,7 @@
       "location" : "https://github.com/Quick/Nimble.git",
       "state" : {
         "branch" : "main",
-        "revision" : "3c81754d6174885759be729fd36e91e4c946be48"
+        "revision" : "371f7d278ba95a5511c248aaeec84f5dbe770491"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/Quick/Quick.git",
       "state" : {
         "branch" : "main",
-        "revision" : "a77506a7a389b54688b7b8e48226d56bde360c80"
+        "revision" : "c6a3fbadb3dc6e32baef29aa48d1f32457751eb8"
       }
     }
   ],

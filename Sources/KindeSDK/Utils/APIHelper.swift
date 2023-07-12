@@ -33,12 +33,10 @@ struct APIHelper {
     }
 
     static func convertAnyToString(_ value: Any?) -> String? {
-        guard let value = value else { return nil }
-        if let value = value as? any RawRepresentable {
-            return "\(value.rawValue)"
-        } else {
-            return "\(value)"
+        if let nonNil = value, !(nonNil is NSNull) {
+            return String(describing: nonNil)
         }
+        return ""
     }
 
     /// maps all values from source to query parameters
