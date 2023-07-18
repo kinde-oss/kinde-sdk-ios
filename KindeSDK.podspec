@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   
   s.source_files = 'Sources/KindeSDK/**/*'
   
-  s.dependency 'AppAuth'
+  s.dependency 'AppAuth', '>= 1.6.2'
 end
