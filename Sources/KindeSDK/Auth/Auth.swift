@@ -45,6 +45,21 @@ public final class Auth {
         return nil
     }
     
+
+    public func getClaim(forKey key: String, token: TokenType = .accessToken) -> Claim? {
+        let lastTokenResponse = authStateRepository.state?.lastTokenResponse
+        let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
+        guard let params = tokenToParse?.parsedJWT else {
+            return nil
+        }
+        if let value = params[key],
+            let value {
+            return Claim(name: key, value: value)
+        }
+        return nil
+    }
+    
+    @available(*, deprecated, message: "Use getClaim(forKey:token:) with return type Claim?")
     public func getClaim(key: String, token: TokenType = .accessToken) -> Any? {
         let lastTokenResponse = authStateRepository.state?.lastTokenResponse
         let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
@@ -55,29 +70,36 @@ public final class Auth {
     }
     
     public func getPermissions() -> Permissions? {
-        if let permissionsArray = getClaim(key: "permissions") as? [String],
-           let orgCode = getClaim(key: "org_code") as? String {
+        if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+           let permissionsArray = permissionsClaim.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
+            
             let organization = Organization(code: orgCode)
             let permissions = Permissions(organization: organization,
                                           permissions: permissionsArray)
             return permissions
-        }        
+        }
         return nil
     }
     
     public func getPermission(name: String) -> Permission? {
-        if let permissions = getClaim(key: "permissions") as? [String],
-           let orgCode = getClaim(key: "org_code") as? String {
+        if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+           let permissionsArray = permissionsClaim.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
+            
             let organization = Organization(code: orgCode)
             let permission = Permission(organization: organization,
-                                        isGranted: permissions.contains(name))
+                                        isGranted: permissionsArray.contains(name))
             return permission
         }
         return nil
     }
     
     public func getOrganization() -> Organization? {
-        if let orgCode = getClaim(key: "org_code") as? String {
+        if let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
             let org = Organization(code: orgCode)
             return org
         }
@@ -85,8 +107,10 @@ public final class Auth {
     }
     
     public func getUserOrganizations() -> UserOrganizations? {
-        if let userOrgs = getClaim(key: "org_codes",
-                                   token: .idToken) as? [String] {
+        if let userOrgsClaim = getClaim(forKey: ClaimKey.organisationCodes.rawValue,
+                                   token: .idToken),
+           let userOrgs = userOrgsClaim.value as? [String] {
+            
             let orgCodes = userOrgs.map({ Organization(code: $0)})
             return UserOrganizations(orgCodes: orgCodes)
         }        
@@ -439,6 +463,20 @@ public final class Auth {
                 continuation.resume(with: .success(tokens))
             }
         }
+    }
+}
+
+extension Auth {
+   
+    public struct Claim {
+        let name: String
+        let value: Any
+    }
+    
+    enum ClaimKey: String {
+        case permissions = "permissions"
+        case organisationCode = "org_code"
+        case organisationCodes = "org_codes"
     }
 }
 
