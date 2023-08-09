@@ -4,7 +4,7 @@ import KindeSDK
 import Foundation
 
 class AuthSpec: QuickSpec {
-    override func spec() {        
+    override class func spec() {        
         describe("Auth") {
             it("is unauthorised after initialisation") {
                 KindeSDKAPI.configure()
@@ -12,7 +12,6 @@ class AuthSpec: QuickSpec {
             }
             
             it("check helper functions") {
-
                 KindeSDKAPI.configure()
                 let auth: Auth = KindeSDKAPI.auth
                 guard auth.isAuthorized() == true else { return }
@@ -36,10 +35,12 @@ class AuthSpec: QuickSpec {
                 let auth: Auth = KindeSDKAPI.auth
                 guard auth.isAuthorized() == true else { return }
 
-                let result = await auth.logout()
-                if result == true {
-                    expect(auth.isAuthorized()).to(beFalse())
-                }                
+                Task {
+                    let result = await auth.logout()
+                    if result == true {
+                        expect(auth.isAuthorized()).to(beFalse())
+                    }
+                }
             }
         }
     }
