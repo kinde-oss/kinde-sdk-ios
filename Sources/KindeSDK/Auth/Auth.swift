@@ -40,7 +40,12 @@ public final class Auth {
            let email = params["email"] as? String {
             let givenName = params["given_name"] as? String
             let familyName = params["family_name"] as? String
-            return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
+            let picture = params["picture"] as? String
+            return User(id: idValue,
+                        email: email,
+                        lastName: familyName,
+                        firstName: givenName,
+                        picture: picture)
         }
         return nil
     }
