@@ -471,17 +471,109 @@ public final class Auth {
     }
 }
 
+// MARK: - Feature Flags
 extension Auth {
-   
-    public struct Claim {
-        let name: String
-        let value: Any
+ 
+    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType) -> Flag? {
+        return getFlagInternal(code: code, defaultValue: defaultValue, flagType: flagType)
     }
     
-    enum ClaimKey: String {
+    // Wrapper Methods
+    
+    public func getBooleanFlag(code: String, defaultValue: Bool? = nil) -> Bool? {
+        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .bool)?.value as? Bool
+        return value ?? defaultValue
+    }
+    
+    public func getStringFlag(code: String, defaultValue: String? = nil) -> String? {
+        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .string)?.value as? String
+        return value ?? defaultValue
+    }
+    
+    public func getIntegerFlag(code: String, defaultValue: Int? = nil) -> Int? {
+        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .int)?.value as? Int
+        return value ?? defaultValue
+    }
+    
+    // Internal
+    
+    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType) -> Flag? {
+        
+        guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue) else {
+            return nil
+        }
+        
+        guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
+            return nil
+        }
+        
+        
+        if let flagData = featureFlags[code] as? [String: Any],
+           let valueTypeLetter = flagData["t"] as? String,
+           let actualFlagType = Flag.ValueType(rawValue: valueTypeLetter),
+           let actualValue = flagData["v"] {
+            
+            // Value type check
+            if flagType != actualFlagType {
+                self.logger.error(message: "Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
+                return nil
+            }
+            
+            return Flag(code: code, type: flagType, value: actualValue)
+            
+        }else {
+            
+            if let defaultValue {
+                // This flag does not exist - default value provided
+                return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
+            }else {
+                logger.error(message: "This flag was not found, and no default value has been provided")
+                return nil
+            }
+        }
+        
+    }
+}
+
+extension Auth {
+    private enum ClaimKey: String {
         case permissions = "permissions"
         case organisationCode = "org_code"
         case organisationCodes = "org_codes"
+        case featureFlags = "feature_flags"
+    }
+}
+
+public struct Claim {
+    public let name: String
+    public let value: Any
+}
+
+public struct Flag {
+    public let code: String
+    public let type: ValueType?
+    public let value: Any
+    public let isDefault: Bool
+
+    public init(code: String, type: ValueType?, value: Any, isDefault: Bool = false) {
+        self.code = code
+        self.type = type
+        self.value = value
+        self.isDefault = isDefault
+    }
+    
+    public enum ValueType: String {
+        case string = "s"
+        case int = "i"
+        case bool = "b"
+        
+        fileprivate var typeDescription: String {
+            switch self {
+            case .string: return "string"
+            case .bool: return "boolean"
+            case .int: return "integer"
+            }
+        }
     }
 }
 
