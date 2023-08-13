@@ -473,40 +473,60 @@ public final class Auth {
 
 // MARK: - Feature Flags
 extension Auth {
- 
-    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType) -> Flag? {
-        return getFlagInternal(code: code, defaultValue: defaultValue, flagType: flagType)
+    
+    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType) throws -> Flag {
+        return try getFlagInternal(code: code, defaultValue: defaultValue, flagType: flagType)
     }
     
     // Wrapper Methods
     
-    public func getBooleanFlag(code: String, defaultValue: Bool? = nil) -> Bool? {
-        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .bool)?.value as? Bool
-        return value ?? defaultValue
+    public func getBooleanFlag(code: String, defaultValue: Bool? = nil) throws -> Bool {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .bool).value as? Bool {
+            return value
+        }else {
+            if let defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
     }
     
-    public func getStringFlag(code: String, defaultValue: String? = nil) -> String? {
-        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .string)?.value as? String
-        return value ?? defaultValue
+    public func getStringFlag(code: String, defaultValue: String? = nil) throws -> String {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .string).value as? String {
+           return value
+        }else{
+            if let defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
     }
     
-    public func getIntegerFlag(code: String, defaultValue: Int? = nil) -> Int? {
-        let value = getFlag(code: code, defaultValue: defaultValue, flagType: .int)?.value as? Int
-        return value ?? defaultValue
+    public func getIntegerFlag(code: String, defaultValue: Int? = nil) throws -> Int {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .int).value as? Int {
+            return value
+        }else {
+            if let defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
     }
     
     // Internal
     
-    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType) -> Flag? {
+    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType) throws -> Flag {
         
         guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue) else {
-            return nil
+            throw FlagError.unknownError
         }
         
         guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
-            return nil
+            throw FlagError.unknownError
         }
-        
         
         if let flagData = featureFlags[code] as? [String: Any],
            let valueTypeLetter = flagData["t"] as? String,
@@ -515,8 +535,7 @@ extension Auth {
             
             // Value type check
             if flagType != actualFlagType {
-                self.logger.error(message: "Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
-                return nil
+                throw FlagError.incorrectType("Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
             }
             
             return Flag(code: code, type: flagType, value: actualValue)
@@ -527,11 +546,9 @@ extension Auth {
                 // This flag does not exist - default value provided
                 return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
             }else {
-                logger.error(message: "This flag was not found, and no default value has been provided")
-                return nil
+                throw FlagError.notFound
             }
         }
-        
     }
 }
 

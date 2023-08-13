@@ -52,6 +52,7 @@
 		3BA67F852A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F862A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F872A0A5FF600399C6A /* kinde-auth.json in Sources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
+		D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D773EAD32A897ED30049DDEE /* FlagError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +105,7 @@
 		3B41B1D82A0E5F9100EFD9E4 /* UserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		3B41B1D92A0E5F9100EFD9E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3BA67F842A0A5FCE00399C6A /* kinde-auth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kinde-auth.json"; sourceTree = "<group>"; };
+		D773EAD32A897ED30049DDEE /* FlagError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +221,7 @@
 				3B41B1C22A0E5F9100EFD9E4 /* AuthError.swift */,
 				3B41B1C32A0E5F9100EFD9E4 /* DefaultLogger.swift */,
 				3B41B1C42A0E5F9100EFD9E4 /* Auth.swift */,
+				D773EAD32A897ED30049DDEE /* FlagError.swift */,
 				3B41B1C52A0E5F9100EFD9E4 /* Config.swift */,
 				3B41B1C62A0E5F9100EFD9E4 /* BearerTokenHandler.swift */,
 				3B41B1C72A0E5F9100EFD9E4 /* BearerRequestBuilderFactory.swift */,
@@ -399,6 +402,7 @@
 				3B41B1EE2A0E5F9100EFD9E4 /* Keychain.swift in Sources */,
 				3B41B1F12A0E5F9100EFD9E4 /* Models.swift in Sources */,
 				3B41B1E42A0E5F9100EFD9E4 /* BearerTokenHandler.swift in Sources */,
+				D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */,
 				3B41B1E32A0E5F9100EFD9E4 /* Config.swift in Sources */,
 				3B41B1F02A0E5F9100EFD9E4 /* JSONEncodingHelper.swift in Sources */,
 				3B41B1EC2A0E5F9100EFD9E4 /* OpenISO8601DateFormatter.swift in Sources */,
