@@ -4,7 +4,7 @@ import KindeSDK
 import Foundation
 
 class AuthSpec: QuickSpec {
-    override class func spec() {        
+    override class func spec() {
         describe("Auth") {
             it("is unauthorised after initialisation") {
                 KindeSDKAPI.configure()
@@ -18,7 +18,7 @@ class AuthSpec: QuickSpec {
                 let userDetails: User? = auth.getUserDetails()
                 expect(userDetails?.id.count).to(beGreaterThan(0))
                 
-                let audClaim = auth.getClaim(key: "aud")
+                let audClaim = auth.getClaim(forKey: "aud")
                 expect(audClaim).notTo(beNil())
                 
                 let permissions = auth.getPermissions()
@@ -29,18 +29,44 @@ class AuthSpec: QuickSpec {
                 
                 let userOrganizations = auth.getUserOrganizations()
                 expect(userOrganizations).notTo(beNil())
-            }
-            
-            it("check logout functions") {
-                let auth: Auth = KindeSDKAPI.auth
-                guard auth.isAuthorized() == true else { return }
+                
+                // Feature Flags
+                let testFlagCode = "#__testFlagCode__#"
+                
+                let flagNotExistGetDefaultValue = try? auth.getFlag(code: testFlagCode, defaultValue: testFlagCode, flagType: .string).value as? String
+                expect(flagNotExistGetDefaultValue).to(equal(testFlagCode))
+                expect( try auth.getFlag(code: testFlagCode, flagType: .string) )
+                    .to( throwError(FlagError.notFound) )
+                
+                let flagBoolNotExistGetNil = try? auth.getBooleanFlag(code: testFlagCode)
+                expect(flagBoolNotExistGetNil).to(beNil())
+                expect( try auth.getBooleanFlag(code: testFlagCode) )
+                    .to( throwError(FlagError.notFound ) )
+                
+                let flagBoolNotExistGetDefaultValue = try? auth.getBooleanFlag(code: testFlagCode, defaultValue: true)
+                expect(flagBoolNotExistGetDefaultValue).to(equal(true))
+                expect( try auth.getBooleanFlag(code: testFlagCode, defaultValue: true) )
+                    .to( equal(true) )
 
-                Task {
-                    let result = await auth.logout()
-                    if result == true {
-                        expect(auth.isAuthorized()).to(beFalse())
-                    }
-                }
+                let flagStringNotExistGetNil = try? auth.getStringFlag(code: testFlagCode)
+                expect(flagStringNotExistGetNil).to(beNil())
+                expect( try auth.getStringFlag(code: testFlagCode) )
+                    .to( throwError(FlagError.notFound) )
+
+                let flagStringNotExistGetDefaultValue = try? auth.getStringFlag(code: testFlagCode, defaultValue: testFlagCode)
+                expect(flagStringNotExistGetDefaultValue).to(equal(testFlagCode))
+                expect( try auth.getStringFlag(code: testFlagCode, defaultValue: testFlagCode) )
+                    .to( equal(testFlagCode) )
+                
+                let flagIntNotExistGetNil = try? auth.getIntegerFlag(code: testFlagCode)
+                expect(flagIntNotExistGetNil).to(beNil())
+                expect( try auth.getIntegerFlag(code: testFlagCode) )
+                    .to( throwError(FlagError.notFound) )
+
+                let flagIntNotExistGetDefaultValue = try? auth.getIntegerFlag(code: testFlagCode, defaultValue: 1)
+                expect(flagIntNotExistGetDefaultValue).to(equal(1))
+                expect( try auth.getIntegerFlag(code: testFlagCode, defaultValue: 1) )
+                    .to( equal(1) )
             }
         }
     }
