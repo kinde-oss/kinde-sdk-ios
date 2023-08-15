@@ -453,8 +453,9 @@ public final class Auth {
             return nil
         }
         
+        let params = ["Kinde-SDK": "1.2.0"]
         return try await withCheckedThrowingContinuation { continuation in
-            authState.performAction {(accessToken, idToken, error1) in
+            authState.performAction(freshTokens: { (accessToken, idToken, error1) in
                 if let error = error1 {
                     self.logger.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
                     return continuation.resume(with: .failure(error))
@@ -466,7 +467,7 @@ public final class Auth {
                 }
                 let tokens = Tokens(accessToken: accessToken1, idToken: idToken)
                 continuation.resume(with: .success(tokens))
-            }
+            }, additionalRefreshParameters: params)
         }
     }
 }
