@@ -33,9 +33,9 @@ class AuthSpec: QuickSpec {
                 // Feature Flags
                 let testFlagCode = "#__testFlagCode__#"
                 
-                let flagNotExistGetDefaultValue = try? auth.getFlag(code: testFlagCode, defaultValue: testFlagCode, flagType: .string).value as? String
+                let flagNotExistGetDefaultValue = try? auth.getFlag(code: testFlagCode, defaultValue: testFlagCode).value as? String
                 expect(flagNotExistGetDefaultValue).to(equal(testFlagCode))
-                expect( try auth.getFlag(code: testFlagCode, flagType: .string) )
+                expect( try auth.getFlag(code: testFlagCode) )
                     .to( throwError(FlagError.notFound) )
                 
                 let flagBoolNotExistGetNil = try? auth.getBooleanFlag(code: testFlagCode)

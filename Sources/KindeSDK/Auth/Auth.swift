@@ -475,7 +475,7 @@ public final class Auth {
 // MARK: - Feature Flags
 extension Auth {
     
-    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType) throws -> Flag {
+    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType? = nil) throws -> Flag {
         return try getFlagInternal(code: code, defaultValue: defaultValue, flagType: flagType)
     }
     
@@ -519,7 +519,7 @@ extension Auth {
     
     // Internal
     
-    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType) throws -> Flag {
+    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType?) throws -> Flag {
         
         guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue) else {
             throw FlagError.unknownError
@@ -535,11 +535,11 @@ extension Auth {
            let actualValue = flagData["v"] {
             
             // Value type check
-            if flagType != actualFlagType {
+            if let flagType, flagType != actualFlagType {
                 throw FlagError.incorrectType("Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
             }
             
-            return Flag(code: code, type: flagType, value: actualValue)
+            return Flag(code: code, type: actualFlagType, value: actualValue)
             
         }else {
             
