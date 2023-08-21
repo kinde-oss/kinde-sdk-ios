@@ -26,7 +26,7 @@ public final class Auth {
         }
         guard let accessTokenExpirationDate = lastTokenResponse.accessTokenExpirationDate else {
             return false
-        }        
+        }
         return lastTokenResponse.accessToken != nil &&
                isAuthorized == true &&
                accessTokenExpirationDate > Date()
@@ -118,7 +118,7 @@ public final class Auth {
             
             let orgCodes = userOrgs.map({ Organization(code: $0)})
             return UserOrganizations(orgCodes: orgCodes)
-        }        
+        }
         return nil
     }
     
