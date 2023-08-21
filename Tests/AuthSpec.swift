@@ -68,6 +68,18 @@ class AuthSpec: QuickSpec {
                 expect( try auth.getIntegerFlag(code: testFlagCode, defaultValue: 1) )
                     .to( equal(1) )
             }
+            
+            it("check logout functions") {
+                let auth: Auth = KindeSDKAPI.auth
+                Task {
+                    guard auth.isAuthorized() == true else { return }
+                    
+                    let result = await auth.logout()
+                    if result == true {
+                        expect(auth.isAuthorized()).to(beFalse())
+                    }
+                }
+            }
         }
     }
 }
