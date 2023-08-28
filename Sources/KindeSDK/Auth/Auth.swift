@@ -1,4 +1,5 @@
 import AppAuth
+import os.log
 
 /// The Kinde authentication service
 public final class Auth {
@@ -50,6 +51,9 @@ public final class Auth {
         let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
         guard let params = tokenToParse?.parsedJWT else {
             return nil
+        }
+        if !params.keys.contains(key) {
+            os_log("The claimed value of \"%@\" does not existed in your token", log: .default, type: .error, key)
         }
         return params[key] ?? nil
     }
