@@ -60,7 +60,7 @@ you configure in your [App Keys](https://kinde.com/docs/the-basics/getting-app-k
 ```
 {
   "issuer": "https://app.example.com",
-  "clientId": "abc@live",
+  "clientId": "203185d2502246e1a7cb430fbeacc121",
   "redirectUri": "com.example.App://kinde_callback",
   "postLogoutRedirectUri": "com.example.App://kinde_logoutcallback",
   "scope": "openid profile email offline"
