@@ -33,7 +33,7 @@ add the following `dependency` to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/kinde-oss/kinde-sdk-ios.git", from: "1.1")
+    .package(url: "https://github.com/kinde-oss/kinde-sdk-ios.git", from: "1.2")
 ]
 ```
 
@@ -127,6 +127,97 @@ Once a user has been verified, your application will be returned the JWT token w
     ]
 ````
 
+## Feature flags
+When a user signs in the Access token your product/application receives contains a custom claim called `feature_flags` which is an object detailing the feature flags for that user.
+You can set feature flags in your Kinde account. Here’s an example.
+````
+    feature_flags: {
+        theme: {
+              "t": "s",
+              "v": "pink"
+        },
+        is_dark_mode: {
+              "t": "b",
+              "v": true
+        },
+        competitions_limit: {
+              "t": "i",
+              "v": 5
+        }
+    }
+````
+In order to minimize the payload in the token we have used single letter keys / values where possible. The single letters represent the following:
+`t` = type,
+`v` = value, 
+`s` = String,
+`b` = Boolean,
+`i` = Integer,
+
+````
+/**
+  * Get a flag from the feature_flags claim of the access_token.
+  * @param {String} code - The name of the flag.
+  * @param {Any?} [defaultValue] - A fallback value if the flag isn't found.
+  * @param {Flag.ValueType?} [flagType] - The data type of the flag (integer / boolean / string).
+  * @return {Flag} Flag details.
+*/
+ KindeSDKAPI.auth.getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType? = nil) throws -> Flag 
+ 
+/* Example usage */
+try KindeSDKAPI.auth.getFlag(code: "theme")
+{
+   "code": "theme",
+   "type": "String",
+   "value": "pink",
+   "isDefault": false // whether the fallback value had to be used
+}
+
+try KindeSDKAPI.auth.getFlag(code: "create_competition", defaultValue: false)
+{
+     "code": "create_competition",
+     "value": false,
+     "isDefault": true // because fallback value had to be used
+}
+````
+We also require wrapper functions by type which should leverage `getFlag` above.
+
+We provide helper functions to more easily access feature flags:
+- Booleans:
+    ````
+  /**
+  * Get a boolean flag from the feature_flags claim of the access_token.
+  * @param {String} code - The name of the flag.
+  * @param {Boolean} [defaultValue] - A fallback value if the flag isn't found.
+  * @return {Boolean}
+    **/
+    KindeSDKAPI.auth.getBooleanFlag(code: String, defaultValue: Bool? = nil) throws -> Bool
+    
+    /* Example usage */
+    try KindeSDKAPI.auth.getBooleanFlag(code: "is_dark_mode")
+    // true
+    try KindeSDKAPI.auth.getBooleanFlag(code: "is_dark_mode", defaultValue: false)
+    // true
+    try KindeSDKAPI.auth.getBooleanFlag(code: "new_feature", defaultValue: false)
+    // false (flag does not exist so falls back to default)
+  ````
+- Strings and integers work in the same way as booleans above:
+    ````
+  /**
+  * Get a string flag from the feature_flags claim of the access_token.
+  * @param {String} code - The name of the flag.
+  * @param {String} [defaultValue] - A fallback value if the flag isn't found.
+  * @return {String}
+  */
+  KindeSDKAPI.auth.getStringFlag(code: String, defaultValue: String? = nil) throws -> String
+  /**
+  * Get an integer flag from the feature_flags claim of the access_token.
+  * @param {String} code - The name of the flag.
+  * @param {Int} [defaultValue] - A fallback value if the flag isn't found.
+  * @return {Int}
+  */
+  KindeSDKAPI.auth.getIntegerFlag(code: String, defaultValue: Int? = nil) throws -> Int
+  ````
+
 ## Audience
 
 An `audience` is the intended recipient of an access token.
@@ -161,13 +252,13 @@ Configuration example:
 ```
 
 ## Getting claims
-We have provided a helper to grab any claim from your id or access tokens. The helper defaults to access tokens:
+We have provided a new helper to grab any claim from your id or access tokens. The helper defaults to access tokens:
 ````
     ...
-    KindeSDKAPI.auth.getClaim(key: "aud")
-    // "api.yourapp.com"
-    KindeSDKAPI.auth.getClaim(key: "given_name", token: TokenType.idToken)
-    // "David"
+   KindeSDKAPI.auth.getClaim(forKey: "aud")
+    // {name: "aud", "value": ["api.yourapp.com"]}
+   KindeSDKAPI.auth.getClaim(forKey: "given_name", token: TokenType.idToken)
+    // {name: "given_name", "value": "David"}
     ...
 ````
 
