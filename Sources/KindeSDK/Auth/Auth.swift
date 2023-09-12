@@ -485,7 +485,7 @@ extension Auth {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .bool).value as? Bool {
             return value
         }else {
-            if let defaultValue {
+            if let defaultValue = defaultValue {
                 return defaultValue
             }else {
                 throw FlagError.notFound
@@ -497,7 +497,7 @@ extension Auth {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .string).value as? String {
            return value
         }else{
-            if let defaultValue {
+            if let defaultValue = defaultValue {
                 return defaultValue
             }else {
                 throw FlagError.notFound
@@ -509,7 +509,7 @@ extension Auth {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .int).value as? Int {
             return value
         }else {
-            if let defaultValue {
+            if let defaultValue = defaultValue {
                 return defaultValue
             }else {
                 throw FlagError.notFound
@@ -543,7 +543,7 @@ extension Auth {
             
         }else {
             
-            if let defaultValue {
+            if let defaultValue = defaultValue {
                 // This flag does not exist - default value provided
                 return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
             }else {
