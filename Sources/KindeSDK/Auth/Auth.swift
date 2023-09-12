@@ -470,6 +470,20 @@ public final class Auth {
             }, additionalRefreshParameters: params)
         }
     }
+    
+    /// Return the access token with auto-refresh mechanism.
+    /// - Returns: Returns access token, throw error if failed to refresh which may require re-authentication.
+    public func getToken() async throws -> String {
+        do {
+            if let tokens = try await performWithFreshTokens() {
+                return tokens.accessToken
+            }else {
+                throw AuthError.notAuthenticated
+            }
+        }catch {
+            throw AuthError.notAuthenticated
+        }
+    }
 }
 
 // MARK: - Feature Flags
