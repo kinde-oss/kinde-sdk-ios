@@ -7,6 +7,7 @@ public final class Auth {
     private let config: Config
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
+    private var privateAuthSession: Bool = false
     
     init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
         self.config = config
@@ -314,6 +315,7 @@ public final class Auth {
                 await MainActor.run {
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
+                                                                      prefersEphemeralSession: privateAuthSession,
                                                                       callback: authorizationFlowCallback(then: { value in
                         switch value {
                         case .success:
@@ -564,6 +566,14 @@ extension Auth {
                 throw FlagError.notFound
             }
         }
+    }
+}
+
+
+extension Auth {
+    /// Hide/Show message prompt in authentication sessions.
+    public func enablePrivateAuthSession(_ isEnable: Bool) {
+        privateAuthSession = isEnable
     }
 }
 
