@@ -6,6 +6,8 @@
 
 Integrate Kinde authentication with your iOS app. Simply **configure**, **register**, **login**, and **logout**, and authentication state is securely stored on the iOS keychain across app restarts.
 
+You can also view the [iOS starter kit here](https://github.com/kinde-starter-kits/ios-starter-kit).
+
 ## Requirements
 
 - iOS 13+
