@@ -23,10 +23,8 @@ Sources/KindeSDK/Auth/Config.swift
 Sources/KindeSDK/Auth/DefaultLogger.swift
 Sources/KindeSDK/Auth/FlagError.swift
 Sources/KindeSDK/Auth/Tokens.swift
-Sources/KindeSDK/Configuration.swift
 Sources/KindeSDK/Models/User.swift
 Sources/KindeSDK/Models/UserProfile.swift
-Sources/KindeSDK/SynchronizedDictionary.swift
 Sources/KindeSDK/Utils/APIHelper.swift
 Sources/KindeSDK/Utils/AtomicWrapper.swift
 Sources/KindeSDK/Utils/CodableHelper.swift
@@ -48,6 +46,4 @@ Tests/StringJWTTokenDecodeSpec.swift
 docs/OAuthAPI.md
 docs/User.md
 docs/UserProfile.md
-git_push.sh
 kinde-auth.json
-project.yml
