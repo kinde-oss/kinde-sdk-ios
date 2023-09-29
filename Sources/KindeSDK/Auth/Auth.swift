@@ -227,7 +227,7 @@ public final class Auth {
         }
     }
 
-    public func createOrg() async throws -> () {
+    public func createOrg(orgName: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await getViewController() else {
@@ -235,7 +235,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: true, createOrg: true)
+                    let request = try await getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName)
                     _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -284,6 +284,7 @@ public final class Auth {
     private func getAuthorizationRequest(signUp: Bool,
                                          createOrg: Bool = false,
                                          orgCode: String = "",
+                                         orgName: String = "",
                                          usePKCE: Bool = true,
                                          useNonce: Bool = false) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
@@ -333,6 +334,7 @@ public final class Auth {
                                               signUp: Bool,
                                               createOrg: Bool = false,
                                               orgCode: String = "",
+                                              orgName: String = "",
                                               usePKCE: Bool = true,
                                               useNonce: Bool = false) async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
@@ -371,6 +373,10 @@ public final class Auth {
                 
                 if !orgCode.isEmpty {
                     additionalParameters["org_code"] = orgCode
+                }
+                
+                if !orgName.isEmpty {
+                    additionalParameters["org_name"] = orgName
                 }
                 
                 // if/when the API supports nonce validation
