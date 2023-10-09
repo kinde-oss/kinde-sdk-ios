@@ -300,6 +300,7 @@ public final class Auth {
                                                                  signUp: signUp,
                                                                  createOrg: createOrg,
                                                                  orgCode: orgCode,
+                                                                 orgName: orgName,
                                                                  usePKCE: usePKCE,
                                                                  useNonce: useNonce)
                     continuation.resume(returning: result)
