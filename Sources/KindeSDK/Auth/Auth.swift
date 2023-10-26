@@ -58,8 +58,8 @@ public final class Auth {
         guard let params = tokenToParse?.parsedJWT else {
             return nil
         }
-        if let value = params[key],
-            let value {
+        if let valueOrNil = params[key],
+            let value = valueOrNil {
             return Claim(name: key, value: value)
         }
         return nil
@@ -157,13 +157,13 @@ public final class Auth {
     public func register(orgCode: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: true, orgCode: orgCode)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -194,13 +194,13 @@ public final class Auth {
     public func login(orgCode: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: false, orgCode: orgCode)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -230,13 +230,13 @@ public final class Auth {
     public func createOrg(orgName: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -558,7 +558,8 @@ extension Auth {
            let actualValue = flagData["v"] {
             
             // Value type check
-            if let flagType, flagType != actualFlagType {
+            if let flagType = flagType,
+                flagType != actualFlagType {
                 throw FlagError.incorrectType("Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
             }
             
