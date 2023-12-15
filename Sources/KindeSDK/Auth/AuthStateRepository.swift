@@ -50,6 +50,7 @@ class AuthStateRepository: NSObject {
     }
     
     private func persistToKeychain(state: OIDAuthState) -> Bool {
+        removeFromKeychain()
         let persisted = Keychain.set(state: state, service: self.key)
         if !persisted {
             self.logger?.error(message: "Failed to persist authState to the keychain")
@@ -59,6 +60,7 @@ class AuthStateRepository: NSObject {
         return true
     }
     
+    @discardableResult
     private func removeFromKeychain() -> Bool {
         if Keychain.get(self.key) != nil {
             let cleared = Keychain.delete(service: self.key) == errSecSuccess

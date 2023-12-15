@@ -52,6 +52,9 @@
 		3BA67F852A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F862A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F872A0A5FF600399C6A /* kinde-auth.json in Sources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
+		D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D773EAD32A897ED30049DDEE /* FlagError.swift */; };
+		D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F672A8D59E20088802F /* SDKVersion.swift */; };
+		D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F6D2A8D5D390088802F /* PList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +107,10 @@
 		3B41B1D82A0E5F9100EFD9E4 /* UserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		3B41B1D92A0E5F9100EFD9E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3BA67F842A0A5FCE00399C6A /* kinde-auth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kinde-auth.json"; sourceTree = "<group>"; };
+		D773EAD32A897ED30049DDEE /* FlagError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagError.swift; sourceTree = "<group>"; };
+		D7FD1F672A8D59E20088802F /* SDKVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKVersion.swift; sourceTree = "<group>"; };
+		D7FD1F6C2A8D5CEC0088802F /* KindeSDK-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "KindeSDK-Info.plist"; sourceTree = "<group>"; };
+		D7FD1F6D2A8D5D390088802F /* PList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +140,7 @@
 		3B1EBA4429F943B200444EEB = {
 			isa = PBXGroup;
 			children = (
+				D7FD1F6C2A8D5CEC0088802F /* KindeSDK-Info.plist */,
 				3B41B1B72A0E5F9100EFD9E4 /* Sources */,
 				3B41B1AC2A0E5F8500EFD9E4 /* Tests */,
 				3BA67F842A0A5FCE00399C6A /* kinde-auth.json */,
@@ -219,6 +227,7 @@
 				3B41B1C22A0E5F9100EFD9E4 /* AuthError.swift */,
 				3B41B1C32A0E5F9100EFD9E4 /* DefaultLogger.swift */,
 				3B41B1C42A0E5F9100EFD9E4 /* Auth.swift */,
+				D773EAD32A897ED30049DDEE /* FlagError.swift */,
 				3B41B1C52A0E5F9100EFD9E4 /* Config.swift */,
 				3B41B1C62A0E5F9100EFD9E4 /* BearerTokenHandler.swift */,
 				3B41B1C72A0E5F9100EFD9E4 /* BearerRequestBuilderFactory.swift */,
@@ -242,6 +251,8 @@
 				3B41B1D42A0E5F9100EFD9E4 /* Models.swift */,
 				3B41B1D52A0E5F9100EFD9E4 /* String+JWTTokenDecode.swift */,
 				3B41B1D62A0E5F9100EFD9E4 /* AtomicWrapper.swift */,
+				D7FD1F672A8D59E20088802F /* SDKVersion.swift */,
+				D7FD1F6D2A8D5D390088802F /* PList.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -399,6 +410,7 @@
 				3B41B1EE2A0E5F9100EFD9E4 /* Keychain.swift in Sources */,
 				3B41B1F12A0E5F9100EFD9E4 /* Models.swift in Sources */,
 				3B41B1E42A0E5F9100EFD9E4 /* BearerTokenHandler.swift in Sources */,
+				D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */,
 				3B41B1E32A0E5F9100EFD9E4 /* Config.swift in Sources */,
 				3B41B1F02A0E5F9100EFD9E4 /* JSONEncodingHelper.swift in Sources */,
 				3B41B1EC2A0E5F9100EFD9E4 /* OpenISO8601DateFormatter.swift in Sources */,
@@ -409,10 +421,12 @@
 				3B41B1DF2A0E5F9100EFD9E4 /* AuthStateRepository.swift in Sources */,
 				3B41B1E92A0E5F9100EFD9E4 /* APIHelper.swift in Sources */,
 				3B41B1E82A0E5F9100EFD9E4 /* APIs.swift in Sources */,
+				D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */,
 				3B41B1ED2A0E5F9100EFD9E4 /* Extensions.swift in Sources */,
 				3B41B1F42A0E5F9100EFD9E4 /* UserProfile.swift in Sources */,
 				3B41B1EB2A0E5F9100EFD9E4 /* CodableHelper.swift in Sources */,
 				3B41B1EF2A0E5F9100EFD9E4 /* JSONDataEncoding.swift in Sources */,
+				D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */,
 				3B41B1E22A0E5F9100EFD9E4 /* Auth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -505,7 +519,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -513,6 +527,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -564,13 +579,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -591,8 +607,10 @@
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "KindeSDK-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -626,8 +644,10 @@
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "KindeSDK-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

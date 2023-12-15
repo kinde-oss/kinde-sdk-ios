@@ -7,6 +7,7 @@ public final class Auth {
     private let config: Config
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
+    private var privateAuthSession: Bool = false
     
     init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
         self.config = config
@@ -26,7 +27,7 @@ public final class Auth {
         }
         guard let accessTokenExpirationDate = lastTokenResponse.accessTokenExpirationDate else {
             return false
-        }        
+        }
         return lastTokenResponse.accessToken != nil &&
                isAuthorized == true &&
                accessTokenExpirationDate > Date()
@@ -40,11 +41,31 @@ public final class Auth {
            let email = params["email"] as? String {
             let givenName = params["given_name"] as? String
             let familyName = params["family_name"] as? String
-            return User(id: idValue, email: email, lastName: familyName, firstName: givenName)
+            let picture = params["picture"] as? String
+            return User(id: idValue,
+                        email: email,
+                        lastName: familyName,
+                        firstName: givenName,
+                        picture: picture)
         }
         return nil
     }
     
+
+    public func getClaim(forKey key: String, token: TokenType = .accessToken) -> Claim? {
+        let lastTokenResponse = authStateRepository.state?.lastTokenResponse
+        let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
+        guard let params = tokenToParse?.parsedJWT else {
+            return nil
+        }
+        if let valueOrNil = params[key],
+            let value = valueOrNil {
+            return Claim(name: key, value: value)
+        }
+        return nil
+    }
+    
+    @available(*, deprecated, message: "Use getClaim(forKey:token:) with return type Claim?")
     public func getClaim(key: String, token: TokenType = .accessToken) -> Any? {
         let lastTokenResponse = authStateRepository.state?.lastTokenResponse
         let tokenToParse = token == .accessToken ? lastTokenResponse?.accessToken: lastTokenResponse?.idToken
@@ -55,29 +76,36 @@ public final class Auth {
     }
     
     public func getPermissions() -> Permissions? {
-        if let permissionsArray = getClaim(key: "permissions") as? [String],
-           let orgCode = getClaim(key: "org_code") as? String {
+        if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+           let permissionsArray = permissionsClaim.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
+            
             let organization = Organization(code: orgCode)
             let permissions = Permissions(organization: organization,
                                           permissions: permissionsArray)
             return permissions
-        }        
+        }
         return nil
     }
     
     public func getPermission(name: String) -> Permission? {
-        if let permissions = getClaim(key: "permissions") as? [String],
-           let orgCode = getClaim(key: "org_code") as? String {
+        if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+           let permissionsArray = permissionsClaim.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
+            
             let organization = Organization(code: orgCode)
             let permission = Permission(organization: organization,
-                                        isGranted: permissions.contains(name))
+                                        isGranted: permissionsArray.contains(name))
             return permission
         }
         return nil
     }
     
     public func getOrganization() -> Organization? {
-        if let orgCode = getClaim(key: "org_code") as? String {
+        if let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value as? String {
             let org = Organization(code: orgCode)
             return org
         }
@@ -85,11 +113,13 @@ public final class Auth {
     }
     
     public func getUserOrganizations() -> UserOrganizations? {
-        if let userOrgs = getClaim(key: "org_codes",
-                                   token: .idToken) as? [String] {
+        if let userOrgsClaim = getClaim(forKey: ClaimKey.organisationCodes.rawValue,
+                                   token: .idToken),
+           let userOrgs = userOrgsClaim.value as? [String] {
+            
             let orgCodes = userOrgs.map({ Organization(code: $0)})
             return UserOrganizations(orgCodes: orgCodes)
-        }        
+        }
         return nil
     }
     
@@ -127,13 +157,13 @@ public final class Auth {
     public func register(orgCode: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: true, orgCode: orgCode)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -164,13 +194,13 @@ public final class Auth {
     public func login(orgCode: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: false, orgCode: orgCode)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -197,16 +227,16 @@ public final class Auth {
         }
     }
 
-    public func createOrg() async throws -> () {
+    public func createOrg(orgName: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                guard let viewController = await getViewController() else {
+                guard let viewController = await self.getViewController() else {
                     continuation.resume(throwing: AuthError.notAuthenticated)
                     return
                 }
                 do {
-                    let request = try await getAuthorizationRequest(signUp: true, createOrg: true)
-                    _ = try await runCurrentAuthorizationFlow(request: request, viewController: viewController)
+                    let request = try await self.getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName)
+                    _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
                     continuation.resume(throwing: error)
@@ -254,6 +284,7 @@ public final class Auth {
     private func getAuthorizationRequest(signUp: Bool,
                                          createOrg: Bool = false,
                                          orgCode: String = "",
+                                         orgName: String = "",
                                          usePKCE: Bool = true,
                                          useNonce: Bool = false) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
@@ -269,6 +300,7 @@ public final class Auth {
                                                                  signUp: signUp,
                                                                  createOrg: createOrg,
                                                                  orgCode: orgCode,
+                                                                 orgName: orgName,
                                                                  usePKCE: usePKCE,
                                                                  useNonce: useNonce)
                     continuation.resume(returning: result)
@@ -285,6 +317,7 @@ public final class Auth {
                 await MainActor.run {
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
+                                                                      prefersEphemeralSession: privateAuthSession,
                                                                       callback: authorizationFlowCallback(then: { value in
                         switch value {
                         case .success:
@@ -302,6 +335,7 @@ public final class Auth {
                                               signUp: Bool,
                                               createOrg: Bool = false,
                                               orgCode: String = "",
+                                              orgName: String = "",
                                               usePKCE: Bool = true,
                                               useNonce: Bool = false) async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
@@ -340,6 +374,10 @@ public final class Auth {
                 
                 if !orgCode.isEmpty {
                     additionalParameters["org_code"] = orgCode
+                }
+                
+                if !orgName.isEmpty {
+                    additionalParameters["org_name"] = orgName
                 }
                 
                 // if/when the API supports nonce validation
@@ -424,8 +462,9 @@ public final class Auth {
             return nil
         }
         
+        let params = ["Kinde-SDK": "Swift/\(SDKVersion.versionString)"]
         return try await withCheckedThrowingContinuation { continuation in
-            authState.performAction {(accessToken, idToken, error1) in
+            authState.performAction(freshTokens: { (accessToken, idToken, error1) in
                 if let error = error1 {
                     self.logger.error(message: "Failed to get authentication tokens: \(error.localizedDescription)")
                     return continuation.resume(with: .failure(error))
@@ -437,6 +476,152 @@ public final class Auth {
                 }
                 let tokens = Tokens(accessToken: accessToken1, idToken: idToken)
                 continuation.resume(with: .success(tokens))
+            }, additionalRefreshParameters: params)
+        }
+    }
+    
+    /// Return the access token with auto-refresh mechanism.
+    /// - Returns: Returns access token, throw error if failed to refresh which may require re-authentication.
+    public func getToken() async throws -> String {
+        do {
+            if let tokens = try await performWithFreshTokens() {
+                return tokens.accessToken
+            }else {
+                throw AuthError.notAuthenticated
+            }
+        }catch {
+            throw AuthError.notAuthenticated
+        }
+    }
+}
+
+// MARK: - Feature Flags
+extension Auth {
+    
+    public func getFlag(code: String, defaultValue: Any? = nil, flagType: Flag.ValueType? = nil) throws -> Flag {
+        return try getFlagInternal(code: code, defaultValue: defaultValue, flagType: flagType)
+    }
+    
+    // Wrapper Methods
+    
+    public func getBooleanFlag(code: String, defaultValue: Bool? = nil) throws -> Bool {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .bool).value as? Bool {
+            return value
+        }else {
+            if let defaultValue = defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
+    }
+    
+    public func getStringFlag(code: String, defaultValue: String? = nil) throws -> String {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .string).value as? String {
+           return value
+        }else{
+            if let defaultValue = defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
+    }
+    
+    public func getIntegerFlag(code: String, defaultValue: Int? = nil) throws -> Int {
+        if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .int).value as? Int {
+            return value
+        }else {
+            if let defaultValue = defaultValue {
+                return defaultValue
+            }else {
+                throw FlagError.notFound
+            }
+        }
+    }
+    
+    // Internal
+    
+    private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType?) throws -> Flag {
+        
+        guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue) else {
+            throw FlagError.unknownError
+        }
+        
+        guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
+            throw FlagError.unknownError
+        }
+        
+        if let flagData = featureFlags[code] as? [String: Any],
+           let valueTypeLetter = flagData["t"] as? String,
+           let actualFlagType = Flag.ValueType(rawValue: valueTypeLetter),
+           let actualValue = flagData["v"] {
+            
+            // Value type check
+            if let flagType = flagType,
+                flagType != actualFlagType {
+                throw FlagError.incorrectType("Flag \"\(code)\" is type \(actualFlagType.typeDescription) - requested type \(flagType.typeDescription)")
+            }
+            
+            return Flag(code: code, type: actualFlagType, value: actualValue)
+            
+        }else {
+            
+            if let defaultValue = defaultValue {
+                // This flag does not exist - default value provided
+                return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
+            }else {
+                throw FlagError.notFound
+            }
+        }
+    }
+}
+
+
+extension Auth {
+    /// Hide/Show message prompt in authentication sessions.
+    public func enablePrivateAuthSession(_ isEnable: Bool) {
+        privateAuthSession = isEnable
+    }
+}
+
+extension Auth {
+    private enum ClaimKey: String {
+        case permissions = "permissions"
+        case organisationCode = "org_code"
+        case organisationCodes = "org_codes"
+        case featureFlags = "feature_flags"
+    }
+}
+
+public struct Claim {
+    public let name: String
+    public let value: Any
+}
+
+public struct Flag {
+    public let code: String
+    public let type: ValueType?
+    public let value: Any
+    public let isDefault: Bool
+
+    public init(code: String, type: ValueType?, value: Any, isDefault: Bool = false) {
+        self.code = code
+        self.type = type
+        self.value = value
+        self.isDefault = isDefault
+    }
+    
+    public enum ValueType: String {
+        case string = "s"
+        case int = "i"
+        case bool = "b"
+        
+        fileprivate var typeDescription: String {
+            switch self {
+            case .string: return "string"
+            case .bool: return "boolean"
+            case .int: return "integer"
             }
         }
     }
