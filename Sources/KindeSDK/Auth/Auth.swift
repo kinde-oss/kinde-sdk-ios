@@ -53,7 +53,7 @@ public final class Auth {
             return nil
         }
         if !params.keys.contains(key) {
-            os_log("The claimed value of \"%@\" does not existed in your token", log: .default, type: .error, key)
+            os_log("The claimed value of \"%@\" does not exist in your token", log: .default, type: .error, key)
         }
         return params[key] ?? nil
     }
