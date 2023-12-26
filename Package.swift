@@ -6,7 +6,6 @@ let package = Package(
     name: "KindeSDK",
     platforms: [
         .iOS(.v13),
-        .macOS(.v10_15)
     ],
     products: [
         .library(
