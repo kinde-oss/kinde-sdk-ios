@@ -20,4 +20,4 @@ Please refer to Kinde’s [contributing guidelines](https://github.com/kinde-os
 
 ## License
 
-By contributing to Kinde, you agree that your contributions will be licensed under its MIT License.
+KindeSDK is available under the MIT license. See the LICENSE file for more info.
