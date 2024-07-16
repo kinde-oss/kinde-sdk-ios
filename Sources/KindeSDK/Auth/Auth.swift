@@ -180,10 +180,12 @@ public final class Auth {
     ///
     @available(*, renamed: "login")
     public func login(orgCode: String = "",
+                      loginHint: String = "",
                       _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await login(orgCode: orgCode)
+                try await login(orgCode: orgCode,
+                                loginHint: loginHint)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -195,7 +197,8 @@ public final class Auth {
         }
     }
 
-    public func login(orgCode: String = "") async throws -> () {
+    public func login(orgCode: String = "", 
+                      loginHint: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -203,7 +206,9 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode)
+                    let request = try await self.getAuthorizationRequest(signUp: false, 
+                                                                         orgCode: orgCode,
+                                                                         loginHint: loginHint)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -289,6 +294,7 @@ public final class Auth {
                                          createOrg: Bool = false,
                                          orgCode: String = "",
                                          orgName: String = "",
+                                         loginHint: String = "",
                                          usePKCE: Bool = true,
                                          useNonce: Bool = false) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
@@ -305,6 +311,7 @@ public final class Auth {
                                                                  createOrg: createOrg,
                                                                  orgCode: orgCode,
                                                                  orgName: orgName,
+                                                                 loginHint: loginHint,
                                                                  usePKCE: usePKCE,
                                                                  useNonce: useNonce)
                     continuation.resume(returning: result)
@@ -340,6 +347,7 @@ public final class Auth {
                                               createOrg: Bool = false,
                                               orgCode: String = "",
                                               orgName: String = "",
+                                              loginHint: String = "",
                                               usePKCE: Bool = true,
                                               useNonce: Bool = false) async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
@@ -382,6 +390,10 @@ public final class Auth {
                 
                 if !orgName.isEmpty {
                     additionalParameters["org_name"] = orgName
+                }
+                
+                if !loginHint.isEmpty {
+                    additionalParameters["login_hint"] = loginHint
                 }
                 
                 // if/when the API supports nonce validation
