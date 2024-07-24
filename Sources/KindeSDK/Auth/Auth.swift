@@ -347,6 +347,7 @@ public final class Auth {
                 if let error = error {
                     self.logger.error(message: "Failed to discover OpenID configuration: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
+                    return
                 }
                 
                 guard let configuration = configuration else {
