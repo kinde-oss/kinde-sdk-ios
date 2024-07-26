@@ -466,7 +466,7 @@ public final class Auth {
             return nil
         }
         
-        let params = ["Kinde-SDK": "Swift/\(SDKVersion.versionString)"]
+        let params = ["Kinde-SDK": "Python/\(SDKVersion.versionString)"]
         return try await withCheckedThrowingContinuation { continuation in
             authState.performAction(freshTokens: { (accessToken, idToken, error1) in
                 if let error = error1 {
