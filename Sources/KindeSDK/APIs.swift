@@ -118,7 +118,12 @@ public extension KindeSDKAPI {
             preconditionFailure("Failed to parse Business Name from configured issuer \(config.issuer)")
         }
         
-        basePath = basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
+        // for full custom domain, the config.issuer will be as base path
+        if host.contains("kinde.com"){
+            basePath = basePath.replacingOccurrences(of: "://app.", with: "://\(businessName).")
+        }else{
+            basePath = config.issuer
+        }
         // Use Bearer authentication subclass of RequestBuilderFactory
         requestBuilderFactory = BearerRequestBuilderFactory()
         
