@@ -497,11 +497,15 @@ public final class Auth {
     public func getToken(desiredToken: TokenType = .accessToken) async throws -> String {
         do {
             if let tokens = try await performWithFreshTokens() {
-                return desiredToken == .accessToken ? tokens.accessToken: tokens.idToken
-            }else {
+                if let token = (desiredToken == .accessToken ? tokens.accessToken : tokens.idToken) {
+                    return token
+                } else {
+                    throw AuthError.notAuthenticated
+                }
+            } else {
                 throw AuthError.notAuthenticated
             }
-        }catch {
+        } catch {
             throw AuthError.notAuthenticated
         }
     }
