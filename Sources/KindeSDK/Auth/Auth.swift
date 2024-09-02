@@ -492,12 +492,12 @@ public final class Auth {
         }
     }
     
-    /// Return the access token with auto-refresh mechanism.
-    /// - Returns: Returns access token, throw error if failed to refresh which may require re-authentication.
-    public func getToken() async throws -> String {
+    /// Return the desired token with auto-refresh mechanism.
+    /// - Returns: Returns either the access token (default) or the id token, throw error if failed to refresh which may require re-authentication.
+    public func getToken(desiredToken: TokenType = .accessToken) async throws -> String {
         do {
             if let tokens = try await performWithFreshTokens() {
-                return tokens.accessToken
+                return desiredToken == .accessToken ? tokens.accessToken: tokens.idToken
             }else {
                 throw AuthError.notAuthenticated
             }
