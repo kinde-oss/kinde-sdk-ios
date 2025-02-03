@@ -16,14 +16,16 @@ public struct UserProfile: Codable, JSONEncodable, Hashable {
     public let givenName: String?
     public let familyName: String?
     public let updatedAt: Int
+    public let email: String?
 
-    public init(id: String, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int) {
+    public init(id: String, providedId: String? = nil, name: String? = nil, givenName: String? = nil, familyName: String? = nil, updatedAt: Int, email: String? = nil) {
         self.id = id
         self.providedId = providedId
         self.name = name
         self.givenName = givenName
         self.familyName = familyName
         self.updatedAt = updatedAt
+        self.email = email
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -33,6 +35,7 @@ public struct UserProfile: Codable, JSONEncodable, Hashable {
         case givenName = "given_name"
         case familyName = "family_name"
         case updatedAt = "updated_at"
+        case email
     }
 
     // Encodable protocol methods
@@ -45,6 +48,7 @@ public struct UserProfile: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(givenName, forKey: .givenName)
         try container.encodeIfPresent(familyName, forKey: .familyName)
         try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(email, forKey: .email)
     }
 }
 
