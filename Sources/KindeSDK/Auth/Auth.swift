@@ -509,6 +509,18 @@ public final class Auth {
             throw AuthError.notAuthenticated
         }
     }
+    
+    public func getToken() async throws -> Tokens {
+        do {
+            if let tokens = try await performWithFreshTokens() {
+                return Tokens(accessToken: tokens.accessToken, idToken: tokens.idToken)
+            } else {
+                throw AuthError.notAuthenticated
+            }
+        } catch {
+            throw AuthError.notAuthenticated
+        }
+    }
 }
 
 // MARK: - Feature Flags
