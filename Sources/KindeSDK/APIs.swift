@@ -105,10 +105,13 @@ public extension KindeSDKAPI {
      `configure` must be called before `Auth` or any Kinde Management APIs are used.	
      	
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
-     configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	
-     */	
-    static func configure(_ logger: LoggerProtocol = DefaultLogger()) {
-        guard let config = Config.initialize() else {
+     configured `issuer`. E.g., `https://example.kinde.com` -> `example`.
+     
+     If your app requires multiple configurations for development and production, add all Kinde configuration files to your app target and specify the desired configuration using `configurationFileName`
+     
+     */
+    static func configure(_ logger: LoggerProtocol = DefaultLogger(), configurationFileName: String = "kinde-auth") {
+        guard let config = Config.initialize(configurationFileName: configurationFileName) else {
             preconditionFailure("Failed to load configuration")
         }
         
@@ -128,7 +131,7 @@ public extension KindeSDKAPI {
         requestBuilderFactory = BearerRequestBuilderFactory()
         
         auth = Auth(config: config,
-                    authStateRepository: AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger),
+                    authStateRepository: AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").\(config.clientId).authState", logger: logger),
                     logger: logger)
     }
 }
