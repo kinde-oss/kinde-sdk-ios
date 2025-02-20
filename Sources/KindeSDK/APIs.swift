@@ -107,8 +107,8 @@ public extension KindeSDKAPI {
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	
      */	
-    static func configure(_ logger: LoggerProtocol = DefaultLogger()) {
-        guard let config = Config.initialize() else {
+    static func configure(_ logger: LoggerProtocol = DefaultLogger(), fileName: String = "kinde-auth") {
+        guard let config = Config.initialize(fileName: fileName) else {
             preconditionFailure("Failed to load configuration")
         }
         

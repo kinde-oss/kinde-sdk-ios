@@ -44,11 +44,11 @@ public struct Config: Decodable {
     }
     
     /// Load configuration from bundled source file: (default) `KindeAuth.plist` or `kinde-auth.json`
-    static func initialize() -> Config? {
+    static func initialize(fileName: String) -> Config? {
         do {
             var configFilePath: String = ""
             for bundle in Bundle.allBundles {
-                if let resourcePath = bundle.path(forResource: "kinde-auth", ofType: "json") {
+                if let resourcePath = bundle.path(forResource: fileName, ofType: "json") {
                     configFilePath = resourcePath
                     break
                 }
