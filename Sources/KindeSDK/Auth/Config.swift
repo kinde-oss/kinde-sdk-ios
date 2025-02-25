@@ -47,8 +47,9 @@ public struct Config: Decodable {
     static func initialize(fileName: String) -> Config? {
         do {
             var configFilePath: String = ""
+            let cleanedFileName = fileName.replacingOccurrences(of: ".json", with: "")
             for bundle in Bundle.allBundles {
-                if let resourcePath = bundle.path(forResource: fileName, ofType: "json") {
+                if let resourcePath = bundle.path(forResource: cleanedFileName, ofType: "json") {
                     configFilePath = resourcePath
                     break
                 }
