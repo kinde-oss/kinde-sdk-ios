@@ -100,6 +100,16 @@ public protocol RequestBuilderFactory {
     func getBuilder<T: Decodable>() -> RequestBuilder<T>.Type
 }
 
+public func logout() {
+    guard let auth = KindeSDKAPI.auth else {
+        return
+    }
+
+    auth.logout { result in
+        print(result)
+    }
+}
+
 public extension KindeSDKAPI {	
     /**	
      `configure` must be called before `Auth` or any Kinde Management APIs are used.	
@@ -107,10 +117,12 @@ public extension KindeSDKAPI {
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	
      */	
-    static func configure(_ logger: LoggerProtocol = DefaultLogger()) {
-        guard let config = Config.initialize() else {
+    static func configure(_ logger: LoggerProtocol = DefaultLogger(), fileName: String = "kinde-auth") {
+        guard let config = Config.initialize(fileName: fileName) else {
             preconditionFailure("Failed to load configuration")
         }
+        
+        let storedClientId = UserDefaults.standard.string(forKey: "clientId")
         
         guard let urlComponents = URLComponents(string: config.issuer),
            let host = urlComponents.host,
@@ -130,5 +142,13 @@ public extension KindeSDKAPI {
         auth = Auth(config: config,
                     authStateRepository: AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger),
                     logger: logger)
+        
+        if storedClientId == nil {
+            logout()
+            UserDefaults.standard.set(config.clientId, forKey: "clientId")
+        } else if storedClientId != config.clientId {
+            logout()
+            UserDefaults.standard.set(config.clientId, forKey: "clientId")
+        }
     }
 }
