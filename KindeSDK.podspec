@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name = 'KindeSDK'
   s.ios.deployment_target = '13.0'
-  s.version = '1.4.2'
+  s.version = '1.4.3'
   s.swift_version = '5.0.0'
   s.source = { :git => 'https://github.com/kinde-oss/kinde-sdk-ios.git', :tag => s.version.to_s }
   s.authors = { 'Kinde' => 'engineering@kinde.com' }
