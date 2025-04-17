@@ -417,6 +417,21 @@ public final class Auth {
         }
     }
     
+    func extractEmail(from idToken: String) -> String? {
+        let params = idToken.parsedJWT
+        return params["email"] as? String
+    }
+    
+    func hasMatchingEmail(in authState: OIDAuthState) -> Bool {
+        guard let currentIDToken = authState.lastTokenResponse?.idToken,
+              let existingIDToken = authStateRepository.state?.lastTokenResponse?.idToken,
+              let currentEmail = extractEmail(from: currentIDToken),
+              let existingEmail = extractEmail(from: existingIDToken)
+        else { return false }
+
+        return currentEmail == existingEmail
+    }
+
     /// Callback to complete the current authorization flow
     private func authorizationFlowCallback(then completion: @escaping (Result<Bool, Error>) -> Void) -> (OIDAuthState?, Error?) -> Void {
         return { authState, error in
@@ -435,7 +450,9 @@ public final class Auth {
             self.logger.debug(message: "Got authorization tokens. Access token: " +
                           "\(authState.lastTokenResponse?.accessToken ?? "nil")")
             
-            let saved = self.authStateRepository.setState(authState)
+            let shouldPreserveState = self.isAuthenticated() && self.hasMatchingEmail(in: authState)
+            let saved = shouldPreserveState ? true : self.authStateRepository.setState(authState)
+            
             if !saved {
                 return completion(.failure(AuthError.failedToSaveState))
             }
