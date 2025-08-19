@@ -142,11 +142,11 @@ public final class Auth {
     /// Register a new user
     ///
     @available(*, renamed: "register")
-    public func register(orgCode: String = "", loginHint: String = "",
+    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "",
                          _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await register(orgCode: orgCode, loginHint: loginHint)
+                try await register(orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -158,7 +158,7 @@ public final class Auth {
         }
     }
     
-    public func register(orgCode: String = "", loginHint: String = "") async throws -> () {
+    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -166,7 +166,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode, loginHint: loginHint)
+                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -291,7 +291,9 @@ public final class Auth {
                                          loginHint: String = "",
                                          orgName: String = "",
                                          usePKCE: Bool = true,
-                                         useNonce: Bool = false) async throws -> OIDAuthorizationRequest {
+                                         useNonce: Bool = false,
+                                         planInterest: String = "",
+                                         pricingTableKey: String = "") async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 let issuerUrl = config.getIssuerUrl()
@@ -308,7 +310,9 @@ public final class Auth {
                                                                  loginHint: loginHint,
                                                                  orgName: orgName,
                                                                  usePKCE: usePKCE,
-                                                                 useNonce: useNonce)
+                                                                 useNonce: useNonce,
+                                                                 planInterest: planInterest,
+                                                                 pricingTableKey: pricingTableKey)
                     continuation.resume(returning: result)
                 } catch {
                     continuation.resume(throwing: error)
@@ -344,7 +348,9 @@ public final class Auth {
                                               loginHint: String = "",
                                               orgName: String = "",
                                               usePKCE: Bool = true,
-                                              useNonce: Bool = false) async throws -> (OIDAuthorizationRequest) {
+                                              useNonce: Bool = false,
+                                              planInterest: String = "",
+                                              pricingTableKey: String = "") async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
             OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl) { configuration, error in
                 if let error = error {
@@ -391,6 +397,14 @@ public final class Auth {
                 if !loginHint.isEmpty {
                     additionalParameters["login_hint"] = loginHint
                 }
+                
+                if !planInterest.isEmpty {
+                    additionalParameters["plan_interest"] = planInterest
+                }
+
+                if !pricingTableKey.isEmpty {
+                    additionalParameters["pricing_table_key"] = pricingTableKey
+                }
 
                 // if/when the API supports nonce validation
                 let codeChallengeMethod = usePKCE ? OIDOAuthorizationRequestCodeChallengeMethodS256 : nil
@@ -424,11 +438,10 @@ public final class Auth {
     
     func hasMatchingEmail(in authState: OIDAuthState) -> Bool {
         guard let currentIDToken = authState.lastTokenResponse?.idToken,
-              let existingIDToken = authStateRepository.state?.lastTokenResponse?.idToken,
+              let existingIDToken = self.authStateRepository.state?.lastTokenResponse?.idToken,
               let currentEmail = extractEmail(from: currentIDToken),
               let existingEmail = extractEmail(from: existingIDToken)
         else { return false }
-
         return currentEmail == existingEmail
     }
 
