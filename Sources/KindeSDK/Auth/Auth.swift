@@ -738,7 +738,9 @@ public struct AnyCodable: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         
-        if let stringValue = try? container.decode(String.self) {
+        if container.decodeNil() {
+            value = NSNull()
+        } else if let stringValue = try? container.decode(String.self) {
             value = stringValue
         } else if let intValue = try? container.decode(Int.self) {
             value = intValue
@@ -746,6 +748,10 @@ public struct AnyCodable: Codable {
             value = boolValue
         } else if let doubleValue = try? container.decode(Double.self) {
             value = doubleValue
+        } else if let arrayValue = try? container.decode([AnyCodable].self) {
+            value = arrayValue.map { $0.value }
+        } else if let dictionaryValue = try? container.decode([String: AnyCodable].self) {
+            value = dictionaryValue.mapValues { $0.value }
         } else {
             throw DecodingError.typeMismatch(AnyCodable.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unsupported type"))
         }
@@ -755,6 +761,8 @@ public struct AnyCodable: Codable {
         var container = encoder.singleValueContainer()
         
         switch value {
+        case is NSNull:
+            try container.encodeNil()
         case let stringValue as String:
             try container.encode(stringValue)
         case let intValue as Int:
@@ -763,6 +771,12 @@ public struct AnyCodable: Codable {
             try container.encode(boolValue)
         case let doubleValue as Double:
             try container.encode(doubleValue)
+        case let arrayValue as [Any]:
+            let anyCodableArray = arrayValue.map { AnyCodable($0) }
+            try container.encode(anyCodableArray)
+        case let dictionaryValue as [String: Any]:
+            let anyCodableDictionary = dictionaryValue.mapValues { AnyCodable($0) }
+            try container.encode(anyCodableDictionary)
         default:
             throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: encoder.codingPath, debugDescription: "Unsupported type"))
         }
@@ -911,11 +925,7 @@ public class ClaimsService {
     /// - Parameter key: The claim key to retrieve
     /// - Returns: Claim if found, nil otherwise
     public func getClaim(forKey key: String) -> Claim? {
-        guard let claim = auth.getClaim(forKey: key) else {
-            return nil
-        }
-        
-        return Claim(name: key, value: AnyCodable(claim.value))
+        return auth.getClaim(forKey: key)
     }
     
     /// Check if a specific permission is granted
