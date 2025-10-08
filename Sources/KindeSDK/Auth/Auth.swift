@@ -1,6 +1,74 @@
 import AppAuth
 import os.log
 
+// MARK: - Pagination Models
+
+/// Pagination metadata for API responses
+public struct EntitlementsMetadata: Codable {
+    /// Whether there are more pages available
+    public let hasMore: Bool
+    /// Token to get the next page of results
+    public let nextPageStartingAfter: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case hasMore = "has_more"
+        case nextPageStartingAfter = "next_page_starting_after"
+    }
+}
+
+/// Individual entitlement model
+public struct Entitlement: Codable {
+    /// The entitlement key/name
+    public let key: String
+    /// The entitlement value
+    public let value: AnyCodable
+    /// The entitlement type
+    public let type: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case key, value, type
+    }
+}
+
+/// Entitlement plan model
+public struct EntitlementPlan: Codable {
+    /// The plan code
+    public let code: String
+    /// The plan name
+    public let name: String?
+    /// The plan description
+    public let description: String?
+}
+
+/// Entitlements data container
+public struct Entitlements: Codable {
+    /// Organization code
+    public let orgCode: String
+    /// List of entitlement plans
+    public let plans: [EntitlementPlan]
+    /// List of entitlements
+    public let entitlements: [Entitlement]
+    
+    private enum CodingKeys: String, CodingKey {
+        case orgCode = "org_code"
+        case plans, entitlements
+    }
+}
+
+/// Entitlements API response with pagination
+public struct EntitlementsResponse: Codable {
+    /// The entitlements data
+    public let data: Entitlements
+    /// Pagination metadata
+    public let metadata: EntitlementsMetadata
+}
+
+/// Single entitlement response
+public struct EntitlementResponse: Codable {
+    /// The entitlement data
+    public let data: Entitlement
+}
+
 /// The Kinde authentication service
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -9,6 +77,17 @@ public final class Auth {
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
     private var privateAuthSession: Bool = false
+    
+    // MARK: - Service Properties
+    
+    /// Claims service for accessing user claims from tokens
+    public lazy var claims: ClaimsService = ClaimsService(auth: self, logger: logger)
+    
+    /// Entitlements service for managing user entitlements
+    public lazy var entitlements: EntitlementsService = EntitlementsService(auth: self, logger: logger)
+    
+    /// Feature flags service for managing feature flags
+    public lazy var featureFlags: FeatureFlagsService = FeatureFlagsService(auth: self, logger: logger)
     
     init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
         self.config = config
@@ -61,7 +140,7 @@ public final class Auth {
         }
         if let valueOrNil = params[key],
             let value = valueOrNil {
-            return Claim(name: key, value: value)
+            return Claim(name: key, value: AnyCodable(value))
         }
         return nil
     }
@@ -460,9 +539,6 @@ public final class Auth {
                 return completion(.failure(AuthError.notAuthenticated))
             }
             
-            self.logger.debug(message: "Got authorization tokens. Access token: " +
-                          "\(authState.lastTokenResponse?.accessToken ?? "nil")")
-            
             let shouldPreserveState = self.isAuthenticated() && self.hasMatchingEmail(in: authState)
             let saved = shouldPreserveState ? true : self.authStateRepository.setState(authState)
             
@@ -641,22 +717,59 @@ extension Auth {
     public func enablePrivateAuthSession(_ isEnable: Bool) {
         privateAuthSession = isEnable
     }
-}
-
-extension Auth {
-    private enum ClaimKey: String {
-        case permissions = "permissions"
-        case organisationCode = "org_code"
-        case organisationCodes = "org_codes"
-        case featureFlags = "feature_flags"
+    
+    /// Get the current token response
+    /// - Returns: The current token response if available
+    public func getTokenResponse() -> OIDTokenResponse? {
+        return authStateRepository.state?.lastTokenResponse
     }
 }
 
-public struct Claim {
-    public let name: String
+// MARK: - Temporary Inline Types (to be moved to separate files later)
+
+/// Helper type for encoding/decoding Any values in JSON
+public struct AnyCodable: Codable {
     public let value: Any
+    
+    public init(_ value: Any) {
+        self.value = value
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        
+        if let stringValue = try? container.decode(String.self) {
+            value = stringValue
+        } else if let intValue = try? container.decode(Int.self) {
+            value = intValue
+        } else if let boolValue = try? container.decode(Bool.self) {
+            value = boolValue
+        } else if let doubleValue = try? container.decode(Double.self) {
+            value = doubleValue
+        } else {
+            throw DecodingError.typeMismatch(AnyCodable.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unsupported type"))
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        
+        switch value {
+        case let stringValue as String:
+            try container.encode(stringValue)
+        case let intValue as Int:
+            try container.encode(intValue)
+        case let boolValue as Bool:
+            try container.encode(boolValue)
+        case let doubleValue as Double:
+            try container.encode(doubleValue)
+        default:
+            throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: encoder.codingPath, debugDescription: "Unsupported type"))
+        }
+    }
 }
 
+/// Represents a feature flag with its code, type, and value
 public struct Flag {
     public let code: String
     public let type: ValueType?
@@ -685,20 +798,462 @@ public struct Flag {
     }
 }
 
-public struct Organization {
+/// Represents a JWT claim with its name and value
+public struct Claim: Codable {
+    /// The name/key of the claim
+    public let name: String
+    
+    /// The value of the claim (can be any type)
+    public let value: AnyCodable
+    
+    public init(name: String, value: AnyCodable) {
+        self.name = name
+        self.value = value
+    }
+}
+
+/// Represents a feature flag with its value and metadata
+public struct FeatureFlag: Codable {
+    /// The feature flag code/identifier
     public let code: String
+    
+    /// The type of the feature flag value
+    public let type: ValueType?
+    
+    /// The actual value of the feature flag
+    public let value: AnyCodable
+    
+    /// Whether this is a default value
+    public let isDefault: Bool
+    
+    public init(code: String, type: ValueType?, value: AnyCodable, isDefault: Bool = false) {
+        self.code = code
+        self.type = type
+        self.value = value
+        self.isDefault = isDefault
+    }
+    
+    /// Enum representing the type of feature flag value
+    public enum ValueType: String, Codable {
+        case string = "s"
+        case int = "i"
+        case bool = "b"
+        
+        public var typeDescription: String {
+            switch self {
+            case .string: return "string"
+            case .bool: return "boolean"
+            case .int: return "integer"
+            }
+        }
+    }
 }
 
-public struct Permission {
+/// Represents an organization
+public struct Organization: Codable {
+    /// The organization code
+    public let code: String
+    
+    public init(code: String) {
+        self.code = code
+    }
+}
+
+/// Represents a permission with organization context
+public struct Permission: Codable {
+    /// The organization this permission belongs to
     public let organization: Organization
+    
+    /// Whether the permission is granted
     public let isGranted: Bool
+    
+    public init(organization: Organization, isGranted: Bool) {
+        self.organization = organization
+        self.isGranted = isGranted
+    }
 }
 
-public struct Permissions {
+/// Collection of permissions
+public struct Permissions: Codable {
+    /// The organization these permissions belong to
     public let organization: Organization
+    
+    /// List of permission names
     public let permissions: [String]
+    
+    public init(organization: Organization, permissions: [String]) {
+        self.organization = organization
+        self.permissions = permissions
+    }
 }
 
-public struct UserOrganizations {
+/// Collection of user organizations
+public struct UserOrganizations: Codable {
+    /// List of organization codes
     public let orgCodes: [Organization]
+    
+    public init(orgCodes: [Organization]) {
+        self.orgCodes = orgCodes
+    }
+}
+
+/// Service for managing JWT claims with type-safe API
+public class ClaimsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get a specific claim by key
+    /// - Parameter key: The claim key to retrieve
+    /// - Returns: Claim if found, nil otherwise
+    public func getClaim(forKey key: String) -> Claim? {
+        guard let claim = auth.getClaim(forKey: key) else {
+            return nil
+        }
+        
+        return Claim(name: key, value: AnyCodable(claim.value))
+    }
+    
+    /// Check if a specific permission is granted
+    /// - Parameter name: The permission name to check
+    /// - Returns: True if permission is granted, false otherwise
+    public func getPermission(name: String) -> Bool {
+        return auth.getPermission(name: name) != nil
+    }
+}
+
+/// Service for managing user entitlements with type-safe API
+public class EntitlementsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get all entitlements for the current user
+    /// - Returns: Dictionary of entitlements with their values, or empty dictionary if not available
+    public func getEntitlements() -> [String: Any] {
+        guard let claim = auth.claims.getClaim(forKey: "entitlements") else {
+            return [:]
+        }
+        
+        let rawValue = claim.value.value
+        
+        // Try to parse as JSON string first
+        if let claimString = rawValue as? String,
+           let data = claimString.data(using: .utf8) {
+            do {
+                let entitlements = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                return entitlements ?? [:]
+            } catch {
+                logger.error(message: "Failed to parse entitlements JSON: \(error)")
+            }
+        }
+        
+        // Try to parse as direct dictionary
+        if let entitlementsDict = rawValue as? [String: Any] {
+            return entitlementsDict
+        }
+        
+        return [:]
+    }
+    
+    /// Get a specific entitlement by feature key
+    /// - Parameter featureKey: The feature key to look for
+    /// - Returns: Entitlement value if found, nil otherwise
+    public func getEntitlement(featureKey: String) -> Any? {
+        let entitlements = getEntitlements()
+        return entitlements[featureKey]
+    }
+    
+    /// Check if user has a specific entitlement
+    /// - Parameter featureKey: The feature key to check
+    /// - Returns: True if user has the entitlement, false otherwise
+    public func hasEntitlement(featureKey: String) -> Bool {
+        return getEntitlement(featureKey: featureKey) != nil
+    }
+    
+    // MARK: - HTTP API Methods (Server-side Entitlements)
+    
+    /// Fetch entitlements from the server with pagination support
+    /// - Parameters:
+    ///   - pageSize: Number of results per page (optional)
+    ///   - startingAfter: Token to get the next page of results (optional)
+    /// - Returns: EntitlementsResponse with pagination metadata
+    /// - Throws: AuthError if not authenticated or network error
+    public func fetchEntitlements(pageSize: Int? = nil, startingAfter: String? = nil) async throws -> EntitlementsResponse {
+        guard auth.isAuthenticated() else {
+            throw AuthError.notAuthenticated
+        }
+        
+        let tokens = try await auth.getToken()
+        let token = tokens.accessToken
+        
+        // Build URL with query parameters
+        var urlComponents = URLComponents(string: "\(KindeSDKAPI.basePath)/account_api/v1/entitlements")
+        var queryItems: [URLQueryItem] = []
+        
+        if let pageSize = pageSize {
+            queryItems.append(URLQueryItem(name: "page_size", value: String(pageSize)))
+        }
+        
+        if let startingAfter = startingAfter {
+            queryItems.append(URLQueryItem(name: "starting_after", value: startingAfter))
+        }
+        
+        urlComponents?.queryItems = queryItems.isEmpty ? nil : queryItems
+        
+        guard let url = urlComponents?.url else {
+            throw AuthError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.invalidResponse
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            logger.error(message: "Failed to fetch entitlements. Status: \(httpResponse.statusCode)")
+            throw AuthError.serverError(httpResponse.statusCode)
+        }
+        
+        do {
+            let entitlementsResponse = try JSONDecoder().decode(EntitlementsResponse.self, from: data)
+            return entitlementsResponse
+        } catch {
+            logger.error(message: "Failed to decode entitlements response: \(error)")
+            throw AuthError.decodingError
+        }
+    }
+    
+    /// Fetch a single entitlement from the server
+    /// - Returns: EntitlementResponse with the entitlement data
+    /// - Throws: AuthError if not authenticated or network error
+    public func fetchEntitlement() async throws -> EntitlementResponse {
+        guard auth.isAuthenticated() else {
+            throw AuthError.notAuthenticated
+        }
+        
+        let tokens = try await auth.getToken()
+        let token = tokens.accessToken
+        
+        guard let url = URL(string: "\(KindeSDKAPI.basePath)/account_api/v1/entitlement") else {
+            throw AuthError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.invalidResponse
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            logger.error(message: "Failed to fetch entitlement. Status: \(httpResponse.statusCode)")
+            throw AuthError.serverError(httpResponse.statusCode)
+        }
+        
+        do {
+            let entitlementResponse = try JSONDecoder().decode(EntitlementResponse.self, from: data)
+            return entitlementResponse
+        } catch {
+            logger.error(message: "Failed to decode entitlement response: \(error)")
+            throw AuthError.decodingError
+        }
+    }
+    
+    /// Get all entitlements from server (handles pagination automatically)
+    /// - Returns: Array of all entitlements
+    /// - Throws: AuthError if not authenticated or network error
+    public func getAllEntitlements() async throws -> [Entitlement] {
+        var allEntitlements: [Entitlement] = []
+        var startingAfter: String? = nil
+        
+        repeat {
+            let response = try await fetchEntitlements(startingAfter: startingAfter)
+            allEntitlements.append(contentsOf: response.data.entitlements)
+            startingAfter = response.metadata.nextPageStartingAfter
+        } while startingAfter != nil
+        
+        return allEntitlements
+    }
+    
+    /// Get entitlements as a dictionary (convenience method)
+    /// - Returns: Dictionary of entitlements with their values
+    /// - Throws: AuthError if not authenticated or network error
+    public func getEntitlementsDictionary() async throws -> [String: Any] {
+        let entitlements = try await getAllEntitlements()
+        var dictionary: [String: Any] = [:]
+        
+        for entitlement in entitlements {
+            dictionary[entitlement.key] = entitlement.value.value
+        }
+        
+        return dictionary
+    }
+    
+    // MARK: - Hard Check Methods
+    
+    /// Check if user has a boolean entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: Boolean entitlement value
+    public func getBooleanEntitlement(featureKey: String, defaultValue: Bool = false) -> Bool {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let boolValue = value as? Bool {
+                return boolValue
+            } else if let stringValue = value as? String {
+                return Bool(stringValue) ?? defaultValue
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Check if user has a string entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: String entitlement value
+    public func getStringEntitlement(featureKey: String, defaultValue: String = "") -> String {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let stringValue = value as? String {
+                return stringValue
+            } else {
+                return String(describing: value)
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Check if user has a numeric entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: Numeric entitlement value
+    public func getNumericEntitlement(featureKey: String, defaultValue: Int = 0) -> Int {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let intValue = value as? Int {
+                return intValue
+            } else if let stringValue = value as? String {
+                return Int(stringValue) ?? defaultValue
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Perform a hard check with validation and fallback
+    /// - Parameters:
+    ///   - checkName: Name of the check being performed
+    ///   - validation: Validation function that returns the result
+    ///   - fallbackValue: Fallback value if validation fails
+    /// - Returns: Result of validation or fallback value
+    public func performHardCheck<T>(checkName: String, validation: () -> T?, fallbackValue: T) -> T {
+        if let result = validation() {
+            return result
+        } else {
+            logger.error(message: "Hard check '\(checkName)' failed, using fallback: \(fallbackValue)")
+            return fallbackValue
+        }
+    }
+}
+
+/// Service for managing feature flags with type-safe API
+public class FeatureFlagsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get all feature flags for the current user
+    /// - Returns: Dictionary of feature flags with their values, or empty dictionary if not available
+    public func getFeatureFlags() -> [String: Any] {
+        guard let claim = auth.claims.getClaim(forKey: "feature_flags") else {
+            return [:]
+        }
+        
+        let rawValue = claim.value.value
+        
+        // Try to parse as JSON string first
+        if let claimString = rawValue as? String,
+           let data = claimString.data(using: .utf8) {
+            do {
+                let flags = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                return flags ?? [:]
+            } catch {
+                logger.error(message: "Failed to parse feature flags JSON: \(error)")
+            }
+        }
+        
+        // Try to parse as direct dictionary
+        if let flagsDict = rawValue as? [String: Any] {
+            return flagsDict
+        }
+        
+        return [:]
+    }
+    
+    /// Get a specific feature flag by code
+    /// - Parameter code: The feature flag code to look for
+    /// - Returns: Feature flag value if found, nil otherwise
+    public func getFeatureFlag(code: String) -> Any? {
+        let flags = getFeatureFlags()
+        return flags[code]
+    }
+    
+    /// Check if a feature flag is enabled (boolean type)
+    /// - Parameters:
+    ///   - code: The feature flag code to check
+    ///   - defaultValue: Default value if flag not found
+    /// - Returns: Boolean indicating if feature is enabled
+    public func isFeatureEnabled(code: String, defaultValue: Bool = false) -> Bool {
+        guard let flagValue = getFeatureFlag(code: code) else {
+            return defaultValue
+        }
+        
+        // Handle boolean values
+        if let boolValue = flagValue as? Bool {
+            return boolValue
+        }
+        
+        // Handle string values that represent booleans
+        if let stringValue = flagValue as? String {
+            return Bool(stringValue) ?? defaultValue
+        }
+        
+        return defaultValue
+    }
+}
+
+extension Auth {
+    private enum ClaimKey: String {
+        case permissions = "permissions"
+        case organisationCode = "org_code"
+        case organisationCodes = "org_codes"
+        case featureFlags = "feature_flags"
+    }
 }
