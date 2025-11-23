@@ -127,9 +127,10 @@
 				3B4B332D29F9490600D45A5A /* AppAuth in Frameworks */,
 				3B4B333429F9493D00D45A5A /* Quick in Frameworks */,
 				3B4B332F29F9490600D45A5A /* AppAuthCore in Frameworks */,
-			
-				1FF4050EE3A3442F8C44FC3B /* Claims.swift in Sources */,
-				7323339292584BFAA1CE541F /* MobileEntitlements.swift in Sources */,);
+/* Inside PBXSourcesBuildPhase */
+                3B41B1E22A0E5F9100EFD9E4 /* Auth.swift in Sources */,
+                1FF4050EE3A3442F8C44FC3B /* Claims.swift in Sources */,
+                7323339292584BFAA1CE541F /* MobileEntitlements.swift in Sources */,
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3B1EBA6F29F944E000444EEB /* Frameworks */ = {
