@@ -8,32 +8,36 @@ class AuthSpec: QuickSpec {
         describe("Auth") {
             it("is unauthorised after initialisation") {
                 KindeSDKAPI.configure()
-                expect(KindeSDKAPI.auth.isAuthorized()) == false
+                expect(KindeSDKAPI.auth.isAuthenticated()).to(beFalse())
             }
             
             it("check helper functions") {
                 KindeSDKAPI.configure()
                 let auth: Auth = KindeSDKAPI.auth
-                guard auth.isAuthorized() == true else { return }
+                
+                // Test authentication state
+                expect(auth.isAuthenticated()).to(beFalse())
+                
+                // Test helper functions when not authenticated
                 let userDetails: User? = auth.getUserDetails()
-                expect(userDetails?.id.count).to(beGreaterThan(0))
+                expect(userDetails).to(beNil())
                 
                 let audClaim = auth.getClaim(forKey: "aud")
-                expect(audClaim).notTo(beNil())
+                expect(audClaim).to(beNil())
                 
                 let permissions = auth.getPermissions()
-                expect(permissions).notTo(beNil())
+                expect(permissions).to(beNil())
                 
                 let organization = auth.getOrganization()
-                expect(organization).notTo(beNil())
+                expect(organization).to(beNil())
                 
                 let userOrganizations = auth.getUserOrganizations()
-                expect(userOrganizations).notTo(beNil())
+                expect(userOrganizations).to(beNil())
                 
                 // Feature Flags
                 let testFlagCode = "#__testFlagCode__#"
                 
-                let flagNotExistGetDefaultValue = try? auth.getFlag(code: testFlagCode, defaultValue: testFlagCode).value as? String
+                let flagNotExistGetDefaultValue = try? auth.getFlag(code: testFlagCode, defaultValue: testFlagCode).value.value as? String
                 expect(flagNotExistGetDefaultValue).to(equal(testFlagCode))
                 expect( try auth.getFlag(code: testFlagCode) )
                     .to( throwError(FlagError.notFound) )
@@ -71,13 +75,13 @@ class AuthSpec: QuickSpec {
             
             it("check logout functions") {
                 let auth: Auth = KindeSDKAPI.auth
+                
+                // Test logout when not authenticated (should still work)
                 Task {
-                    guard auth.isAuthorized() == true else { return }
-                    
                     let result = await auth.logout()
-                    if result == true {
-                        expect(auth.isAuthorized()).to(beFalse())
-                    }
+                    // Logout should return true even when not authenticated
+                    expect(result).to(equal(true))
+                    expect(auth.isAuthenticated()).to(beFalse())
                 }
             }
         }
