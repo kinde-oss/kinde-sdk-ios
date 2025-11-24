@@ -1,1 +1,18 @@
-* @kinde-oss/giants-kinde
+#Default owners for everything
+
+@kinde-oss/giants-kinde
+
+#Dependency-related files for this repo
+
+/Package.swift @kinde-oss/sdk-engineers
+**/Package.swift @kinde-oss/sdk-engineers
+/Package.resolved @kinde-oss/sdk-engineers
+**/Package.resolved @kinde-oss/sdk-engineers
+/Cartfile @kinde-oss/sdk-engineers
+**/Cartfile @kinde-oss/sdk-engineers
+/Cartfile.resolved @kinde-oss/sdk-engineers
+**/Cartfile.resolved @kinde-oss/sdk-engineers
+/Cartfile.private @kinde-oss/sdk-engineers
+**/Cartfile.private @kinde-oss/sdk-engineers
+/.podspec @kinde-oss/sdk-engineers
+**/.podspec @kinde-oss/sdk-engineers
