@@ -219,25 +219,26 @@ class EntitlementsSpec: QuickSpec {
             
             describe("isFeatureEnabled") {
                 it("returns false for non-existent feature flag") {
-                    let result = featureFlagsService.isFeatureEnabled(flag: "non_existent_flag")
+                    let result = featureFlagsService.isFeatureEnabled(code: "non_existent_flag")
                     expect(result).to(equal(false))
                 }
                 
                 it("returns default value for non-existent feature flag") {
-                    let result = featureFlagsService.isFeatureEnabled(flag: "non_existent_flag", defaultValue: true)
+                    let result = featureFlagsService.isFeatureEnabled(code: "non_existent_flag", defaultValue: true)
                     expect(result).to(equal(true))
                 }
             }
             
             describe("getFeatureFlag") {
-                it("returns default value for non-existent feature flag") {
-                    let result = featureFlagsService.getFeatureFlag(flag: "non_existent_flag", defaultValue: "default")
-                    expect(result).to(equal("default"))
+                it("returns nil for non-existent feature flag") {
+                    let result = featureFlagsService.getFeatureFlag(code: "non_existent_flag")
+                    expect(result).to(beNil())
                 }
                 
-                it("handles type conversion correctly") {
-                    let result = featureFlagsService.getFeatureFlag(flag: "test_flag", defaultValue: 42)
-                    expect(result).to(beAKindOf(Int.self))
+                it("returns Any? type for feature flag") {
+                    let result = featureFlagsService.getFeatureFlag(code: "test_flag")
+                    // Result will be nil when flag doesn't exist
+                    expect(result).to(beNil())
                 }
             }
         }
