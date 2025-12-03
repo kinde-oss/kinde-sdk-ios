@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3B1EBA7329F944E000444EEB /* KindeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1EBA6B29F944E000444EEB /* KindeSDK.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		3B1EBAAF29F945DB00444EEB /* KindeSDK.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 3B1EBA8129F945DA00444EEB /* KindeSDK.podspec */; };
-		3B1EBAD329F945DB00444EEB /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = 3B1EBAAC29F945DA00444EEB /* Package.resolved */; };
 		3B1EBAD429F945DB00444EEB /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 3B1EBAAD29F945DA00444EEB /* LICENSE */; };
 		3B41B1B22A0E5F8500EFD9E4 /* AuthSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1AD2A0E5F8500EFD9E4 /* AuthSpec.swift */; };
 		3B41B1B32A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1AE2A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift */; };
@@ -79,7 +78,6 @@
 		3B1EBA6B29F944E000444EEB /* KindeSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KindeSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B1EBA7229F944E000444EEB /* KindeSDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KindeSDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B1EBA8129F945DA00444EEB /* KindeSDK.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KindeSDK.podspec; sourceTree = "<group>"; };
-		3B1EBAAC29F945DA00444EEB /* Package.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Package.resolved; sourceTree = "<group>"; };
 		3B1EBAAD29F945DA00444EEB /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3B41B1AD2A0E5F8500EFD9E4 /* AuthSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthSpec.swift; sourceTree = "<group>"; };
 		3B41B1AE2A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringJWTTokenDecodeSpec.swift; sourceTree = "<group>"; };
@@ -162,7 +160,6 @@
 				3BA67F842A0A5FCE00399C6A /* kinde-auth.json */,
 				3B1EBA8129F945DA00444EEB /* KindeSDK.podspec */,
 				3B1EBAAD29F945DA00444EEB /* LICENSE */,
-				3B1EBAAC29F945DA00444EEB /* Package.resolved */,
 				3B1EBA4F29F943B200444EEB /* Products */,
 				3B1EBAF529F947DA00444EEB /* Frameworks */,
 			);
@@ -403,7 +400,6 @@
 				3B41B1DA2A0E5F9100EFD9E4 /* OAuthAPI.md in Resources */,
 				3B41B1DB2A0E5F9100EFD9E4 /* UserProfile.md in Resources */,
 				3B1EBAAF29F945DB00444EEB /* KindeSDK.podspec in Resources */,
-				3B1EBAD329F945DB00444EEB /* Package.resolved in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
