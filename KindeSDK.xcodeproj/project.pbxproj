@@ -60,8 +60,6 @@
 		D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D773EAD32A897ED30049DDEE /* FlagError.swift */; };
 		D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F672A8D59E20088802F /* SDKVersion.swift */; };
 		D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F6D2A8D5D390088802F /* PList.swift */; };
-		1FF4050EE3A3442F8C44FC3B /* Claims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7868368F2B9D480CA62B8169 /* Claims.swift */; };
-		7323339292584BFAA1CE541F /* MobileEntitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67687A29ECEE460982748C70 /* MobileEntitlements.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,8 +121,6 @@
 		D7FD1F672A8D59E20088802F /* SDKVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKVersion.swift; sourceTree = "<group>"; };
 		D7FD1F6C2A8D5CEC0088802F /* KindeSDK-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "KindeSDK-Info.plist"; sourceTree = "<group>"; };
 		D7FD1F6D2A8D5D390088802F /* PList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PList.swift; sourceTree = "<group>"; };
-		7868368F2B9D480CA62B8169 /* Claims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Claims.swift; sourceTree = "<group>"; };
-		67687A29ECEE460982748C70 /* MobileEntitlements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileEntitlements.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,8 +448,6 @@
 				3B41B1EF2A0E5F9100EFD9E4 /* JSONDataEncoding.swift in Sources */,
 				D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */,
 				3B41B1E22A0E5F9100EFD9E4 /* Auth.swift in Sources */,
-				1FF4050EE3A3442F8C44FC3B /* Claims.swift in Sources */,
-				7323339292584BFAA1CE541F /* MobileEntitlements.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
