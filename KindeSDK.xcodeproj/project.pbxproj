@@ -15,6 +15,7 @@
 		3B41B1B42A0E5F8500EFD9E4 /* AuthErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */; };
 		3B41B1B52A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1B02A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift */; };
 		3B41B1B62A0E5F8500EFD9E4 /* ConfigSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1B12A0E5F8500EFD9E4 /* ConfigSpec.swift */; };
+		8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */; };
 		3B41B1DA2A0E5F9100EFD9E4 /* OAuthAPI.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1B92A0E5F9100EFD9E4 /* OAuthAPI.md */; };
 		3B41B1DB2A0E5F9100EFD9E4 /* UserProfile.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1BA2A0E5F9100EFD9E4 /* UserProfile.md */; };
 		3B41B1DC2A0E5F9100EFD9E4 /* User.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1BB2A0E5F9100EFD9E4 /* User.md */; };
@@ -82,6 +83,7 @@
 		3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthErrorSpec.swift; sourceTree = "<group>"; };
 		3B41B1B02A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultLoggerSpec.swift; sourceTree = "<group>"; };
 		3B41B1B12A0E5F8500EFD9E4 /* ConfigSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigSpec.swift; sourceTree = "<group>"; };
+		8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsSpec.swift; sourceTree = "<group>"; };
 		3B41B1B92A0E5F9100EFD9E4 /* OAuthAPI.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = OAuthAPI.md; sourceTree = "<group>"; };
 		3B41B1BA2A0E5F9100EFD9E4 /* UserProfile.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = UserProfile.md; sourceTree = "<group>"; };
 		3B41B1BB2A0E5F9100EFD9E4 /* User.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = User.md; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */,
 				3B41B1B02A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift */,
 				3B41B1B12A0E5F8500EFD9E4 /* ConfigSpec.swift */,
+				8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -455,6 +458,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */,
 				3B41B1B32A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift in Sources */,
 				3B41B1B52A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift in Sources */,
 				3B41B1B62A0E5F8500EFD9E4 /* ConfigSpec.swift in Sources */,

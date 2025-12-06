@@ -3,7 +3,7 @@ import Nimble
 import KindeSDK
 import Foundation
 
-class EntitlementsSpec: QuickSpec {
+class EntitlementsSpec: AsyncSpec {
     override class func spec() {
         describe("EntitlementsService") {
             var auth: Auth!
@@ -190,7 +190,7 @@ class EntitlementsSpec: QuickSpec {
                 it("maintains consistent state with auth service") {
                     let entitlements1 = auth.entitlements.getEntitlements()
                     let entitlements2 = entitlementsService.getEntitlements()
-                    expect(entitlements1).to(equal(entitlements2))
+                    expect(entitlements1 as NSDictionary).to(equal(entitlements2 as NSDictionary))
                 }
             }
         }
@@ -275,6 +275,9 @@ class EntitlementsSpec: QuickSpec {
                 it("returns claim value when claim exists") {
                     let result = claimsService.getClaimValue(forKey: "test_claim")
                     expect(result).to(beAKindOf(Any.self))
+                    // This would require a mock token with specific claims
+                    // TODO: Add proper test fixtures with mocked tokens
+                    pending("Requires mock token with claims") {}
                 }
             }
             
