@@ -23,3 +23,8 @@ DerivedData
 Pods
 Example/Pods
 MockingbirdCache/
+
+# Swift Package Manager
+#
+.build/
+Package.resolved
