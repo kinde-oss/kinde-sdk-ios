@@ -775,8 +775,8 @@ extension Auth {
     
     // Wrapper Methods
     
-    public func getBooleanFlag(code: String, defaultValue: Bool? = nil, options: ApiOptions? = nil) async throws -> Bool? {
-        if options?.forceApi == true {
+    public func getBooleanFlag(code: String, defaultValue: Bool? = nil, options: ApiOptions) async throws -> Bool? {
+        if options.forceApi {
             let response = try await FeatureFlagsAPI.getFeatureFlags()
             guard response.success else {
                 throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
@@ -790,11 +790,7 @@ extension Auth {
             }
         } else {
             do {
-                if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .bool).value as? Bool {
-                    return value
-                } else {
-                    return defaultValue
-                }
+                return try getBooleanFlag(code: code, defaultValue: defaultValue)
             } catch {
                 return defaultValue
             }
@@ -814,8 +810,8 @@ extension Auth {
         }
     }
     
-    public func getStringFlag(code: String, defaultValue: String? = nil, options: ApiOptions? = nil) async throws -> String? {
-        if options?.forceApi == true {
+    public func getStringFlag(code: String, defaultValue: String? = nil, options: ApiOptions) async throws -> String? {
+        if options.forceApi {
             let response = try await FeatureFlagsAPI.getFeatureFlags()
             guard response.success else {
                 throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
@@ -829,11 +825,7 @@ extension Auth {
             }
         } else {
             do {
-                if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .string).value as? String {
-                    return value
-                } else {
-                    return defaultValue
-                }
+                return try getStringFlag(code: code, defaultValue: defaultValue)
             } catch {
                 return defaultValue
             }
