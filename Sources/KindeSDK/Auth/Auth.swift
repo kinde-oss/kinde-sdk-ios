@@ -845,8 +845,8 @@ extension Auth {
         }
     }
     
-    public func getIntegerFlag(code: String, defaultValue: Int? = nil, options: ApiOptions? = nil) async throws -> Int? {
-        if options?.forceApi == true {
+    public func getIntegerFlag(code: String, defaultValue: Int? = nil, options: ApiOptions) async throws -> Int? {
+        if options.forceApi {
             let response = try await FeatureFlagsAPI.getFeatureFlags()
             guard response.success else {
                 throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
@@ -862,11 +862,7 @@ extension Auth {
             }
         } else {
             do {
-                if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .int).value as? Int {
-                    return value
-                } else {
-                    return defaultValue
-                }
+                return try getIntegerFlag(code: code, defaultValue: defaultValue)
             } catch {
                 return defaultValue
             }
