@@ -112,7 +112,7 @@ public func logout() {
 
 public extension KindeSDKAPI {	
     /**	
-     `configure` must be called before `Auth` or any Kinde Management APIs are used.	
+     `configure` must be called before `Auth` or any Kinde SDK APIs are used.	
      	
      Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
      configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	

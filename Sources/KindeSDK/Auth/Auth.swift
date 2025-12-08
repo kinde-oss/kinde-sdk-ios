@@ -1,6 +1,87 @@
 import AppAuth
 import os.log
 
+// MARK: - ApiOptions
+
+/// Configuration options for API calls
+/// - Parameter forceApi: When true, forces the SDK to fetch data from the API instead of token claims
+public struct ApiOptions {
+    /// When true, forces the SDK to fetch data from the API instead of token claims
+    public let forceApi: Bool
+    
+    public init(forceApi: Bool = false) {
+        self.forceApi = forceApi
+    }
+}
+
+// MARK: - Pagination Models
+
+/// Pagination metadata for API responses
+public struct EntitlementsMetadata: Codable {
+    /// Whether there are more pages available
+    public let hasMore: Bool
+    /// Token to get the next page of results
+    public let nextPageStartingAfter: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case hasMore = "has_more"
+        case nextPageStartingAfter = "next_page_starting_after"
+    }
+}
+
+/// Individual entitlement model
+public struct Entitlement: Codable {
+    /// The entitlement key/name
+    public let key: String
+    /// The entitlement value
+    public let value: AnyCodable
+    /// The entitlement type
+    public let type: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case key, value, type
+    }
+}
+
+/// Entitlement plan model
+public struct EntitlementPlan: Codable {
+    /// The plan code
+    public let code: String
+    /// The plan name
+    public let name: String?
+    /// The plan description
+    public let description: String?
+}
+
+/// Entitlements data container
+public struct Entitlements: Codable {
+    /// Organization code
+    public let orgCode: String
+    /// List of entitlement plans
+    public let plans: [EntitlementPlan]
+    /// List of entitlements
+    public let entitlements: [Entitlement]
+    
+    private enum CodingKeys: String, CodingKey {
+        case orgCode = "org_code"
+        case plans, entitlements
+    }
+}
+
+/// Entitlements API response with pagination
+public struct EntitlementsResponse: Codable {
+    /// The entitlements data
+    public let data: Entitlements
+    /// Pagination metadata
+    public let metadata: EntitlementsMetadata
+}
+
+/// Single entitlement response
+public struct EntitlementResponse: Codable {
+    /// The entitlement data
+    public let data: Entitlement
+}
+
 /// The Kinde authentication service
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -9,6 +90,17 @@ public final class Auth {
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
     private var privateAuthSession: Bool = false
+    
+    // MARK: - Service Properties
+    
+    /// Claims service for accessing user claims from tokens
+    public lazy var claims: ClaimsService = ClaimsService(auth: self, logger: logger)
+    
+    /// Entitlements service for managing user entitlements
+    public lazy var entitlements: EntitlementsService = EntitlementsService(auth: self, logger: logger)
+    
+    /// Feature flags service for managing feature flags
+    public lazy var featureFlags: FeatureFlagsService = FeatureFlagsService(auth: self, logger: logger)
     
     init(config: Config, authStateRepository: AuthStateRepository, logger: LoggerProtocol) {
         self.config = config
@@ -61,7 +153,7 @@ public final class Auth {
         }
         if let valueOrNil = params[key],
             let value = valueOrNil {
-            return Claim(name: key, value: value)
+            return Claim(name: key, value: AnyCodable(value))
         }
         return nil
     }
@@ -79,11 +171,37 @@ public final class Auth {
         return params[key] ?? nil
     }
     
+    public func getPermissions(options: ApiOptions? = nil) async throws -> Permissions {
+        if options?.forceApi == true {
+            let response = try await PermissionsAPI.getPermissions()
+            guard response.success, let data = response.data else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch permissions from API - check network and authentication"])
+            }
+            let orgCode = data.orgCode ?? ""
+            let organization = Organization(code: orgCode)
+            return Permissions(organization: organization, permissions: response.getPermissionKeys())
+        } else {
+            if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+               let permissionsArray = permissionsClaim.value.value as? [String],
+               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+               let orgCode = orgCodeClaim.value.value as? String {
+                
+                let organization = Organization(code: orgCode)
+                let permissions = Permissions(organization: organization,
+                                              permissions: permissionsArray)
+                return permissions
+            }
+            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permissions not found in token claims"])
+        }
+    }
+    
+    /// Get all permissions for the authenticated user (synchronous version, reads from token claims)
+    /// - Returns: Permissions if found, nil otherwise
     public func getPermissions() -> Permissions? {
         if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-           let permissionsArray = permissionsClaim.value as? [String],
+           let permissionsArray = permissionsClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let permissions = Permissions(organization: organization,
@@ -93,11 +211,33 @@ public final class Auth {
         return nil
     }
     
+    public func getPermission(name: String, options: ApiOptions? = nil) async throws -> Permission {
+        if options?.forceApi == true {
+            let perms = try await getPermissions(options: options)
+            return Permission(organization: perms.organization, isGranted: perms.permissions.contains(name))
+        } else {
+            if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
+               let permissionsArray = permissionsClaim.value.value as? [String],
+               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+               let orgCode = orgCodeClaim.value.value as? String {
+                
+                let organization = Organization(code: orgCode)
+                let permission = Permission(organization: organization,
+                                            isGranted: permissionsArray.contains(name))
+                return permission
+            }
+            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permission not found in token claims"])
+        }
+    }
+    
+    /// Check if user has a specific permission (synchronous version, reads from token claims)
+    /// - Parameter name: The permission name to check
+    /// - Returns: Permission if found, nil otherwise
     public func getPermission(name: String) -> Permission? {
         if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-           let permissionsArray = permissionsClaim.value as? [String],
+           let permissionsArray = permissionsClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let permission = Permission(organization: organization,
@@ -107,9 +247,85 @@ public final class Auth {
         return nil
     }
     
+    public func getRoles(options: ApiOptions? = nil) async throws -> Roles {
+        if options?.forceApi == true {
+            let response = try await RolesAPI.getRoles()
+            guard response.success, let data = response.data else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch roles from API - check network and authentication"])
+            }
+            let orgCode = data.orgCode ?? ""
+            let organization = Organization(code: orgCode)
+            return Roles(organization: organization, roles: response.getRoleKeys())
+        } else {
+            if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
+               let rolesArray = rolesClaim.value.value as? [String],
+               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+               let orgCode = orgCodeClaim.value.value as? String {
+                
+                let organization = Organization(code: orgCode)
+                let roles = Roles(organization: organization,
+                                 roles: rolesArray)
+                return roles
+            }
+            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Roles not found in token claims"])
+        }
+    }
+    
+    /// Get all roles for the authenticated user (synchronous version, reads from token claims)
+    /// - Returns: Roles if found, nil otherwise
+    public func getRoles() -> Roles? {
+        if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
+           let rolesArray = rolesClaim.value.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value.value as? String {
+            
+            let organization = Organization(code: orgCode)
+            let roles = Roles(organization: organization,
+                             roles: rolesArray)
+            return roles
+        }
+        return nil
+    }
+    
+    public func getRole(name: String, options: ApiOptions? = nil) async throws -> Role {
+        if options?.forceApi == true {
+            let roles = try await getRoles(options: options)
+            return Role(organization: roles.organization, isGranted: roles.roles.contains(name))
+        } else {
+            if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
+               let rolesArray = rolesClaim.value.value as? [String],
+               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+               let orgCode = orgCodeClaim.value.value as? String {
+                
+                let organization = Organization(code: orgCode)
+                let role = Role(organization: organization,
+                               isGranted: rolesArray.contains(name))
+                return role
+            }
+            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Role not found in token claims"])
+        }
+    }
+    
+    /// Check if user has a specific role (synchronous version, reads from token claims)
+    /// - Parameter name: The role name to check
+    /// - Returns: Role if found, nil otherwise
+    public func getRole(name: String) -> Role? {
+        if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
+           let rolesArray = rolesClaim.value.value as? [String],
+           let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
+           let orgCode = orgCodeClaim.value.value as? String {
+            
+            let organization = Organization(code: orgCode)
+            let role = Role(organization: organization,
+                           isGranted: rolesArray.contains(name))
+            return role
+        }
+        return nil
+    }
+    
     public func getOrganization() -> Organization? {
         if let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             let org = Organization(code: orgCode)
             return org
         }
@@ -119,7 +335,7 @@ public final class Auth {
     public func getUserOrganizations() -> UserOrganizations? {
         if let userOrgsClaim = getClaim(forKey: ClaimKey.organisationCodes.rawValue,
                                    token: .idToken),
-           let userOrgs = userOrgsClaim.value as? [String] {
+           let userOrgs = userOrgsClaim.value.value as? [String] {
             
             let orgCodes = userOrgs.map({ Organization(code: $0)})
             return UserOrganizations(orgCodes: orgCodes)
@@ -460,9 +676,6 @@ public final class Auth {
                 return completion(.failure(AuthError.notAuthenticated))
             }
             
-            self.logger.debug(message: "Got authorization tokens. Access token: " +
-                          "\(authState.lastTokenResponse?.accessToken ?? "nil")")
-            
             let shouldPreserveState = self.isAuthenticated() && self.hasMatchingEmail(in: authState)
             let saved = shouldPreserveState ? true : self.authStateRepository.setState(authState)
             
@@ -562,6 +775,29 @@ extension Auth {
     
     // Wrapper Methods
     
+    public func getBooleanFlag(code: String, defaultValue: Bool? = nil, options: ApiOptions) async throws -> Bool? {
+        if options.forceApi {
+            let response = try await FeatureFlagsAPI.getFeatureFlags()
+            guard response.success else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
+            }
+            let flags = response.toFlagMap()
+            let flag = flags[code]
+            if let flag = flag, let boolValue = flag.value as? Bool {
+                return boolValue
+            } else {
+                return defaultValue
+            }
+        } else {
+            do {
+                return try getBooleanFlag(code: code, defaultValue: defaultValue)
+            } catch {
+                return defaultValue
+            }
+        }
+    }
+    
+    /// Get a boolean feature flag value (synchronous version, reads from token claims)
     public func getBooleanFlag(code: String, defaultValue: Bool? = nil) throws -> Bool {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .bool).value as? Bool {
             return value
@@ -574,6 +810,29 @@ extension Auth {
         }
     }
     
+    public func getStringFlag(code: String, defaultValue: String? = nil, options: ApiOptions) async throws -> String? {
+        if options.forceApi {
+            let response = try await FeatureFlagsAPI.getFeatureFlags()
+            guard response.success else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
+            }
+            let flags = response.toFlagMap()
+            let flag = flags[code]
+            if let flag = flag, let stringValue = flag.value as? String {
+                return stringValue
+            } else {
+                return defaultValue
+            }
+        } else {
+            do {
+                return try getStringFlag(code: code, defaultValue: defaultValue)
+            } catch {
+                return defaultValue
+            }
+        }
+    }
+    
+    /// Get a string feature flag value (synchronous version, reads from token claims)
     public func getStringFlag(code: String, defaultValue: String? = nil) throws -> String {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .string).value as? String {
            return value
@@ -586,6 +845,31 @@ extension Auth {
         }
     }
     
+    public func getIntegerFlag(code: String, defaultValue: Int? = nil, options: ApiOptions) async throws -> Int? {
+        if options.forceApi {
+            let response = try await FeatureFlagsAPI.getFeatureFlags()
+            guard response.success else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
+            }
+            let flags = response.toFlagMap()
+            let flag = flags[code]
+            if let flag = flag, let intValue = flag.value as? Int {
+                return intValue
+            } else if let flag = flag, let numberValue = flag.value as? NSNumber {
+                return numberValue.intValue
+            } else {
+                return defaultValue
+            }
+        } else {
+            do {
+                return try getIntegerFlag(code: code, defaultValue: defaultValue)
+            } catch {
+                return defaultValue
+            }
+        }
+    }
+    
+    /// Get an integer feature flag value (synchronous version, reads from token claims)
     public func getIntegerFlag(code: String, defaultValue: Int? = nil) throws -> Int {
         if let value = try getFlag(code: code, defaultValue: defaultValue, flagType: .int).value as? Int {
             return value
@@ -598,16 +882,56 @@ extension Auth {
         }
     }
     
+    /// Get all feature flags for the authenticated user
+    /// - Parameter options: Optional API options. Use ApiOptions(forceApi: true) to fetch fresh data from API
+    /// - Returns: Map of flag codes to Flag objects
+    public func getAllFlags(options: ApiOptions? = nil) async throws -> [String: Flag] {
+        if options?.forceApi == true {
+            let response = try await FeatureFlagsAPI.getFeatureFlags()
+            guard response.success else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Feature flags API returned success: false"])
+            }
+            return response.toFlagMap()
+        } else {
+            guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue),
+                  let featureFlags = featureFlagsClaim.value.value as? [String: Any] else {
+                return [:]
+            }
+            
+            var flagMap: [String: Flag] = [:]
+            for (code, flagData) in featureFlags {
+                if let flagDict = flagData as? [String: Any],
+                   let valueTypeLetter = flagDict["t"] as? String,
+                   let flagType = Flag.ValueType(rawValue: valueTypeLetter),
+                   let value = flagDict["v"] {
+                    flagMap[code] = Flag(code: code, type: flagType, value: value, isDefault: false)
+                }
+            }
+            return flagMap
+        }
+    }
+    
     // Internal
     
     private func getFlagInternal(code: String, defaultValue: Any?, flagType: Flag.ValueType?) throws -> Flag {
         
+        // If no feature_flags claim exists, check if default value is provided
         guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue) else {
-            throw FlagError.unknownError
+            if let defaultValue = defaultValue {
+                // Default value provided - return it even if claim doesn't exist
+                return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
+            } else {
+                throw FlagError.unknownError
+            }
         }
         
         guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
-            throw FlagError.unknownError
+            // Claim exists but is not a dictionary - check for default value
+            if let defaultValue = defaultValue {
+                return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
+            } else {
+                throw FlagError.unknownError
+            }
         }
         
         if let flagData = featureFlags[code] as? [String: Any],
@@ -641,22 +965,73 @@ extension Auth {
     public func enablePrivateAuthSession(_ isEnable: Bool) {
         privateAuthSession = isEnable
     }
-}
-
-extension Auth {
-    private enum ClaimKey: String {
-        case permissions = "permissions"
-        case organisationCode = "org_code"
-        case organisationCodes = "org_codes"
-        case featureFlags = "feature_flags"
+    
+    /// Get the current token response
+    /// - Returns: The current token response if available
+    public func getTokenResponse() -> OIDTokenResponse? {
+        return authStateRepository.state?.lastTokenResponse
     }
 }
 
-public struct Claim {
-    public let name: String
+// MARK: - Temporary Inline Types (to be moved to separate files later)
+
+/// Helper type for encoding/decoding Any values in JSON
+public struct AnyCodable: Codable {
     public let value: Any
+    
+    public init(_ value: Any) {
+        self.value = value
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        
+        if container.decodeNil() {
+            value = NSNull()
+        } else if let stringValue = try? container.decode(String.self) {
+            value = stringValue
+        } else if let intValue = try? container.decode(Int.self) {
+            value = intValue
+        } else if let boolValue = try? container.decode(Bool.self) {
+            value = boolValue
+        } else if let doubleValue = try? container.decode(Double.self) {
+            value = doubleValue
+        } else if let arrayValue = try? container.decode([AnyCodable].self) {
+            value = arrayValue.map { $0.value }
+        } else if let dictionaryValue = try? container.decode([String: AnyCodable].self) {
+            value = dictionaryValue.mapValues { $0.value }
+        } else {
+            throw DecodingError.typeMismatch(AnyCodable.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unsupported type"))
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        
+        switch value {
+        case is NSNull:
+            try container.encodeNil()
+        case let stringValue as String:
+            try container.encode(stringValue)
+        case let intValue as Int:
+            try container.encode(intValue)
+        case let boolValue as Bool:
+            try container.encode(boolValue)
+        case let doubleValue as Double:
+            try container.encode(doubleValue)
+        case let arrayValue as [Any]:
+            let anyCodableArray = arrayValue.map { AnyCodable($0) }
+            try container.encode(anyCodableArray)
+        case let dictionaryValue as [String: Any]:
+            let anyCodableDictionary = dictionaryValue.mapValues { AnyCodable($0) }
+            try container.encode(anyCodableDictionary)
+        default:
+            throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: encoder.codingPath, debugDescription: "Unsupported type"))
+        }
+    }
 }
 
+/// Represents a feature flag with its code, type, and value
 public struct Flag {
     public let code: String
     public let type: ValueType?
@@ -685,20 +1060,592 @@ public struct Flag {
     }
 }
 
-public struct Organization {
+/// Represents a JWT claim with its name and value
+public struct Claim: Codable {
+    /// The name/key of the claim
+    public let name: String
+    
+    /// The value of the claim (can be any type)
+    public let value: AnyCodable
+    
+    public init(name: String, value: AnyCodable) {
+        self.name = name
+        self.value = value
+    }
+}
+
+/// Represents a feature flag with its value and metadata
+public struct FeatureFlag: Codable {
+    /// The feature flag code/identifier
     public let code: String
+    
+    /// The type of the feature flag value
+    public let type: ValueType?
+    
+    /// The actual value of the feature flag
+    public let value: AnyCodable
+    
+    /// Whether this is a default value
+    public let isDefault: Bool
+    
+    public init(code: String, type: ValueType?, value: AnyCodable, isDefault: Bool = false) {
+        self.code = code
+        self.type = type
+        self.value = value
+        self.isDefault = isDefault
+    }
+    
+    /// Enum representing the type of feature flag value
+    public enum ValueType: String, Codable {
+        case string = "s"
+        case int = "i"
+        case bool = "b"
+        
+        public var typeDescription: String {
+            switch self {
+            case .string: return "string"
+            case .bool: return "boolean"
+            case .int: return "integer"
+            }
+        }
+    }
 }
 
-public struct Permission {
+/// Represents an organization
+public struct Organization: Codable {
+    /// The organization code
+    public let code: String
+    
+    public init(code: String) {
+        self.code = code
+    }
+}
+
+/// Represents a permission with organization context
+public struct Permission: Codable {
+    /// The organization this permission belongs to
     public let organization: Organization
+    
+    /// Whether the permission is granted
     public let isGranted: Bool
+    
+    public init(organization: Organization, isGranted: Bool) {
+        self.organization = organization
+        self.isGranted = isGranted
+    }
 }
 
-public struct Permissions {
+/// Collection of permissions
+public struct Permissions: Codable {
+    /// The organization these permissions belong to
     public let organization: Organization
+    
+    /// List of permission names
     public let permissions: [String]
+    
+    public init(organization: Organization, permissions: [String]) {
+        self.organization = organization
+        self.permissions = permissions
+    }
 }
 
-public struct UserOrganizations {
+/// Represents a role with organization context
+public struct Role: Codable {
+    /// The organization this role belongs to
+    public let organization: Organization
+    
+    /// Whether the role is granted
+    public let isGranted: Bool
+    
+    public init(organization: Organization, isGranted: Bool) {
+        self.organization = organization
+        self.isGranted = isGranted
+    }
+}
+
+/// Collection of roles
+public struct Roles: Codable {
+    /// The organization these roles belong to
+    public let organization: Organization
+    
+    /// List of role names
+    public let roles: [String]
+    
+    public init(organization: Organization, roles: [String]) {
+        self.organization = organization
+        self.roles = roles
+    }
+}
+
+/// Collection of user organizations
+public struct UserOrganizations: Codable {
+    /// List of organization codes
     public let orgCodes: [Organization]
+    
+    public init(orgCodes: [Organization]) {
+        self.orgCodes = orgCodes
+    }
+}
+
+/// Service for managing JWT claims with type-safe API
+public class ClaimsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get a specific claim by key
+    /// - Parameter key: The claim key to retrieve
+    /// - Returns: Claim if found, nil otherwise
+    public func getClaim(forKey key: String) -> Claim? {
+        return auth.getClaim(forKey: key)
+    }
+    
+    /// Check if a specific permission is granted
+    /// - Parameter name: The permission name to check
+    /// - Returns: True if permission is granted, false otherwise
+    public func getPermission(name: String) -> Bool {
+        return auth.getPermission(name: name)?.isGranted ?? false
+    }
+    
+    /// Get all roles for the current user
+    /// - Returns: Roles if found, nil otherwise
+    public func getRoles() -> Roles? {
+        return auth.getRoles()
+    }
+    
+    /// Check if user has a specific role
+    /// - Parameter name: The role name to check
+    /// - Returns: Role if found, nil otherwise
+    public func getRole(name: String) -> Role? {
+        return auth.getRole(name: name)
+    }
+    
+    /// Get the raw value of a claim by key
+    /// - Parameter key: The claim key to retrieve
+    /// - Returns: The claim value if found, nil otherwise
+    public func getClaimValue(forKey key: String) -> Any? {
+        guard let claim = getClaim(forKey: key) else {
+            return nil
+        }
+        return claim.value.value
+    }
+}
+
+/// Service for managing user entitlements with type-safe API
+public class EntitlementsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get all entitlements for the current user
+    /// - Returns: Dictionary of entitlements with their values, or empty dictionary if not available
+    public func getEntitlements() -> [String: Any] {
+        guard let claim = auth.claims.getClaim(forKey: "entitlements") else {
+            return [:]
+        }
+        
+        let rawValue = claim.value.value
+        
+        // Try to parse as JSON string first
+        if let claimString = rawValue as? String,
+           let data = claimString.data(using: .utf8) {
+            do {
+                let entitlements = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                return entitlements ?? [:]
+            } catch {
+                logger.error(message: "Failed to parse entitlements JSON: \(error)")
+            }
+        }
+        
+        // Try to parse as direct dictionary
+        if let entitlementsDict = rawValue as? [String: Any] {
+            return entitlementsDict
+        }
+        
+        return [:]
+    }
+    
+    /// Get a specific entitlement by feature key
+    /// - Parameter featureKey: The feature key to look for
+    /// - Returns: Entitlement value if found, nil otherwise
+    public func getEntitlement(featureKey: String) -> Any? {
+        let entitlements = getEntitlements()
+        return entitlements[featureKey]
+    }
+    
+    /// Check if user has a specific entitlement
+    /// - Parameter featureKey: The feature key to check
+    /// - Returns: True if user has the entitlement, false otherwise
+    public func hasEntitlement(featureKey: String) -> Bool {
+        return getEntitlement(featureKey: featureKey) != nil
+    }
+    
+    // MARK: - HTTP API Methods (Server-side Entitlements)
+    
+    /// Fetch entitlements from the server with pagination support
+    /// - Parameters:
+    ///   - pageSize: Number of results per page (optional)
+    ///   - startingAfter: Token to get the next page of results (optional)
+    /// - Returns: EntitlementsResponse with pagination metadata
+    /// - Throws: AuthError if not authenticated or network error
+    public func fetchEntitlements(pageSize: Int? = nil, startingAfter: String? = nil) async throws -> EntitlementsResponse {
+        guard auth.isAuthenticated() else {
+            throw AuthError.notAuthenticated
+        }
+        
+        let tokens = try await auth.getToken()
+        let token = tokens.accessToken
+        
+        // Build URL with query parameters
+        var urlComponents = URLComponents(string: "\(KindeSDKAPI.basePath)/account_api/v1/entitlements")
+        var queryItems: [URLQueryItem] = []
+        
+        if let pageSize = pageSize {
+            queryItems.append(URLQueryItem(name: "page_size", value: String(pageSize)))
+        }
+        
+        if let startingAfter = startingAfter {
+            queryItems.append(URLQueryItem(name: "starting_after", value: startingAfter))
+        }
+        
+        urlComponents?.queryItems = queryItems.isEmpty ? nil : queryItems
+        
+        guard let url = urlComponents?.url else {
+            throw AuthError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.invalidResponse
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            logger.error(message: "Failed to fetch entitlements. Status: \(httpResponse.statusCode)")
+            throw AuthError.serverError(httpResponse.statusCode)
+        }
+        
+        do {
+            let entitlementsResponse = try JSONDecoder().decode(EntitlementsResponse.self, from: data)
+            return entitlementsResponse
+        } catch {
+            logger.error(message: "Failed to decode entitlements response: \(error)")
+            throw AuthError.decodingError
+        }
+    }
+    
+    /// Fetch a single entitlement from the server
+    /// - Returns: EntitlementResponse with the entitlement data
+    /// - Throws: AuthError if not authenticated or network error
+    public func fetchEntitlement() async throws -> EntitlementResponse {
+        guard auth.isAuthenticated() else {
+            throw AuthError.notAuthenticated
+        }
+        
+        let tokens = try await auth.getToken()
+        let token = tokens.accessToken
+        
+        guard let url = URL(string: "\(KindeSDKAPI.basePath)/account_api/v1/entitlement") else {
+            throw AuthError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.invalidResponse
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            logger.error(message: "Failed to fetch entitlement. Status: \(httpResponse.statusCode)")
+            throw AuthError.serverError(httpResponse.statusCode)
+        }
+        
+        do {
+            let entitlementResponse = try JSONDecoder().decode(EntitlementResponse.self, from: data)
+            return entitlementResponse
+        } catch {
+            logger.error(message: "Failed to decode entitlement response: \(error)")
+            throw AuthError.decodingError
+        }
+    }
+    
+    /// Get all entitlements from server (handles pagination automatically)
+    /// - Returns: Array of all entitlements
+    /// - Throws: AuthError if not authenticated or network error
+    public func getAllEntitlements() async throws -> [Entitlement] {
+        var allEntitlements: [Entitlement] = []
+        var startingAfter: String? = nil
+        
+        repeat {
+            let response = try await fetchEntitlements(startingAfter: startingAfter)
+            allEntitlements.append(contentsOf: response.data.entitlements)
+            startingAfter = response.metadata.nextPageStartingAfter
+        } while startingAfter != nil
+        
+        return allEntitlements
+    }
+    
+    /// Get entitlements as a dictionary (convenience method)
+    /// - Returns: Dictionary of entitlements with their values
+    /// - Throws: AuthError if not authenticated or network error
+    public func getEntitlementsDictionary() async throws -> [String: Any] {
+        let entitlements = try await getAllEntitlements()
+        var dictionary: [String: Any] = [:]
+        
+        for entitlement in entitlements {
+            dictionary[entitlement.key] = entitlement.value.value
+        }
+        
+        return dictionary
+    }
+    
+    // MARK: - Hard Check Methods
+    
+    /// Check if user has a boolean entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: Boolean entitlement value
+    public func getBooleanEntitlement(featureKey: String, defaultValue: Bool = false) -> Bool {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let boolValue = value as? Bool {
+                return boolValue
+            } else if let stringValue = value as? String {
+                return Bool(stringValue) ?? defaultValue
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Check if user has a string entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: String entitlement value
+    public func getStringEntitlement(featureKey: String, defaultValue: String = "") -> String {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let stringValue = value as? String {
+                return stringValue
+            } else {
+                return String(describing: value)
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Check if user has a numeric entitlement with hard check
+    /// - Parameters:
+    ///   - featureKey: The entitlement key to check
+    ///   - defaultValue: Default value if entitlement not found (hard check)
+    /// - Returns: Numeric entitlement value
+    public func getNumericEntitlement(featureKey: String, defaultValue: Int = 0) -> Int {
+        let entitlements = getEntitlements()
+        if let value = entitlements[featureKey] {
+            if let intValue = value as? Int {
+                return intValue
+            } else if let stringValue = value as? String {
+                return Int(stringValue) ?? defaultValue
+            }
+        }
+        return defaultValue
+    }
+    
+    /// Perform a hard check with validation and fallback
+    /// - Parameters:
+    ///   - checkName: Name of the check being performed
+    ///   - validation: Validation function that returns the result
+    ///   - fallbackValue: Fallback value if validation fails
+    /// - Returns: Result of validation or fallback value
+    public func performHardCheck<T>(checkName: String, validation: () -> T?, fallbackValue: T) -> T {
+        if let result = validation() {
+            return result
+        } else {
+            logger.error(message: "Hard check '\(checkName)' failed, using fallback: \(fallbackValue)")
+            return fallbackValue
+        }
+    }
+    
+    /// Validate a user permission with hard check
+    /// - Parameters:
+    ///   - permission: The permission name to validate
+    ///   - fallbackAccess: Default access value if permission not found
+    /// - Returns: True if permission is granted, fallback value otherwise
+    public func validatePermission(permission: String, fallbackAccess: Bool) -> Bool {
+        return performHardCheck(
+            checkName: "permission:\(permission)",
+            validation: { auth.getPermission(name: permission)?.isGranted },
+            fallbackValue: fallbackAccess
+        )
+    }
+    
+    /// Validate a user role with hard check
+    /// - Parameters:
+    ///   - role: The role name to validate
+    ///   - fallbackAccess: Default access value if role not found
+    /// - Returns: True if user has the role, fallback value otherwise
+    public func validateRole(role: String, fallbackAccess: Bool) -> Bool {
+        return performHardCheck(
+            checkName: "role:\(role)",
+            validation: {
+                auth.getRole(name: role)?.isGranted
+            },
+            fallbackValue: fallbackAccess
+        )
+    }
+    
+    /// Validate a feature flag with hard check
+    /// - Parameters:
+    ///   - flag: The feature flag code to validate
+    ///   - fallbackEnabled: Default enabled value if flag not found
+    /// - Returns: True if feature flag is enabled, fallback value otherwise
+    public func validateFeatureFlag(flag: String, fallbackEnabled: Bool) -> Bool {
+        return performHardCheck(
+            checkName: "featureFlag:\(flag)",
+            validation: {
+                try? auth.getBooleanFlag(code: flag)
+            },
+            fallbackValue: fallbackEnabled
+        )
+    }
+    
+    /// Validate an entitlement with hard check
+    /// - Parameters:
+    ///   - entitlement: The entitlement key to validate
+    ///   - fallbackValue: Default value if entitlement not found
+    /// - Returns: Entitlement value if found, fallback value otherwise
+    public func validateEntitlement(entitlement: String, fallbackValue: String) -> String {
+        return performHardCheck(
+            checkName: "entitlement:\(entitlement)",
+            validation: {
+                if let value = getEntitlement(featureKey: entitlement) {
+                    return String(describing: value)
+                }
+                return nil
+            },
+            fallbackValue: fallbackValue
+        )
+    }
+    
+    /// Check if the user is authenticated
+    /// - Returns: True if user is authenticated, false otherwise
+    public func isUserAuthenticated() -> Bool {
+        return auth.isAuthenticated()
+    }
+    
+    /// Get user organization context
+    /// - Returns: Dictionary with organization information, or empty dictionary if not available
+    public func getUserOrganization() -> [String: Any] {
+        guard let org = auth.getOrganization() else {
+            return [:]
+        }
+        return ["code": org.code]
+    }
+    
+    /// Get user subscription tier
+    /// - Returns: Subscription tier string, defaults to "free" if not found
+    public func getUserSubscriptionTier() -> String {
+        return getStringEntitlement(featureKey: "subscription_tier", defaultValue: "free")
+    }
+}
+
+/// Service for managing feature flags with type-safe API
+public class FeatureFlagsService {
+    private unowned let auth: Auth
+    private let logger: LoggerProtocol
+    
+    public init(auth: Auth, logger: LoggerProtocol = DefaultLogger()) {
+        self.auth = auth
+        self.logger = logger
+    }
+    
+    /// Get all feature flags for the current user
+    /// - Returns: Dictionary of feature flags with their values, or empty dictionary if not available
+    public func getFeatureFlags() -> [String: Any] {
+        guard let claim = auth.claims.getClaim(forKey: "feature_flags") else {
+            return [:]
+        }
+        
+        let rawValue = claim.value.value
+        
+        // Try to parse as JSON string first
+        if let claimString = rawValue as? String,
+           let data = claimString.data(using: .utf8) {
+            do {
+                let flags = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                return flags ?? [:]
+            } catch {
+                logger.error(message: "Failed to parse feature flags JSON: \(error)")
+            }
+        }
+        
+        // Try to parse as direct dictionary
+        if let flagsDict = rawValue as? [String: Any] {
+            return flagsDict
+        }
+        
+        return [:]
+    }
+    
+    /// Get a specific feature flag by code
+    /// - Parameter code: The feature flag code to look for
+    /// - Returns: Feature flag value if found, nil otherwise
+    public func getFeatureFlag(code: String) -> Any? {
+        let flags = getFeatureFlags()
+        return flags[code]
+    }
+    
+    /// Check if a feature flag is enabled (boolean type)
+    /// - Parameters:
+    ///   - code: The feature flag code to check
+    ///   - defaultValue: Default value if flag not found
+    /// - Returns: Boolean indicating if feature is enabled
+    public func isFeatureEnabled(code: String, defaultValue: Bool = false) -> Bool {
+        guard let flagValue = getFeatureFlag(code: code) else {
+            return defaultValue
+        }
+        
+        // Handle boolean values
+        if let boolValue = flagValue as? Bool {
+            return boolValue
+        }
+        
+        // Handle string values that represent booleans
+        if let stringValue = flagValue as? String {
+            return Bool(stringValue) ?? defaultValue
+        }
+        
+        return defaultValue
+    }
+}
+
+extension Auth {
+    private enum ClaimKey: String {
+        case permissions = "permissions"
+        case roles = "roles"
+        case organisationCode = "org_code"
+        case organisationCodes = "org_codes"
+        case featureFlags = "feature_flags"
+    }
 }

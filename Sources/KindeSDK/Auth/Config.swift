@@ -1,6 +1,6 @@
 import Foundation
 
-/// Configuration for the Kinde authentication service and Kinde Management API client
+/// Configuration for the Kinde authentication service
 public struct Config: Decodable {
     let issuer: String
     let clientId: String
