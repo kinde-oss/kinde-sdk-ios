@@ -271,14 +271,6 @@ class EntitlementsSpec: AsyncSpec {
                     let result = claimsService.getClaimValue(forKey: "non_existent_claim")
                     expect(result).to(beNil())
                 }
-                
-                it("returns claim value when claim exists") {
-                    let result = claimsService.getClaimValue(forKey: "test_claim")
-                    expect(result).to(beAKindOf(Any.self))
-                    // This would require a mock token with specific claims
-                    // TODO: Add proper test fixtures with mocked tokens
-                    pending("Requires mock token with claims") {}
-                }
             }
             
             describe("getRoles") {

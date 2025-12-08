@@ -179,15 +179,72 @@ class AuthSpec: QuickSpec {
             describe("async methods without forceApi (token claims)") {
                 it("getBooleanFlag without forceApi returns default value when flag doesn't exist") {
                     let auth: Auth = KindeSDKAPI.auth
+                    let options = ApiOptions(forceApi: false)
                     waitUntil(timeout: .seconds(5)) { done in
                         Task {
                             do {
-                                let result = try await auth.getBooleanFlag(code: "non_existent_flag", defaultValue: true)
+                                let result = try await auth.getBooleanFlag(code: "non_existent_flag", defaultValue: true, options: options)
                                 expect(result).to(equal(true))
                                 done()
                             } catch {
                                 // Should not throw when default value is provided
                                 expect(true).to(beFalse())
+                                done()
+                            }
+                        }
+                    }
+                }
+                
+                it("getStringFlag without forceApi returns default value when flag doesn't exist") {
+                    let auth: Auth = KindeSDKAPI.auth
+                    let options = ApiOptions(forceApi: false)
+                    waitUntil(timeout: .seconds(5)) { done in
+                        Task {
+                            do {
+                                let result = try await auth.getStringFlag(code: "non_existent_flag", defaultValue: "default", options: options)
+                                expect(result).to(equal("default"))
+                                done()
+                            } catch {
+                                // Should not throw when default value is provided
+                                expect(true).to(beFalse())
+                                done()
+                            }
+                        }
+                    }
+                }
+                
+                it("getBooleanFlag with forceApi throws when not authenticated") {
+                    let auth: Auth = KindeSDKAPI.auth
+                    let options = ApiOptions(forceApi: true)
+                    waitUntil(timeout: .seconds(5)) { done in
+                        Task {
+                            do {
+                                _ = try await auth.getBooleanFlag(code: "test_flag", defaultValue: false, options: options)
+                                // Should not reach here when not authenticated
+                                expect(true).to(beFalse())
+                                done()
+                            } catch {
+                                // Expected to fail when not authenticated
+                                expect(error).toNot(beNil())
+                                done()
+                            }
+                        }
+                    }
+                }
+                
+                it("getStringFlag with forceApi throws when not authenticated") {
+                    let auth: Auth = KindeSDKAPI.auth
+                    let options = ApiOptions(forceApi: true)
+                    waitUntil(timeout: .seconds(5)) { done in
+                        Task {
+                            do {
+                                _ = try await auth.getStringFlag(code: "test_flag", defaultValue: "default", options: options)
+                                // Should not reach here when not authenticated
+                                expect(true).to(beFalse())
+                                done()
+                            } catch {
+                                // Expected to fail when not authenticated
+                                expect(error).toNot(beNil())
                                 done()
                             }
                         }
