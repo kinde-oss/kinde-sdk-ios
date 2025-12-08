@@ -182,9 +182,9 @@ public final class Auth {
             return Permissions(organization: organization, permissions: response.getPermissionKeys())
         } else {
             if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-               let permissionsArray = permissionsClaim.value as? [String],
+               let permissionsArray = permissionsClaim.value.value as? [String],
                let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value as? String {
+               let orgCode = orgCodeClaim.value.value as? String {
                 
                 let organization = Organization(code: orgCode)
                 let permissions = Permissions(organization: organization,
@@ -199,9 +199,9 @@ public final class Auth {
     /// - Returns: Permissions if found, nil otherwise
     public func getPermissions() -> Permissions? {
         if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-           let permissionsArray = permissionsClaim.value as? [String],
+           let permissionsArray = permissionsClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let permissions = Permissions(organization: organization,
@@ -217,9 +217,9 @@ public final class Auth {
             return Permission(organization: perms.organization, isGranted: perms.permissions.contains(name))
         } else {
             if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-               let permissionsArray = permissionsClaim.value as? [String],
+               let permissionsArray = permissionsClaim.value.value as? [String],
                let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value as? String {
+               let orgCode = orgCodeClaim.value.value as? String {
                 
                 let organization = Organization(code: orgCode)
                 let permission = Permission(organization: organization,
@@ -235,9 +235,9 @@ public final class Auth {
     /// - Returns: Permission if found, nil otherwise
     public func getPermission(name: String) -> Permission? {
         if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-           let permissionsArray = permissionsClaim.value as? [String],
+           let permissionsArray = permissionsClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let permission = Permission(organization: organization,
@@ -258,9 +258,9 @@ public final class Auth {
             return Roles(organization: organization, roles: response.getRoleKeys())
         } else {
             if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-               let rolesArray = rolesClaim.value as? [String],
+               let rolesArray = rolesClaim.value.value as? [String],
                let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value as? String {
+               let orgCode = orgCodeClaim.value.value as? String {
                 
                 let organization = Organization(code: orgCode)
                 let roles = Roles(organization: organization,
@@ -275,9 +275,9 @@ public final class Auth {
     /// - Returns: Roles if found, nil otherwise
     public func getRoles() -> Roles? {
         if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-           let rolesArray = rolesClaim.value as? [String],
+           let rolesArray = rolesClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let roles = Roles(organization: organization,
@@ -293,9 +293,9 @@ public final class Auth {
             return Role(organization: roles.organization, isGranted: roles.roles.contains(name))
         } else {
             if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-               let rolesArray = rolesClaim.value as? [String],
+               let rolesArray = rolesClaim.value.value as? [String],
                let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value as? String {
+               let orgCode = orgCodeClaim.value.value as? String {
                 
                 let organization = Organization(code: orgCode)
                 let role = Role(organization: organization,
@@ -311,9 +311,9 @@ public final class Auth {
     /// - Returns: Role if found, nil otherwise
     public func getRole(name: String) -> Role? {
         if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-           let rolesArray = rolesClaim.value as? [String],
+           let rolesArray = rolesClaim.value.value as? [String],
            let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             
             let organization = Organization(code: orgCode)
             let role = Role(organization: organization,
@@ -325,7 +325,7 @@ public final class Auth {
     
     public func getOrganization() -> Organization? {
         if let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-           let orgCode = orgCodeClaim.value as? String {
+           let orgCode = orgCodeClaim.value.value as? String {
             let org = Organization(code: orgCode)
             return org
         }
@@ -335,7 +335,7 @@ public final class Auth {
     public func getUserOrganizations() -> UserOrganizations? {
         if let userOrgsClaim = getClaim(forKey: ClaimKey.organisationCodes.rawValue,
                                    token: .idToken),
-           let userOrgs = userOrgsClaim.value as? [String] {
+           let userOrgs = userOrgsClaim.value.value as? [String] {
             
             let orgCodes = userOrgs.map({ Organization(code: $0)})
             return UserOrganizations(orgCodes: orgCodes)
@@ -894,7 +894,7 @@ extension Auth {
             return response.toFlagMap()
         } else {
             guard let featureFlagsClaim = getClaim(forKey: ClaimKey.featureFlags.rawValue),
-                  let featureFlags = featureFlagsClaim.value as? [String: Any] else {
+                  let featureFlags = featureFlagsClaim.value.value as? [String: Any] else {
                 return [:]
             }
             
@@ -1208,7 +1208,7 @@ public class ClaimsService {
     /// - Parameter name: The permission name to check
     /// - Returns: True if permission is granted, false otherwise
     public func getPermission(name: String) -> Bool {
-        return auth.getPermission(name: name) != nil
+        return auth.getPermission(name: name)?.isGranted ?? false
     }
     
     /// Get all roles for the current user
