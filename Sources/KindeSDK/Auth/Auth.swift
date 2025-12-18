@@ -171,8 +171,8 @@ public final class Auth {
         return params[key] ?? nil
     }
     
-    public func getPermissions(options: ApiOptions? = nil) async throws -> Permissions {
-        if options?.forceApi == true {
+    public func getPermissions(options: ApiOptions) async throws -> Permissions {
+        if options.forceApi {
             let response = try await PermissionsAPI.getPermissions()
             guard response.success, let data = response.data else {
                 throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch permissions from API - check network and authentication"])
@@ -181,17 +181,10 @@ public final class Auth {
             let organization = Organization(code: orgCode)
             return Permissions(organization: organization, permissions: response.getPermissionKeys())
         } else {
-            if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-               let permissionsArray = permissionsClaim.value.value as? [String],
-               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value.value as? String {
-                
-                let organization = Organization(code: orgCode)
-                let permissions = Permissions(organization: organization,
-                                              permissions: permissionsArray)
-                return permissions
+            guard let permissions = getPermissions() else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permissions not found in token claims"])
             }
-            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permissions not found in token claims"])
+            return permissions
         }
     }
     
@@ -211,22 +204,15 @@ public final class Auth {
         return nil
     }
     
-    public func getPermission(name: String, options: ApiOptions? = nil) async throws -> Permission {
-        if options?.forceApi == true {
+    public func getPermission(name: String, options: ApiOptions) async throws -> Permission {
+        if options.forceApi {
             let perms = try await getPermissions(options: options)
             return Permission(organization: perms.organization, isGranted: perms.permissions.contains(name))
         } else {
-            if let permissionsClaim = getClaim(forKey: ClaimKey.permissions.rawValue),
-               let permissionsArray = permissionsClaim.value.value as? [String],
-               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value.value as? String {
-                
-                let organization = Organization(code: orgCode)
-                let permission = Permission(organization: organization,
-                                            isGranted: permissionsArray.contains(name))
-                return permission
+            guard let permission = getPermission(name: name) else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permission not found in token claims"])
             }
-            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Permission not found in token claims"])
+            return permission
         }
     }
     
@@ -247,8 +233,8 @@ public final class Auth {
         return nil
     }
     
-    public func getRoles(options: ApiOptions? = nil) async throws -> Roles {
-        if options?.forceApi == true {
+    public func getRoles(options: ApiOptions) async throws -> Roles {
+        if options.forceApi {
             let response = try await RolesAPI.getRoles()
             guard response.success, let data = response.data else {
                 throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch roles from API - check network and authentication"])
@@ -257,17 +243,10 @@ public final class Auth {
             let organization = Organization(code: orgCode)
             return Roles(organization: organization, roles: response.getRoleKeys())
         } else {
-            if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-               let rolesArray = rolesClaim.value.value as? [String],
-               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value.value as? String {
-                
-                let organization = Organization(code: orgCode)
-                let roles = Roles(organization: organization,
-                                 roles: rolesArray)
-                return roles
+            guard let roles = getRoles() else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Roles not found in token claims"])
             }
-            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Roles not found in token claims"])
+            return roles
         }
     }
     
@@ -287,22 +266,15 @@ public final class Auth {
         return nil
     }
     
-    public func getRole(name: String, options: ApiOptions? = nil) async throws -> Role {
-        if options?.forceApi == true {
+    public func getRole(name: String, options: ApiOptions) async throws -> Role {
+        if options.forceApi {
             let roles = try await getRoles(options: options)
             return Role(organization: roles.organization, isGranted: roles.roles.contains(name))
         } else {
-            if let rolesClaim = getClaim(forKey: ClaimKey.roles.rawValue),
-               let rolesArray = rolesClaim.value.value as? [String],
-               let orgCodeClaim = getClaim(forKey: ClaimKey.organisationCode.rawValue),
-               let orgCode = orgCodeClaim.value.value as? String {
-                
-                let organization = Organization(code: orgCode)
-                let role = Role(organization: organization,
-                               isGranted: rolesArray.contains(name))
-                return role
+            guard let role = getRole(name: name) else {
+                throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Role not found in token claims"])
             }
-            throw NSError(domain: "KindeSDK", code: -1, userInfo: [NSLocalizedDescriptionKey: "Role not found in token claims"])
+            return role
         }
     }
     
