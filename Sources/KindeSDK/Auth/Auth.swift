@@ -1,88 +1,11 @@
 import AppAuth
 import os.log
-
-// MARK: - ApiOptions
-
-/// Configuration options for API calls
-/// - Parameter forceApi: When true, forces the SDK to fetch data from the API instead of token claims
-public struct ApiOptions {
-    /// When true, forces the SDK to fetch data from the API instead of token claims
-    public let forceApi: Bool
-    
-    public init(forceApi: Bool = false) {
-        self.forceApi = forceApi
-    }
-}
-
-// MARK: - Pagination Models
-
-/// Pagination metadata for API responses
-public struct EntitlementsMetadata: Codable {
-    /// Whether there are more pages available
-    public let hasMore: Bool
-    /// Token to get the next page of results
-    public let nextPageStartingAfter: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case hasMore = "has_more"
-        case nextPageStartingAfter = "next_page_starting_after"
-    }
-}
-
-/// Individual entitlement model
-public struct Entitlement: Codable {
-    /// The entitlement key/name
-    public let key: String
-    /// The entitlement value
-    public let value: AnyCodable
-    /// The entitlement type
-    public let type: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case key, value, type
-    }
-}
-
-/// Entitlement plan model
-public struct EntitlementPlan: Codable {
-    /// The plan code
-    public let code: String
-    /// The plan name
-    public let name: String?
-    /// The plan description
-    public let description: String?
-}
-
-/// Entitlements data container
-public struct Entitlements: Codable {
-    /// Organization code
-    public let orgCode: String
-    /// List of entitlement plans
-    public let plans: [EntitlementPlan]
-    /// List of entitlements
-    public let entitlements: [Entitlement]
-    
-    private enum CodingKeys: String, CodingKey {
-        case orgCode = "org_code"
-        case plans, entitlements
-    }
-}
-
-/// Entitlements API response with pagination
-public struct EntitlementsResponse: Codable {
-    /// The entitlements data
-    public let data: Entitlements
-    /// Pagination metadata
-    public let metadata: EntitlementsMetadata
-}
-
-/// Single entitlement response
-public struct EntitlementResponse: Codable {
-    /// The entitlement data
-    public let data: Entitlement
-}
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// The Kinde authentication service
+@available(iOS 13.0, *)
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
     
@@ -315,6 +238,7 @@ public final class Auth {
         return nil
     }
     
+    #if canImport(UIKit)
     private func getViewController() async -> UIViewController? {
         await MainActor.run {
             let keyWindow = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
@@ -326,6 +250,11 @@ public final class Auth {
             return topController
         }
     }
+    #else
+    private func getViewController() async -> Any? {
+        return nil
+    }
+    #endif
     
     /// Register a new user
     ///
@@ -509,6 +438,7 @@ public final class Auth {
         }
     }
     
+    #if canImport(UIKit)
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
@@ -528,6 +458,11 @@ public final class Auth {
             }
         }
     }
+    #else
+    private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: Any) async throws -> Bool {
+        throw AuthError.notAuthenticated
+    }
+    #endif
     
     private func discoverConfiguration(issuerUrl: URL,
                                               signUp: Bool,
@@ -945,221 +880,9 @@ extension Auth {
     }
 }
 
-// MARK: - Temporary Inline Types (to be moved to separate files later)
-
-/// Helper type for encoding/decoding Any values in JSON
-public struct AnyCodable: Codable {
-    public let value: Any
-    
-    public init(_ value: Any) {
-        self.value = value
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        
-        if container.decodeNil() {
-            value = NSNull()
-        } else if let stringValue = try? container.decode(String.self) {
-            value = stringValue
-        } else if let intValue = try? container.decode(Int.self) {
-            value = intValue
-        } else if let boolValue = try? container.decode(Bool.self) {
-            value = boolValue
-        } else if let doubleValue = try? container.decode(Double.self) {
-            value = doubleValue
-        } else if let arrayValue = try? container.decode([AnyCodable].self) {
-            value = arrayValue.map { $0.value }
-        } else if let dictionaryValue = try? container.decode([String: AnyCodable].self) {
-            value = dictionaryValue.mapValues { $0.value }
-        } else {
-            throw DecodingError.typeMismatch(AnyCodable.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unsupported type"))
-        }
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        
-        switch value {
-        case is NSNull:
-            try container.encodeNil()
-        case let stringValue as String:
-            try container.encode(stringValue)
-        case let intValue as Int:
-            try container.encode(intValue)
-        case let boolValue as Bool:
-            try container.encode(boolValue)
-        case let doubleValue as Double:
-            try container.encode(doubleValue)
-        case let arrayValue as [Any]:
-            let anyCodableArray = arrayValue.map { AnyCodable($0) }
-            try container.encode(anyCodableArray)
-        case let dictionaryValue as [String: Any]:
-            let anyCodableDictionary = dictionaryValue.mapValues { AnyCodable($0) }
-            try container.encode(anyCodableDictionary)
-        default:
-            throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: encoder.codingPath, debugDescription: "Unsupported type"))
-        }
-    }
-}
-
-/// Represents a feature flag with its code, type, and value
-public struct Flag {
-    public let code: String
-    public let type: ValueType?
-    public let value: Any
-    public let isDefault: Bool
-
-    public init(code: String, type: ValueType?, value: Any, isDefault: Bool = false) {
-        self.code = code
-        self.type = type
-        self.value = value
-        self.isDefault = isDefault
-    }
-    
-    public enum ValueType: String {
-        case string = "s"
-        case int = "i"
-        case bool = "b"
-        
-        fileprivate var typeDescription: String {
-            switch self {
-            case .string: return "string"
-            case .bool: return "boolean"
-            case .int: return "integer"
-            }
-        }
-    }
-}
-
-/// Represents a JWT claim with its name and value
-public struct Claim: Codable {
-    /// The name/key of the claim
-    public let name: String
-    
-    /// The value of the claim (can be any type)
-    public let value: AnyCodable
-    
-    public init(name: String, value: AnyCodable) {
-        self.name = name
-        self.value = value
-    }
-}
-
-/// Represents a feature flag with its value and metadata
-public struct FeatureFlag: Codable {
-    /// The feature flag code/identifier
-    public let code: String
-    
-    /// The type of the feature flag value
-    public let type: ValueType?
-    
-    /// The actual value of the feature flag
-    public let value: AnyCodable
-    
-    /// Whether this is a default value
-    public let isDefault: Bool
-    
-    public init(code: String, type: ValueType?, value: AnyCodable, isDefault: Bool = false) {
-        self.code = code
-        self.type = type
-        self.value = value
-        self.isDefault = isDefault
-    }
-    
-    /// Enum representing the type of feature flag value
-    public enum ValueType: String, Codable {
-        case string = "s"
-        case int = "i"
-        case bool = "b"
-        
-        public var typeDescription: String {
-            switch self {
-            case .string: return "string"
-            case .bool: return "boolean"
-            case .int: return "integer"
-            }
-        }
-    }
-}
-
-/// Represents an organization
-public struct Organization: Codable {
-    /// The organization code
-    public let code: String
-    
-    public init(code: String) {
-        self.code = code
-    }
-}
-
-/// Represents a permission with organization context
-public struct Permission: Codable {
-    /// The organization this permission belongs to
-    public let organization: Organization
-    
-    /// Whether the permission is granted
-    public let isGranted: Bool
-    
-    public init(organization: Organization, isGranted: Bool) {
-        self.organization = organization
-        self.isGranted = isGranted
-    }
-}
-
-/// Collection of permissions
-public struct Permissions: Codable {
-    /// The organization these permissions belong to
-    public let organization: Organization
-    
-    /// List of permission names
-    public let permissions: [String]
-    
-    public init(organization: Organization, permissions: [String]) {
-        self.organization = organization
-        self.permissions = permissions
-    }
-}
-
-/// Represents a role with organization context
-public struct Role: Codable {
-    /// The organization this role belongs to
-    public let organization: Organization
-    
-    /// Whether the role is granted
-    public let isGranted: Bool
-    
-    public init(organization: Organization, isGranted: Bool) {
-        self.organization = organization
-        self.isGranted = isGranted
-    }
-}
-
-/// Collection of roles
-public struct Roles: Codable {
-    /// The organization these roles belong to
-    public let organization: Organization
-    
-    /// List of role names
-    public let roles: [String]
-    
-    public init(organization: Organization, roles: [String]) {
-        self.organization = organization
-        self.roles = roles
-    }
-}
-
-/// Collection of user organizations
-public struct UserOrganizations: Codable {
-    /// List of organization codes
-    public let orgCodes: [Organization]
-    
-    public init(orgCodes: [Organization]) {
-        self.orgCodes = orgCodes
-    }
-}
 
 /// Service for managing JWT claims with type-safe API
+@available(iOS 13.0, *)
 public class ClaimsService {
     private unowned let auth: Auth
     private let logger: LoggerProtocol
@@ -1208,6 +931,7 @@ public class ClaimsService {
 }
 
 /// Service for managing user entitlements with type-safe API
+@available(iOS 13.0, *)
 public class EntitlementsService {
     private unowned let auth: Auth
     private let logger: LoggerProtocol
@@ -1268,6 +992,7 @@ public class EntitlementsService {
     ///   - startingAfter: Token to get the next page of results (optional)
     /// - Returns: EntitlementsResponse with pagination metadata
     /// - Throws: AuthError if not authenticated or network error
+    @available(iOS 15.0, *)
     public func fetchEntitlements(pageSize: Int? = nil, startingAfter: String? = nil) async throws -> EntitlementsResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated
@@ -1323,6 +1048,7 @@ public class EntitlementsService {
     /// Fetch a single entitlement from the server
     /// - Returns: EntitlementResponse with the entitlement data
     /// - Throws: AuthError if not authenticated or network error
+    @available(iOS 15.0, *)
     public func fetchEntitlement() async throws -> EntitlementResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated
@@ -1543,6 +1269,7 @@ public class EntitlementsService {
 }
 
 /// Service for managing feature flags with type-safe API
+@available(iOS 13.0, *)
 public class FeatureFlagsService {
     private unowned let auth: Auth
     private let logger: LoggerProtocol
