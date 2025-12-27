@@ -1000,7 +1000,6 @@ public class EntitlementsService {
     ///   - startingAfter: Token to get the next page of results (optional)
     /// - Returns: EntitlementsResponse with pagination metadata
     /// - Throws: AuthError if not authenticated or network error
-    @available(iOS 15.0, *)
     public func fetchEntitlements(pageSize: Int? = nil, startingAfter: String? = nil) async throws -> EntitlementsResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated
@@ -1056,7 +1055,6 @@ public class EntitlementsService {
     /// Fetch a single entitlement from the server
     /// - Returns: EntitlementResponse with the entitlement data
     /// - Throws: AuthError if not authenticated or network error
-    @available(iOS 15.0, *)
     public func fetchEntitlement() async throws -> EntitlementResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated
