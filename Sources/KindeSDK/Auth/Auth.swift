@@ -432,7 +432,7 @@ public final class Auth {
                                                                  useNonce: useNonce,
                                                                  planInterest: planInterest,
                                                                  pricingTableKey: pricingTableKey, 
-                                                                 connectionId: connectionId,)
+                                                                 connectionId: connectionId)
                     continuation.resume(returning: result)
                 } catch {
                     continuation.resume(throwing: error)
@@ -840,7 +840,7 @@ extension Auth {
             }
         }
         
-        guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
+        guard let featureFlags = featureFlagsClaim.value.value as? [String : Any] else {
             // Claim exists but is not a dictionary - check for default value
             if let defaultValue = defaultValue {
                 return Flag(code: code, type: nil, value: defaultValue, isDefault: true)

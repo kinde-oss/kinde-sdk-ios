@@ -19,7 +19,7 @@ public struct Flag {
         case int = "i"
         case bool = "b"
         
-        fileprivate var typeDescription: String {
+        var typeDescription: String {
             switch self {
             case .string: return "string"
             case .bool: return "boolean"
