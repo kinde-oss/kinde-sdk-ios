@@ -259,11 +259,11 @@ public final class Auth {
     /// Register a new user
     ///
     @available(*, renamed: "register")
-    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "",
+    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "", connectionId: String = "",
                          _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await register(orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey)
+                try await register(orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey, connectionId: connectionId)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -275,7 +275,7 @@ public final class Auth {
         }
     }
     
-    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "") async throws -> () {
+    public func register(orgCode: String = "", loginHint: String = "", planInterest: String = "", pricingTableKey: String = "", connectionId: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -283,7 +283,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey)
+                    let request = try await self.getAuthorizationRequest(signUp: true, orgCode: orgCode, loginHint: loginHint, planInterest: planInterest, pricingTableKey: pricingTableKey, connectionId: connectionId)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -296,11 +296,11 @@ public final class Auth {
     /// Login an existing user
     ///
     @available(*, renamed: "login")
-    public func login(orgCode: String = "", loginHint: String = "",
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "",
                       _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await login(orgCode: orgCode, loginHint: loginHint)
+                try await login(orgCode: orgCode, loginHint: loginHint, connectionId: connectionId)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -312,7 +312,7 @@ public final class Auth {
         }
     }
 
-    public func login(orgCode: String = "", loginHint: String = "") async throws -> () {
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "" ) async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -320,7 +320,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode, loginHint: loginHint)
+                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode, loginHint: loginHint, connectionId: connectionId)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -333,10 +333,10 @@ public final class Auth {
     /// Register a new organization
     ///
     @available(*, renamed: "createOrg")
-    public func createOrg( _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public func createOrg(connectionId: String = "", _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await createOrg()
+                try await createOrg(connectionId: connectionId)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -348,7 +348,7 @@ public final class Auth {
         }
     }
 
-    public func createOrg(orgName: String = "") async throws -> () {
+    public func createOrg(orgName: String = "", connectionId: String = "") async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -356,7 +356,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName)
+                    let request = try await self.getAuthorizationRequest(signUp: true, createOrg: true, orgName: orgName, connectionId: connectionId)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -391,10 +391,11 @@ public final class Auth {
                                          orgCode: String = "",
                                          usePKCE: Bool = true,
                                          useNonce: Bool = false,
+                                         connectionId: String = "",
                                          then completion: @escaping (Result<OIDAuthorizationRequest, Error>) -> Void) {
         Task {
             do {
-                let request = try await self.getAuthorizationRequest(signUp: signUp, createOrg: createOrg, orgCode: orgCode, usePKCE: usePKCE, useNonce: useNonce)
+                let request = try await self.getAuthorizationRequest(signUp: signUp, createOrg: createOrg, orgCode: orgCode, usePKCE: usePKCE, useNonce: useNonce, connectionId: connectionId)
                 completion(.success(request))
             } catch {
                 completion(.failure(AuthError.notAuthenticated))
@@ -410,7 +411,8 @@ public final class Auth {
                                          usePKCE: Bool = true,
                                          useNonce: Bool = false,
                                          planInterest: String = "",
-                                         pricingTableKey: String = "") async throws -> OIDAuthorizationRequest {
+                                         pricingTableKey: String = "",
+                                         connectionId: String = "") async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 let issuerUrl = config.getIssuerUrl()
@@ -429,7 +431,8 @@ public final class Auth {
                                                                  usePKCE: usePKCE,
                                                                  useNonce: useNonce,
                                                                  planInterest: planInterest,
-                                                                 pricingTableKey: pricingTableKey)
+                                                                 pricingTableKey: pricingTableKey, 
+                                                                 connectionId: connectionId)
                     continuation.resume(returning: result)
                 } catch {
                     continuation.resume(throwing: error)
@@ -473,7 +476,8 @@ public final class Auth {
                                               usePKCE: Bool = true,
                                               useNonce: Bool = false,
                                               planInterest: String = "",
-                                              pricingTableKey: String = "") async throws -> (OIDAuthorizationRequest) {
+                                              pricingTableKey: String = "", 
+                                              connectionId: String = "") async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
             OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl) { configuration, error in
                 if let error = error {
@@ -527,6 +531,10 @@ public final class Auth {
 
                 if !pricingTableKey.isEmpty {
                     additionalParameters["pricing_table_key"] = pricingTableKey
+                }
+                
+                if !connectionId.isEmpty {
+                    additionalParameters["connection_id"] = connectionId
                 }
 
                 // if/when the API supports nonce validation
@@ -832,7 +840,7 @@ extension Auth {
             }
         }
         
-        guard let featureFlags = featureFlagsClaim.value as? [String : Any] else {
+        guard let featureFlags = featureFlagsClaim.value.value as? [String : Any] else {
             // Claim exists but is not a dictionary - check for default value
             if let defaultValue = defaultValue {
                 return Flag(code: code, type: nil, value: defaultValue, isDefault: true)
@@ -992,7 +1000,6 @@ public class EntitlementsService {
     ///   - startingAfter: Token to get the next page of results (optional)
     /// - Returns: EntitlementsResponse with pagination metadata
     /// - Throws: AuthError if not authenticated or network error
-    @available(iOS 15.0, *)
     public func fetchEntitlements(pageSize: Int? = nil, startingAfter: String? = nil) async throws -> EntitlementsResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated
@@ -1048,7 +1055,6 @@ public class EntitlementsService {
     /// Fetch a single entitlement from the server
     /// - Returns: EntitlementResponse with the entitlement data
     /// - Throws: AuthError if not authenticated or network error
-    @available(iOS 15.0, *)
     public func fetchEntitlement() async throws -> EntitlementResponse {
         guard auth.isAuthenticated() else {
             throw AuthError.notAuthenticated

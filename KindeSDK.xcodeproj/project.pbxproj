@@ -15,17 +15,10 @@
 		3B41B1B42A0E5F8500EFD9E4 /* AuthErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */; };
 		3B41B1B52A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1B02A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift */; };
 		3B41B1B62A0E5F8500EFD9E4 /* ConfigSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1B12A0E5F8500EFD9E4 /* ConfigSpec.swift */; };
-		8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */; };
 		3B41B1DA2A0E5F9100EFD9E4 /* OAuthAPI.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1B92A0E5F9100EFD9E4 /* OAuthAPI.md */; };
 		3B41B1DB2A0E5F9100EFD9E4 /* UserProfile.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1BA2A0E5F9100EFD9E4 /* UserProfile.md */; };
 		3B41B1DC2A0E5F9100EFD9E4 /* User.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B41B1BB2A0E5F9100EFD9E4 /* User.md */; };
 		3B41B1DD2A0E5F9100EFD9E4 /* OAuthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1BE2A0E5F9100EFD9E4 /* OAuthAPI.swift */; };
-		3B41B1F72A0E5F9100EFD9E4 /* PermissionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1F62A0E5F9100EFD9E4 /* PermissionsAPI.swift */; };
-		3B41B1F92A0E5F9100EFD9E4 /* RolesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1F82A0E5F9100EFD9E4 /* RolesAPI.swift */; };
-		3B41B1FB2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FA2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift */; };
-		3B41B1FD2A0E5F9100EFD9E4 /* PermissionsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FC2A0E5F9100EFD9E4 /* PermissionsResponse.swift */; };
-		3B41B1FF2A0E5F9100EFD9E4 /* RolesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FE2A0E5F9100EFD9E4 /* RolesResponse.swift */; };
-		3B41B2012A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B2002A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift */; };
 		3B41B1DE2A0E5F9100EFD9E4 /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1C02A0E5F9100EFD9E4 /* Tokens.swift */; };
 		3B41B1DF2A0E5F9100EFD9E4 /* AuthStateRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1C12A0E5F9100EFD9E4 /* AuthStateRepository.swift */; };
 		3B41B1E02A0E5F9100EFD9E4 /* AuthError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1C22A0E5F9100EFD9E4 /* AuthError.swift */; };
@@ -50,6 +43,12 @@
 		3B41B1F32A0E5F9100EFD9E4 /* AtomicWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1D62A0E5F9100EFD9E4 /* AtomicWrapper.swift */; };
 		3B41B1F42A0E5F9100EFD9E4 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1D82A0E5F9100EFD9E4 /* UserProfile.swift */; };
 		3B41B1F52A0E5F9100EFD9E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1D92A0E5F9100EFD9E4 /* User.swift */; };
+		3B41B1F72A0E5F9100EFD9E4 /* PermissionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1F62A0E5F9100EFD9E4 /* PermissionsAPI.swift */; };
+		3B41B1F92A0E5F9100EFD9E4 /* RolesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1F82A0E5F9100EFD9E4 /* RolesAPI.swift */; };
+		3B41B1FB2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FA2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift */; };
+		3B41B1FD2A0E5F9100EFD9E4 /* PermissionsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FC2A0E5F9100EFD9E4 /* PermissionsResponse.swift */; };
+		3B41B1FF2A0E5F9100EFD9E4 /* RolesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B1FE2A0E5F9100EFD9E4 /* RolesResponse.swift */; };
+		3B41B2012A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41B2002A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift */; };
 		3B4B332D29F9490600D45A5A /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4B332C29F9490600D45A5A /* AppAuth */; };
 		3B4B332F29F9490600D45A5A /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4B332E29F9490600D45A5A /* AppAuthCore */; };
 		3B4B333129F9490600D45A5A /* AppAuthTV in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4B333029F9490600D45A5A /* AppAuthTV */; };
@@ -58,6 +57,24 @@
 		3BA67F852A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F862A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F872A0A5FF600399C6A /* kinde-auth.json in Sources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
+		8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */; };
+		8DC0920A2EFFB8B500A59AE5 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */; };
+		8DC0921B2EFFB8DB00A59AE5 /* Claim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920B2EFFB8DB00A59AE5 /* Claim.swift */; };
+		8DC0921C2EFFB8DB00A59AE5 /* RolesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920C2EFFB8DB00A59AE5 /* RolesData.swift */; };
+		8DC0921D2EFFB8DB00A59AE5 /* Entitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920D2EFFB8DB00A59AE5 /* Entitlement.swift */; };
+		8DC0921E2EFFB8DB00A59AE5 /* UserOrganizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920E2EFFB8DB00A59AE5 /* UserOrganizations.swift */; };
+		8DC0921F2EFFB8DB00A59AE5 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920F2EFFB8DB00A59AE5 /* Permission.swift */; };
+		8DC092202EFFB8DB00A59AE5 /* PermissionsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092102EFFB8DB00A59AE5 /* PermissionsData.swift */; };
+		8DC092212EFFB8DB00A59AE5 /* EntitlementsMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092112EFFB8DB00A59AE5 /* EntitlementsMetadata.swift */; };
+		8DC092222EFFB8DB00A59AE5 /* Role.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092122EFFB8DB00A59AE5 /* Role.swift */; };
+		8DC092232EFFB8DB00A59AE5 /* FeatureFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092132EFFB8DB00A59AE5 /* FeatureFlag.swift */; };
+		8DC092242EFFB8DB00A59AE5 /* Flag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092142EFFB8DB00A59AE5 /* Flag.swift */; };
+		8DC092252EFFB8DB00A59AE5 /* Entitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092152EFFB8DB00A59AE5 /* Entitlements.swift */; };
+		8DC092262EFFB8DB00A59AE5 /* Organization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092162EFFB8DB00A59AE5 /* Organization.swift */; };
+		8DC092272EFFB8DB00A59AE5 /* EntitlementPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092172EFFB8DB00A59AE5 /* EntitlementPlan.swift */; };
+		8DC092282EFFB8DB00A59AE5 /* EntitlementsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092182EFFB8DB00A59AE5 /* EntitlementsResponse.swift */; };
+		8DC092292EFFB8DB00A59AE5 /* ApiOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092192EFFB8DB00A59AE5 /* ApiOptions.swift */; };
+		8DC0922A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0921A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift */; };
 		D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D773EAD32A897ED30049DDEE /* FlagError.swift */; };
 		D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F672A8D59E20088802F /* SDKVersion.swift */; };
 		D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F6D2A8D5D390088802F /* PList.swift */; };
@@ -83,17 +100,10 @@
 		3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthErrorSpec.swift; sourceTree = "<group>"; };
 		3B41B1B02A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultLoggerSpec.swift; sourceTree = "<group>"; };
 		3B41B1B12A0E5F8500EFD9E4 /* ConfigSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigSpec.swift; sourceTree = "<group>"; };
-		8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsSpec.swift; sourceTree = "<group>"; };
 		3B41B1B92A0E5F9100EFD9E4 /* OAuthAPI.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = OAuthAPI.md; sourceTree = "<group>"; };
 		3B41B1BA2A0E5F9100EFD9E4 /* UserProfile.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = UserProfile.md; sourceTree = "<group>"; };
 		3B41B1BB2A0E5F9100EFD9E4 /* User.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = User.md; sourceTree = "<group>"; };
 		3B41B1BE2A0E5F9100EFD9E4 /* OAuthAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthAPI.swift; sourceTree = "<group>"; };
-		3B41B1F62A0E5F9100EFD9E4 /* PermissionsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsAPI.swift; sourceTree = "<group>"; };
-		3B41B1F82A0E5F9100EFD9E4 /* RolesAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesAPI.swift; sourceTree = "<group>"; };
-		3B41B1FA2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsAPI.swift; sourceTree = "<group>"; };
-		3B41B1FC2A0E5F9100EFD9E4 /* PermissionsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsResponse.swift; sourceTree = "<group>"; };
-		3B41B1FE2A0E5F9100EFD9E4 /* RolesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesResponse.swift; sourceTree = "<group>"; };
-		3B41B2002A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsResponse.swift; sourceTree = "<group>"; };
 		3B41B1C02A0E5F9100EFD9E4 /* Tokens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
 		3B41B1C12A0E5F9100EFD9E4 /* AuthStateRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthStateRepository.swift; sourceTree = "<group>"; };
 		3B41B1C22A0E5F9100EFD9E4 /* AuthError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthError.swift; sourceTree = "<group>"; };
@@ -118,7 +128,31 @@
 		3B41B1D62A0E5F9100EFD9E4 /* AtomicWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicWrapper.swift; sourceTree = "<group>"; };
 		3B41B1D82A0E5F9100EFD9E4 /* UserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		3B41B1D92A0E5F9100EFD9E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		3B41B1F62A0E5F9100EFD9E4 /* PermissionsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsAPI.swift; sourceTree = "<group>"; };
+		3B41B1F82A0E5F9100EFD9E4 /* RolesAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesAPI.swift; sourceTree = "<group>"; };
+		3B41B1FA2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsAPI.swift; sourceTree = "<group>"; };
+		3B41B1FC2A0E5F9100EFD9E4 /* PermissionsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsResponse.swift; sourceTree = "<group>"; };
+		3B41B1FE2A0E5F9100EFD9E4 /* RolesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesResponse.swift; sourceTree = "<group>"; };
+		3B41B2002A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsResponse.swift; sourceTree = "<group>"; };
 		3BA67F842A0A5FCE00399C6A /* kinde-auth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kinde-auth.json"; sourceTree = "<group>"; };
+		8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsSpec.swift; sourceTree = "<group>"; };
+		8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		8DC0920B2EFFB8DB00A59AE5 /* Claim.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Claim.swift; sourceTree = "<group>"; };
+		8DC0920C2EFFB8DB00A59AE5 /* RolesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesData.swift; sourceTree = "<group>"; };
+		8DC0920D2EFFB8DB00A59AE5 /* Entitlement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entitlement.swift; sourceTree = "<group>"; };
+		8DC0920E2EFFB8DB00A59AE5 /* UserOrganizations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserOrganizations.swift; sourceTree = "<group>"; };
+		8DC0920F2EFFB8DB00A59AE5 /* Permission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
+		8DC092102EFFB8DB00A59AE5 /* PermissionsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsData.swift; sourceTree = "<group>"; };
+		8DC092112EFFB8DB00A59AE5 /* EntitlementsMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsMetadata.swift; sourceTree = "<group>"; };
+		8DC092122EFFB8DB00A59AE5 /* Role.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Role.swift; sourceTree = "<group>"; };
+		8DC092132EFFB8DB00A59AE5 /* FeatureFlag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlag.swift; sourceTree = "<group>"; };
+		8DC092142EFFB8DB00A59AE5 /* Flag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Flag.swift; sourceTree = "<group>"; };
+		8DC092152EFFB8DB00A59AE5 /* Entitlements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
+		8DC092162EFFB8DB00A59AE5 /* Organization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Organization.swift; sourceTree = "<group>"; };
+		8DC092172EFFB8DB00A59AE5 /* EntitlementPlan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementPlan.swift; sourceTree = "<group>"; };
+		8DC092182EFFB8DB00A59AE5 /* EntitlementsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsResponse.swift; sourceTree = "<group>"; };
+		8DC092192EFFB8DB00A59AE5 /* ApiOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiOptions.swift; sourceTree = "<group>"; };
+		8DC0921A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsData.swift; sourceTree = "<group>"; };
 		D773EAD32A897ED30049DDEE /* FlagError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagError.swift; sourceTree = "<group>"; };
 		D7FD1F672A8D59E20088802F /* SDKVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKVersion.swift; sourceTree = "<group>"; };
 		D7FD1F6C2A8D5CEC0088802F /* KindeSDK-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "KindeSDK-Info.plist"; sourceTree = "<group>"; };
@@ -255,6 +289,7 @@
 		3B41B1CB2A0E5F9100EFD9E4 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */,
 				3B41B1CC2A0E5F9100EFD9E4 /* APIHelper.swift */,
 				3B41B1CD2A0E5F9100EFD9E4 /* URLSessionImplementations.swift */,
 				3B41B1CE2A0E5F9100EFD9E4 /* CodableHelper.swift */,
@@ -275,6 +310,22 @@
 		3B41B1D72A0E5F9100EFD9E4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8DC092192EFFB8DB00A59AE5 /* ApiOptions.swift */,
+				8DC0920B2EFFB8DB00A59AE5 /* Claim.swift */,
+				8DC0920D2EFFB8DB00A59AE5 /* Entitlement.swift */,
+				8DC092172EFFB8DB00A59AE5 /* EntitlementPlan.swift */,
+				8DC092152EFFB8DB00A59AE5 /* Entitlements.swift */,
+				8DC092112EFFB8DB00A59AE5 /* EntitlementsMetadata.swift */,
+				8DC092182EFFB8DB00A59AE5 /* EntitlementsResponse.swift */,
+				8DC092132EFFB8DB00A59AE5 /* FeatureFlag.swift */,
+				8DC0921A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift */,
+				8DC092142EFFB8DB00A59AE5 /* Flag.swift */,
+				8DC092162EFFB8DB00A59AE5 /* Organization.swift */,
+				8DC0920F2EFFB8DB00A59AE5 /* Permission.swift */,
+				8DC092102EFFB8DB00A59AE5 /* PermissionsData.swift */,
+				8DC092122EFFB8DB00A59AE5 /* Role.swift */,
+				8DC0920C2EFFB8DB00A59AE5 /* RolesData.swift */,
+				8DC0920E2EFFB8DB00A59AE5 /* UserOrganizations.swift */,
 				3B41B1D82A0E5F9100EFD9E4 /* UserProfile.swift */,
 				3B41B1D92A0E5F9100EFD9E4 /* User.swift */,
 				3B41B1FC2A0E5F9100EFD9E4 /* PermissionsResponse.swift */,
@@ -421,10 +472,17 @@
 				3B41B1EA2A0E5F9100EFD9E4 /* URLSessionImplementations.swift in Sources */,
 				3B41B1E12A0E5F9100EFD9E4 /* DefaultLogger.swift in Sources */,
 				3B41B1F52A0E5F9100EFD9E4 /* User.swift in Sources */,
+				8DC092272EFFB8DB00A59AE5 /* EntitlementPlan.swift in Sources */,
+				8DC0921F2EFFB8DB00A59AE5 /* Permission.swift in Sources */,
+				8DC0921C2EFFB8DB00A59AE5 /* RolesData.swift in Sources */,
 				3B41B1E92A0E5F9100EFD9E4 /* APIHelper.swift in Sources */,
+				8DC0921E2EFFB8DB00A59AE5 /* UserOrganizations.swift in Sources */,
+				8DC092202EFFB8DB00A59AE5 /* PermissionsData.swift in Sources */,
+				8DC092252EFFB8DB00A59AE5 /* Entitlements.swift in Sources */,
 				3B41B1E82A0E5F9100EFD9E4 /* APIs.swift in Sources */,
 				3B41B1DD2A0E5F9100EFD9E4 /* OAuthAPI.swift in Sources */,
 				3B41B1F72A0E5F9100EFD9E4 /* PermissionsAPI.swift in Sources */,
+				8DC092282EFFB8DB00A59AE5 /* EntitlementsResponse.swift in Sources */,
 				3B41B1F92A0E5F9100EFD9E4 /* RolesAPI.swift in Sources */,
 				3B41B1FB2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift in Sources */,
 				3B41B1FD2A0E5F9100EFD9E4 /* PermissionsResponse.swift in Sources */,
@@ -433,23 +491,33 @@
 				3B41B1DE2A0E5F9100EFD9E4 /* Tokens.swift in Sources */,
 				3B41B1E52A0E5F9100EFD9E4 /* BearerRequestBuilderFactory.swift in Sources */,
 				3B41B1EE2A0E5F9100EFD9E4 /* Keychain.swift in Sources */,
+				8DC0921D2EFFB8DB00A59AE5 /* Entitlement.swift in Sources */,
 				3B41B1F12A0E5F9100EFD9E4 /* Models.swift in Sources */,
+				8DC092242EFFB8DB00A59AE5 /* Flag.swift in Sources */,
+				8DC092262EFFB8DB00A59AE5 /* Organization.swift in Sources */,
 				3B41B1E42A0E5F9100EFD9E4 /* BearerTokenHandler.swift in Sources */,
 				D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */,
 				3B41B1E32A0E5F9100EFD9E4 /* Config.swift in Sources */,
+				8DC0922A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift in Sources */,
 				3B41B1F02A0E5F9100EFD9E4 /* JSONEncodingHelper.swift in Sources */,
 				3B41B1EC2A0E5F9100EFD9E4 /* OpenISO8601DateFormatter.swift in Sources */,
+				8DC0920A2EFFB8B500A59AE5 /* AnyCodable.swift in Sources */,
+				8DC092292EFFB8DB00A59AE5 /* ApiOptions.swift in Sources */,
 				3B41B1E62A0E5F9100EFD9E4 /* BearerRequestBuilder.swift in Sources */,
 				3B41B1E72A0E5F9100EFD9E4 /* BearerDecodableRequestBuilder.swift in Sources */,
 				3B41B1E02A0E5F9100EFD9E4 /* AuthError.swift in Sources */,
 				3B41B1F32A0E5F9100EFD9E4 /* AtomicWrapper.swift in Sources */,
 				3B41B1DF2A0E5F9100EFD9E4 /* AuthStateRepository.swift in Sources */,
+				8DC0921B2EFFB8DB00A59AE5 /* Claim.swift in Sources */,
+				8DC092232EFFB8DB00A59AE5 /* FeatureFlag.swift in Sources */,
 				D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */,
 				3B41B1ED2A0E5F9100EFD9E4 /* Extensions.swift in Sources */,
 				3B41B1F42A0E5F9100EFD9E4 /* UserProfile.swift in Sources */,
 				3B41B1EB2A0E5F9100EFD9E4 /* CodableHelper.swift in Sources */,
+				8DC092222EFFB8DB00A59AE5 /* Role.swift in Sources */,
 				3B41B1EF2A0E5F9100EFD9E4 /* JSONDataEncoding.swift in Sources */,
 				D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */,
+				8DC092212EFFB8DB00A59AE5 /* EntitlementsMetadata.swift in Sources */,
 				3B41B1E22A0E5F9100EFD9E4 /* Auth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
