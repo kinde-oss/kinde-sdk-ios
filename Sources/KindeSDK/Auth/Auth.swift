@@ -463,6 +463,8 @@ public final class Auth {
                 await MainActor.run {
                     currentAuthorizationFlow?.cancel()
                     let timer = Timer.scheduledTimer(withTimeInterval: Self.authorizationFlowTimeout, repeats: false) { _ in
+                        self.logger.error(message: "Authorization flow timed out after \(Self.authorizationFlowTimeout) seconds")
+                        _ = self.authStateRepository.clear()
                         resumeOnce(.failure(AuthError.timeout))
                         self.currentAuthorizationFlow?.cancel()
                         self.currentAuthorizationFlow = nil
