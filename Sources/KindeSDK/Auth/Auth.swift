@@ -463,8 +463,9 @@ public final class Auth {
                 await MainActor.run {
                     currentAuthorizationFlow?.cancel()
                     let timer = Timer.scheduledTimer(withTimeInterval: Self.authorizationFlowTimeout, repeats: false) { _ in
-                        self.currentAuthorizationFlow = nil
                         resumeOnce(.failure(AuthError.timeout))
+                        self.currentAuthorizationFlow?.cancel()
+                        self.currentAuthorizationFlow = nil
                     }
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
