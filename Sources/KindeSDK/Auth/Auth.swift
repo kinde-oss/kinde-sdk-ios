@@ -442,7 +442,7 @@ public final class Auth {
     }
     
     #if canImport(UIKit)
-    private static let authorizationFlowTimeout: TimeInterval = 60
+    private static let authorizationFlowTimeout: TimeInterval = 120
 
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
