@@ -8,7 +8,7 @@ import UIKit
 @available(iOS 13.0, *)
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
-    
+
     private let config: Config
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
@@ -461,7 +461,10 @@ public final class Auth {
 
             Task {
                 await MainActor.run {
-                    currentAuthorizationFlow?.cancel()
+                    if currentAuthorizationFlow != nil {
+                        resumeOnce(.failure(AuthError.authFlowAlreadyInProgress))
+                        return
+                    }
                     let timer = Timer.scheduledTimer(withTimeInterval: Self.authorizationFlowTimeout, repeats: false) { _ in
                         self.logger.error(message: "Authorization flow timed out after \(Self.authorizationFlowTimeout) seconds")
                         _ = self.authStateRepository.clear()
@@ -631,6 +634,14 @@ public final class Auth {
     public func isUserCancellationErrorCode(_ error: Error) -> Bool {
         let error = error as NSError
         return error.domain == OIDGeneralErrorDomain && error.code == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
+    }
+
+    /// Is the given error because an auth flow was already in progress (e.g. double-tap ignored)
+    public func isAuthFlowAlreadyInProgressError(_ error: Error) -> Bool {
+        if case AuthError.authFlowAlreadyInProgress = error {
+            return true
+        }
+        return false
     }
     
     /// Perform an action, such as an API call, with a valid access token and ID token
