@@ -461,7 +461,9 @@ public final class Auth {
 
             Task {
                 await MainActor.run {
+                    currentAuthorizationFlow?.cancel()
                     let timer = Timer.scheduledTimer(withTimeInterval: Self.authorizationFlowTimeout, repeats: false) { _ in
+                        self.currentAuthorizationFlow = nil
                         resumeOnce(.failure(AuthError.timeout))
                     }
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
@@ -598,6 +600,7 @@ public final class Auth {
     /// Callback to complete the current authorization flow
     private func authorizationFlowCallback(then completion: @escaping (Result<Bool, Error>) -> Void) -> (OIDAuthState?, Error?) -> Void {
         return { authState, error in
+            self.currentAuthorizationFlow = nil
             if let error = error {
                 self.logger.error(message: "Failed to finish authentication flow: \(error.localizedDescription)")
                 _ = self.authStateRepository.clear()
@@ -617,7 +620,6 @@ public final class Auth {
                 return completion(.failure(AuthError.failedToSaveState))
             }
             
-            self.currentAuthorizationFlow = nil
             completion(.success(true))
         }
     }
