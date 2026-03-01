@@ -442,19 +442,38 @@ public final class Auth {
     }
     
     #if canImport(UIKit)
+    private static let authorizationFlowTimeout: TimeInterval = 60
+
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
+            var hasResumed = false
+
+            func resumeOnce(_ result: Result<Bool, Error>) {
+                guard !hasResumed else { return }
+                hasResumed = true
+                switch result {
+                case .success(let value):
+                    continuation.resume(returning: value)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+
             Task {
                 await MainActor.run {
+                    let timer = Timer.scheduledTimer(withTimeInterval: Self.authorizationFlowTimeout, repeats: false) { _ in
+                        resumeOnce(.failure(AuthError.timeout))
+                    }
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
                                                                       prefersEphemeralSession: privateAuthSession,
                                                                       callback: authorizationFlowCallback(then: { value in
+                        timer.invalidate()
                         switch value {
                         case .success:
-                            continuation.resume(returning: true)
+                            resumeOnce(.success(true))
                         case .failure(let error):
-                            continuation.resume(throwing: error)
+                            resumeOnce(.failure(error))
                         }
                     }))
                 }
