@@ -636,6 +636,14 @@ public final class Auth {
         return error.domain == OIDGeneralErrorDomain && error.code == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
     }
 
+    /// Is the given error because an auth flow timed out
+    public func isAuthFlowTimeoutError(_ error: Error) -> Bool {
+        if case AuthError.timeout = error {
+            return true
+        }
+        return false
+    }
+
     /// Is the given error because an auth flow was already in progress (e.g. double-tap ignored)
     public func isAuthFlowAlreadyInProgressError(_ error: Error) -> Bool {
         if case AuthError.authFlowAlreadyInProgress = error {
