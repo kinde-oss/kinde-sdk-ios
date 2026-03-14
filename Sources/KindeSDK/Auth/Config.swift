@@ -8,15 +8,18 @@ public struct Config: Decodable {
     let postLogoutRedirectUri: String
     let scope: String
     let audience: String?
+    let authorizationFlowTimeout: TimeInterval?
     
     public init(issuer: String, clientId: String, redirectUri: String,
-                postLogoutRedirectUri: String, scope: String, audience: String?) {
+                postLogoutRedirectUri: String, scope: String, audience: String?,
+                authorizationFlowTimeout: TimeInterval? = nil) {
         self.issuer = issuer
         self.clientId = clientId
         self.redirectUri = redirectUri
         self.postLogoutRedirectUri = postLogoutRedirectUri
         self.scope = scope
         self.audience = audience
+        self.authorizationFlowTimeout = authorizationFlowTimeout
     }
     
     /// Get the configured Issuer URL, or `nil` if it is missing or malformed
@@ -89,11 +92,13 @@ public struct Config: Decodable {
                 return nil
             }
         let audience = values["Audience"] as? String
+        let timeout = values["AuthorizationFlowTimeout"] as? TimeInterval
         return Config(issuer: issuer,
                       clientId: clientId,
                       redirectUri: redirectUri,
                       postLogoutRedirectUri: postLogoutRedirectUri,
                       scope: scope,
-                      audience: audience)
+                      audience: audience,
+                      authorizationFlowTimeout: timeout)
     }
 }
