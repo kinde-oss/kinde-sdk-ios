@@ -442,7 +442,6 @@ public final class Auth {
     }
     
     #if canImport(UIKit)
-    private static let defaultAuthorizationFlowTimeout: TimeInterval = 120
 
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
@@ -470,7 +469,7 @@ public final class Auth {
                         resumeOnce(.failure(AuthError.authFlowAlreadyInProgress))
                         return
                     }
-                    let timeout = self.config.authorizationFlowTimeout ?? Self.defaultAuthorizationFlowTimeout
+                    let timeout = self.config.getAuthorizationFlowTimeout()
                     let timer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
                         self.logger.error(message: "Authorization flow timed out after \(timeout) seconds")
                         self.currentAuthorizationFlow?.cancel()
