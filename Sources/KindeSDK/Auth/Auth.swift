@@ -473,10 +473,9 @@ public final class Auth {
                     let timeout = self.config.authorizationFlowTimeout ?? Self.defaultAuthorizationFlowTimeout
                     let timer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
                         self.logger.error(message: "Authorization flow timed out after \(timeout) seconds")
-                        _ = self.authStateRepository.clear()
-                        resumeOnce(.failure(AuthError.timeout))
                         self.currentAuthorizationFlow?.cancel()
                         self.currentAuthorizationFlow = nil
+                        resumeOnce(.failure(AuthError.timeout))
                     }
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
