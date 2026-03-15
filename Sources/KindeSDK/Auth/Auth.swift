@@ -446,11 +446,16 @@ public final class Auth {
 
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
+            let resumeLock = NSLock()
             var hasResumed = false
 
             func resumeOnce(_ result: Result<Bool, Error>) {
+                resumeLock.lock()
+                defer { resumeLock.unlock() }
+                
                 guard !hasResumed else { return }
                 hasResumed = true
+                
                 switch result {
                 case .success(let value):
                     continuation.resume(returning: value)
