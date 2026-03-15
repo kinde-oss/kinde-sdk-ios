@@ -476,18 +476,22 @@ public final class Auth {
                         self.currentAuthorizationFlow = nil
                         resumeOnce(.failure(AuthError.timeout))
                     }
-                    currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
-                                                                      presenting: viewController,
-                                                                      prefersEphemeralSession: privateAuthSession,
-                                                                      callback: authorizationFlowCallback(then: { value in
-                        timer.invalidate()
+                    let flowCallback = authorizationFlowCallback(then: { value in
                         switch value {
                         case .success:
                             resumeOnce(.success(true))
                         case .failure(let error):
                             resumeOnce(.failure(error))
                         }
-                    }))
+                    })
+
+                    currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
+                                                                      presenting: viewController,
+                                                                      prefersEphemeralSession: privateAuthSession,
+                                                                      callback: { authState, error in
+                        timer.invalidate()
+                        flowCallback(authState, error)
+                    })
                 }
             }
         }
