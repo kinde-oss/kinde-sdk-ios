@@ -25,7 +25,12 @@ public struct Config: Decodable {
     private static let defaultAuthorizationFlowTimeout: TimeInterval = 120
 
     public func getAuthorizationFlowTimeout() -> TimeInterval {
-        return self.authorizationFlowTimeout ?? Self.defaultAuthorizationFlowTimeout
+        guard let timeout = self.authorizationFlowTimeout, 
+              timeout.isFinite, 
+              timeout > 0 else {
+            return Self.defaultAuthorizationFlowTimeout
+        }
+        return timeout
     }
     
     /// Get the configured Issuer URL, or `nil` if it is missing or malformed
