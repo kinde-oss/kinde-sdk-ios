@@ -617,7 +617,9 @@ public final class Auth {
             self.currentAuthorizationFlow = nil
             if let error = error {
                 self.logger.error(message: "Failed to finish authentication flow: \(error.localizedDescription)")
-                _ = self.authStateRepository.clear()
+                if !self.isAuthorizationFlowCancellationError(error) {
+                    _ = self.authStateRepository.clear()
+                }
                 return completion(.failure(error))
             }
             
@@ -636,6 +638,17 @@ public final class Auth {
             
             completion(.success(true))
         }
+    }
+
+    /// Is the given error the result of cancellation (user or program) of an authorization flow
+    private func isAuthorizationFlowCancellationError(_ error: Error) -> Bool {
+        let error = error as NSError
+        guard error.domain == OIDGeneralErrorDomain else { return false }
+        
+        let errorCode = error.code
+        
+        return errorCode == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
+        || errorCode == OIDErrorCode.programCanceledAuthorizationFlow.rawValue
     }
     
     /// Is the given error the result of user cancellation of an authorization flow
