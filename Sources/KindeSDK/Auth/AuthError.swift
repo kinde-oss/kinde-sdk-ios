@@ -15,6 +15,10 @@ public enum AuthError: Error {
     case serverError(Int)
     /// Failed to decode response data
     case decodingError
+    /// Authorization flow timed out
+    case timeout
+    /// An authorization flow is already in progress
+    case authFlowAlreadyInProgress
 }
 
 extension AuthError: LocalizedError {
@@ -54,6 +58,16 @@ extension AuthError: LocalizedError {
             return NSLocalizedString(
                 "Failed to decode response data.",
                 comment: "Decoding Error"
+            )
+        case .timeout:
+            return NSLocalizedString(
+                "Authorization flow timed out.",
+                comment: "Timeout"
+            )
+        case .authFlowAlreadyInProgress:
+            return NSLocalizedString(
+                "An authorization flow is already in progress.",
+                comment: "Auth flow already in progress"
             )
         }
     }

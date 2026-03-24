@@ -8,7 +8,7 @@ import UIKit
 @available(iOS 13.0, *)
 public final class Auth {
     @Atomic private var currentAuthorizationFlow: OIDExternalUserAgentSession?
-    
+
     private let config: Config
     private let authStateRepository: AuthStateRepository
     private let logger: LoggerProtocol
@@ -442,21 +442,56 @@ public final class Auth {
     }
     
     #if canImport(UIKit)
+
     private func runCurrentAuthorizationFlow(request: OIDAuthorizationRequest, viewController: UIViewController) async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
+            let resumeLock = NSLock()
+            var hasResumed = false
+
+            func resumeOnce(_ result: Result<Bool, Error>) {
+                resumeLock.lock()
+                defer { resumeLock.unlock() }
+                
+                guard !hasResumed else { return }
+                hasResumed = true
+                
+                switch result {
+                case .success(let value):
+                    continuation.resume(returning: value)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+
             Task {
                 await MainActor.run {
+                    if currentAuthorizationFlow != nil {
+                        resumeOnce(.failure(AuthError.authFlowAlreadyInProgress))
+                        return
+                    }
+                    let timeout = self.config.getAuthorizationFlowTimeout()
+                    let timer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
+                        self.logger.error(message: "Authorization flow timed out after \(timeout) seconds")
+                        self.currentAuthorizationFlow?.cancel()
+                        self.currentAuthorizationFlow = nil
+                        resumeOnce(.failure(AuthError.timeout))
+                    }
+                    let flowCallback = authorizationFlowCallback(then: { value in
+                        switch value {
+                        case .success:
+                            resumeOnce(.success(true))
+                        case .failure(let error):
+                            resumeOnce(.failure(error))
+                        }
+                    })
+
                     currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request,
                                                                       presenting: viewController,
                                                                       prefersEphemeralSession: privateAuthSession,
-                                                                      callback: authorizationFlowCallback(then: { value in
-                        switch value {
-                        case .success:
-                            continuation.resume(returning: true)
-                        case .failure(let error):
-                            continuation.resume(throwing: error)
-                        }
-                    }))
+                                                                      callback: { authState, error in
+                        timer.invalidate()
+                        flowCallback(authState, error)
+                    })
                 }
             }
         }
@@ -579,9 +614,12 @@ public final class Auth {
     /// Callback to complete the current authorization flow
     private func authorizationFlowCallback(then completion: @escaping (Result<Bool, Error>) -> Void) -> (OIDAuthState?, Error?) -> Void {
         return { authState, error in
+            self.currentAuthorizationFlow = nil
             if let error = error {
                 self.logger.error(message: "Failed to finish authentication flow: \(error.localizedDescription)")
-                _ = self.authStateRepository.clear()
+                if !self.isAuthorizationFlowCancellationError(error) {
+                    _ = self.authStateRepository.clear()
+                }
                 return completion(.failure(error))
             }
             
@@ -598,15 +636,41 @@ public final class Auth {
                 return completion(.failure(AuthError.failedToSaveState))
             }
             
-            self.currentAuthorizationFlow = nil
             completion(.success(true))
         }
+    }
+
+    /// Is the given error the result of cancellation (user or program) of an authorization flow
+    private func isAuthorizationFlowCancellationError(_ error: Error) -> Bool {
+        let error = error as NSError
+        guard error.domain == OIDGeneralErrorDomain else { return false }
+        
+        let errorCode = error.code
+        
+        return errorCode == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
+        || errorCode == OIDErrorCode.programCanceledAuthorizationFlow.rawValue
     }
     
     /// Is the given error the result of user cancellation of an authorization flow
     public func isUserCancellationErrorCode(_ error: Error) -> Bool {
         let error = error as NSError
         return error.domain == OIDGeneralErrorDomain && error.code == OIDErrorCode.userCanceledAuthorizationFlow.rawValue
+    }
+
+    /// Is the given error because an auth flow timed out
+    public func isAuthFlowTimeoutError(_ error: Error) -> Bool {
+        if case AuthError.timeout = error {
+            return true
+        }
+        return false
+    }
+
+    /// Is the given error because an auth flow was already in progress (e.g. double-tap ignored)
+    public func isAuthFlowAlreadyInProgressError(_ error: Error) -> Bool {
+        if case AuthError.authFlowAlreadyInProgress = error {
+            return true
+        }
+        return false
     }
     
     /// Perform an action, such as an API call, with a valid access token and ID token
