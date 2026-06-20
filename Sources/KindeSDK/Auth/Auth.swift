@@ -296,11 +296,11 @@ public final class Auth {
     /// Login an existing user
     ///
     @available(*, renamed: "login")
-    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "",
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt? = nil,
                       _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                try await login(orgCode: orgCode, loginHint: loginHint, connectionId: connectionId)
+                try await login(orgCode: orgCode, loginHint: loginHint, connectionId: connectionId, invitationCode: invitationCode, prompt: prompt)
                 await MainActor.run(body: {
                     completion(.success(true))
                 })
@@ -312,7 +312,7 @@ public final class Auth {
         }
     }
 
-    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "" ) async throws -> () {
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt? = nil) async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -320,7 +320,7 @@ public final class Auth {
                     return
                 }
                 do {
-                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode, loginHint: loginHint, connectionId: connectionId)
+                    let request = try await self.getAuthorizationRequest(signUp: false, orgCode: orgCode, loginHint: loginHint, connectionId: connectionId, invitationCode: invitationCode, prompt: prompt)
                     _ = try await self.runCurrentAuthorizationFlow(request: request, viewController: viewController)
                     continuation.resume(with: .success(()))
                 } catch {
@@ -412,7 +412,9 @@ public final class Auth {
                                          useNonce: Bool = false,
                                          planInterest: String = "",
                                          pricingTableKey: String = "",
-                                         connectionId: String = "") async throws -> OIDAuthorizationRequest {
+                                         connectionId: String = "",
+                                         invitationCode: String = "",
+                                         prompt: Prompt? = nil) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 let issuerUrl = config.getIssuerUrl()
@@ -432,7 +434,9 @@ public final class Auth {
                                                                  useNonce: useNonce,
                                                                  planInterest: planInterest,
                                                                  pricingTableKey: pricingTableKey, 
-                                                                 connectionId: connectionId)
+                                                                 connectionId: connectionId,
+                                                                 invitationCode: invitationCode,
+                                                                 prompt: prompt)
                     continuation.resume(returning: result)
                 } catch {
                     continuation.resume(throwing: error)
@@ -477,7 +481,9 @@ public final class Auth {
                                               useNonce: Bool = false,
                                               planInterest: String = "",
                                               pricingTableKey: String = "", 
-                                              connectionId: String = "") async throws -> (OIDAuthorizationRequest) {
+                                              connectionId: String = "",
+                                              invitationCode: String = "",
+                                              prompt: Prompt? = nil) async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
             OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl) { configuration, error in
                 if let error = error {
@@ -501,8 +507,8 @@ public final class Auth {
                 
                 var additionalParameters = [
                     "start_page": signUp ? "registration" : "login",
-                    // Force fresh login
-                    "prompt": "login"
+                    // Defaults to login if prompt is not provided
+                    "prompt": (prompt ?? .login).apiValue
                 ]
                 
                 if createOrg {
@@ -535,6 +541,10 @@ public final class Auth {
                 
                 if !connectionId.isEmpty {
                     additionalParameters["connection_id"] = connectionId
+                }
+                
+                if !invitationCode.isEmpty {
+                    additionalParameters["invitation_code"] = invitationCode
                 }
 
                 // if/when the API supports nonce validation
