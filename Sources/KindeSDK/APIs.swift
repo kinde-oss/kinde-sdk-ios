@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import UIKit
 
 // We reverted the change of KindeSDKAPI to KindeSDK introduced in https://github.com/OpenAPITools/openapi-generator/pull/9624
 // Because it was causing the following issue https://github.com/OpenAPITools/openapi-generator/issues/9953
@@ -20,6 +21,9 @@ open class KindeSDKAPI {
     public static var requestBuilderFactory: RequestBuilderFactory = URLSessionRequestBuilderFactory()
     public static var apiResponseQueue: DispatchQueue = .main
     public static var auth: Auth!
+    
+    /// The bundle used for reading configuration flags. Internal for testing.
+    internal static var bundle: Bundle = .main
 }
 
 open class RequestBuilder<T> {
@@ -110,13 +114,13 @@ public func logout() {
     }
 }
 
-public extension KindeSDKAPI {	
-    /**	
-     `configure` must be called before `Auth` or any Kinde SDK APIs are used.	
-     	
-     Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the	
-     configured `issuer`. E.g., `https://example.kinde.com` -> `example`.	
-     */	
+public extension KindeSDKAPI {
+    /**
+     `configure` must be called before `Auth` or any Kinde SDK APIs are used.
+     
+     Set the host of the base URL of `OpenAPIClientAPI` to the business name extracted from the
+     configured `issuer`. E.g., `https://example.kinde.com` -> `example`.
+     */
     static func configure(_ logger: LoggerProtocol = DefaultLogger(), fileName: String = "kinde-auth") {
         guard let config = Config.initialize(fileName: fileName) else {
             preconditionFailure("Failed to load configuration")
@@ -140,7 +144,7 @@ public extension KindeSDKAPI {
         requestBuilderFactory = BearerRequestBuilderFactory()
         
         auth = Auth(config: config,
-                    authStateRepository: AuthStateRepository(key: "\(Bundle.main.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger),
+                    authStateRepository: AuthStateRepository(key: "\(bundle.bundleIdentifier ?? "com.kinde.KindeAuth").authState", logger: logger),
                     logger: logger)
         
         if storedClientId == nil {
@@ -149,6 +153,36 @@ public extension KindeSDKAPI {
         } else if storedClientId != config.clientId {
             logout()
             UserDefaults.standard.set(config.clientId, forKey: "clientId")
+        }
+        
+        let proxyEnabled = bundle.object(forInfoDictionaryKey: "KindeURLInterceptorEnabled") as? Bool ?? true
+        if proxyEnabled {
+            KindeURLInterceptor.startInterceptingURLs { url in
+                KindeSDKAPI.handle(url: url)
+            }
+        }
+    }
+
+    /// Handle an incoming deep link or universal link.
+    /// - Parameter url: The URL received by the application.
+    /// - Returns: `true` if the SDK successfully handled the URL (e.g. found an invitation code), `false` otherwise.
+    @discardableResult
+    static func handle(url: URL) -> Bool {
+        guard let incomingUrlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return false
+        }
+        
+        let queryItems = incomingUrlComponents.queryItems ?? []
+        
+        if let invitationCode = queryItems.first(where: { $0.name == "invitation_code" })?.value {
+            if let auth = KindeSDKAPI.auth {
+                Task {
+                    try? await auth.login(invitationCode: invitationCode, prompt: Prompt.create)
+                }
+            }
+            return true
+        } else {
+            return false
         }
     }
 }

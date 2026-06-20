@@ -1,7 +1,7 @@
 import Foundation
 
 /// Determines the page the user should land on.
-public enum Prompt: String {
+public enum Prompt: String, Sendable {
     /// The user will land on the sign in page.
     case login
     

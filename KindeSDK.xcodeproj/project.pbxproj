@@ -57,7 +57,11 @@
 		3BA67F852A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F862A0A5FCE00399C6A /* kinde-auth.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
 		3BA67F872A0A5FF600399C6A /* kinde-auth.json in Sources */ = {isa = PBXBuildFile; fileRef = 3BA67F842A0A5FCE00399C6A /* kinde-auth.json */; };
+		8D2C2E262FE6FDDF00966387 /* APIsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2C2E252FE6FDDF00966387 /* APIsSpec.swift */; };
+		8D2C2E282FE71B2700966387 /* KindeURLInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2C2E272FE71B2700966387 /* KindeURLInterceptor.swift */; };
+		8D2C2E2A2FE721B600966387 /* KindeURLInterceptorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2C2E292FE721B600966387 /* KindeURLInterceptorSpec.swift */; };
 		8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */; };
+		8DAC08FA2F8290760097898E /* Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DAC08F92F8290760097898E /* Prompt.swift */; };
 		8DC0920A2EFFB8B500A59AE5 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */; };
 		8DC0921B2EFFB8DB00A59AE5 /* Claim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920B2EFFB8DB00A59AE5 /* Claim.swift */; };
 		8DC0921C2EFFB8DB00A59AE5 /* RolesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0920C2EFFB8DB00A59AE5 /* RolesData.swift */; };
@@ -135,7 +139,11 @@
 		3B41B1FE2A0E5F9100EFD9E4 /* RolesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesResponse.swift; sourceTree = "<group>"; };
 		3B41B2002A0E5F9100EFD9E4 /* FeatureFlagsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsResponse.swift; sourceTree = "<group>"; };
 		3BA67F842A0A5FCE00399C6A /* kinde-auth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kinde-auth.json"; sourceTree = "<group>"; };
+		8D2C2E252FE6FDDF00966387 /* APIsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIsSpec.swift; sourceTree = "<group>"; };
+		8D2C2E272FE71B2700966387 /* KindeURLInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindeURLInterceptor.swift; sourceTree = "<group>"; };
+		8D2C2E292FE721B600966387 /* KindeURLInterceptorSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindeURLInterceptorSpec.swift; sourceTree = "<group>"; };
 		8D6DE2E22EE0F34000476C3F /* EntitlementsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsSpec.swift; sourceTree = "<group>"; };
+		8DAC08F92F8290760097898E /* Prompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prompt.swift; sourceTree = "<group>"; };
 		8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		8DC0920B2EFFB8DB00A59AE5 /* Claim.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Claim.swift; sourceTree = "<group>"; };
 		8DC0920C2EFFB8DB00A59AE5 /* RolesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RolesData.swift; sourceTree = "<group>"; };
@@ -216,6 +224,8 @@
 		3B41B1AC2A0E5F8500EFD9E4 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8D2C2E292FE721B600966387 /* KindeURLInterceptorSpec.swift */,
+				8D2C2E252FE6FDDF00966387 /* APIsSpec.swift */,
 				3B41B1AD2A0E5F8500EFD9E4 /* AuthSpec.swift */,
 				3B41B1AE2A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift */,
 				3B41B1AF2A0E5F8500EFD9E4 /* AuthErrorSpec.swift */,
@@ -272,6 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				3B41B1C02A0E5F9100EFD9E4 /* Tokens.swift */,
+				8DAC08F92F8290760097898E /* Prompt.swift */,
 				3B41B1C12A0E5F9100EFD9E4 /* AuthStateRepository.swift */,
 				3B41B1C22A0E5F9100EFD9E4 /* AuthError.swift */,
 				3B41B1C32A0E5F9100EFD9E4 /* DefaultLogger.swift */,
@@ -289,6 +300,7 @@
 		3B41B1CB2A0E5F9100EFD9E4 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				8D2C2E272FE71B2700966387 /* KindeURLInterceptor.swift */,
 				8DC092092EFFB8B500A59AE5 /* AnyCodable.swift */,
 				3B41B1CC2A0E5F9100EFD9E4 /* APIHelper.swift */,
 				3B41B1CD2A0E5F9100EFD9E4 /* URLSessionImplementations.swift */,
@@ -484,6 +496,7 @@
 				3B41B1F72A0E5F9100EFD9E4 /* PermissionsAPI.swift in Sources */,
 				8DC092282EFFB8DB00A59AE5 /* EntitlementsResponse.swift in Sources */,
 				3B41B1F92A0E5F9100EFD9E4 /* RolesAPI.swift in Sources */,
+				8DAC08FA2F8290760097898E /* Prompt.swift in Sources */,
 				3B41B1FB2A0E5F9100EFD9E4 /* FeatureFlagsAPI.swift in Sources */,
 				3B41B1FD2A0E5F9100EFD9E4 /* PermissionsResponse.swift in Sources */,
 				3B41B1FF2A0E5F9100EFD9E4 /* RolesResponse.swift in Sources */,
@@ -507,6 +520,7 @@
 				3B41B1E72A0E5F9100EFD9E4 /* BearerDecodableRequestBuilder.swift in Sources */,
 				3B41B1E02A0E5F9100EFD9E4 /* AuthError.swift in Sources */,
 				3B41B1F32A0E5F9100EFD9E4 /* AtomicWrapper.swift in Sources */,
+				8D2C2E282FE71B2700966387 /* KindeURLInterceptor.swift in Sources */,
 				3B41B1DF2A0E5F9100EFD9E4 /* AuthStateRepository.swift in Sources */,
 				8DC0921B2EFFB8DB00A59AE5 /* Claim.swift in Sources */,
 				8DC092232EFFB8DB00A59AE5 /* FeatureFlag.swift in Sources */,
@@ -527,7 +541,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D6DE2E32EE0F34000476C3F /* EntitlementsSpec.swift in Sources */,
+				8D2C2E262FE6FDDF00966387 /* APIsSpec.swift in Sources */,
 				3B41B1B32A0E5F8500EFD9E4 /* StringJWTTokenDecodeSpec.swift in Sources */,
+				8D2C2E2A2FE721B600966387 /* KindeURLInterceptorSpec.swift in Sources */,
 				3B41B1B52A0E5F8500EFD9E4 /* DefaultLoggerSpec.swift in Sources */,
 				3B41B1B62A0E5F8500EFD9E4 /* ConfigSpec.swift in Sources */,
 				3B41B1B42A0E5F8500EFD9E4 /* AuthErrorSpec.swift in Sources */,
