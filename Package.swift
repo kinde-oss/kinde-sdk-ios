@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-	    .package(url: "https://github.com/openid/AppAuth-iOS.git", from: "1.7.6")
+	    .package(url: "https://github.com/openid/AppAuth-iOS.git", from: "2.1.0")
     ],
     targets: [
         .target(
