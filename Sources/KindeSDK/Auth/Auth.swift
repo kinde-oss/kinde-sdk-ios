@@ -296,7 +296,7 @@ public final class Auth {
     /// Login an existing user
     ///
     @available(*, renamed: "login")
-    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt? = nil,
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt = .login,
                       _ completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
@@ -312,7 +312,7 @@ public final class Auth {
         }
     }
 
-    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt? = nil) async throws -> () {
+    public func login(orgCode: String = "", loginHint: String = "", connectionId: String = "", invitationCode: String = "", prompt: Prompt = .login) async throws -> () {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 guard let viewController = await self.getViewController() else {
@@ -414,7 +414,7 @@ public final class Auth {
                                          pricingTableKey: String = "",
                                          connectionId: String = "",
                                          invitationCode: String = "",
-                                         prompt: Prompt? = nil) async throws -> OIDAuthorizationRequest {
+                                         prompt: Prompt = .login) async throws -> OIDAuthorizationRequest {
         return try await withCheckedThrowingContinuation { continuation in
             Task {
                 let issuerUrl = config.getIssuerUrl()
@@ -483,7 +483,7 @@ public final class Auth {
                                               pricingTableKey: String = "", 
                                               connectionId: String = "",
                                               invitationCode: String = "",
-                                              prompt: Prompt? = nil) async throws -> (OIDAuthorizationRequest) {
+                                              prompt: Prompt) async throws -> (OIDAuthorizationRequest) {
         return try await withCheckedThrowingContinuation { continuation in
             OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl) { configuration, error in
                 if let error = error {
@@ -507,8 +507,7 @@ public final class Auth {
                 
                 var additionalParameters = [
                     "start_page": signUp ? "registration" : "login",
-                    // Defaults to login if prompt is not provided
-                    "prompt": (prompt ?? .login).apiValue
+                    "prompt": prompt.apiValue
                 ]
                 
                 if createOrg {
