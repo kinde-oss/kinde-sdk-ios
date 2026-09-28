@@ -155,8 +155,8 @@ public extension KindeSDKAPI {
             UserDefaults.standard.set(config.clientId, forKey: "clientId")
         }
         
-        let proxyEnabled = bundle.object(forInfoDictionaryKey: "KindeURLInterceptorEnabled") as? Bool ?? true
-        if proxyEnabled {
+        let urlInterceptorEnabled = bundle.object(forInfoDictionaryKey: "KindeURLInterceptorEnabled") as? Bool ?? false
+        if urlInterceptorEnabled {
             KindeURLInterceptor.startInterceptingURLs { url in
                 KindeSDKAPI.handle(url: url)
             }

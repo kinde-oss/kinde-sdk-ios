@@ -47,7 +47,14 @@ class APIsSpec: QuickSpec {
                     KindeURLInterceptor.onURLReceived = nil
                 }
                 
-                it("does not start intercepting URLs when proxy is disabled in Info.plist") {
+                it("does not start intercepting URLs when the URL interceptor flag is absent from Info.plist") {
+                    KindeSDKAPI.bundle = MockBundle()
+                    KindeSDKAPI.configure()
+
+                    expect(KindeURLInterceptor.onURLReceived).to(beNil())
+                }
+
+                it("does not start intercepting URLs when the URL interceptor is disabled in Info.plist") {
                     let mockBundle = MockBundle()
                     mockBundle.mockedInfoDictionary = ["KindeURLInterceptorEnabled": false]
                     
@@ -57,7 +64,7 @@ class APIsSpec: QuickSpec {
                     expect(KindeURLInterceptor.onURLReceived).to(beNil())
                 }
                 
-                it("starts intercepting URLs when proxy is enabled in Info.plist") {
+                it("starts intercepting URLs when the URL interceptor is enabled in Info.plist") {
                     let mockBundle = MockBundle()
                     mockBundle.mockedInfoDictionary = ["KindeURLInterceptorEnabled": true]
                     
