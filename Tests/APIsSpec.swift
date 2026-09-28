@@ -48,7 +48,9 @@ class APIsSpec: QuickSpec {
                 }
                 
                 it("does not start intercepting URLs when the URL interceptor flag is absent from Info.plist") {
-                    KindeSDKAPI.bundle = MockBundle()
+                    let mockBundle = MockBundle()
+                    mockBundle.mockedInfoDictionary = [:]
+                    KindeSDKAPI.bundle = mockBundle
                     KindeSDKAPI.configure()
 
                     expect(KindeURLInterceptor.onURLReceived).to(beNil())
