@@ -6,6 +6,10 @@ You can also view the [iOS starter kit here](https://github.com/kinde-starter-ki
 
 
 ## Requirements
+- iOS 15.0 or later.
+- Swift 5.7 / Xcode 14 or later for Swift Package Manager.
+- AppAuth 3.x. Applications supporting iOS 13 or 14 must remain on an SDK release using AppAuth 2.x.
+
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com) [![Kinde Docs](https://img.shields.io/badge/Kinde-Docs-eee?style=flat-square)](https://kinde.com/docs/developer-tools) [![Kinde Community](https://img.shields.io/badge/Kinde-Community-eee?style=flat-square)](https://thekindecommunity.slack.com)
 
 ## Documentation
