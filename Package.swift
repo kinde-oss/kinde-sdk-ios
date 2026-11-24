@@ -1,11 +1,11 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
     name: "KindeSDK",
     platforms: [
-        .iOS(.v13),
+        .iOS(.v15),
     ],
     products: [
         .library(
@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-	    .package(url: "https://github.com/openid/AppAuth-iOS.git", from: "2.1.0")
+        .package(url: "https://github.com/openid/AppAuth-iOS.git", from: "3.0.0")
     ],
     targets: [
         .target(
