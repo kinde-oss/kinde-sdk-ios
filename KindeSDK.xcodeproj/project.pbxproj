@@ -81,7 +81,6 @@
 		8DC0922A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0921A2EFFB8DB00A59AE5 /* FeatureFlagsData.swift */; };
 		D773EAD42A897ED30049DDEE /* FlagError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D773EAD32A897ED30049DDEE /* FlagError.swift */; };
 		D7FD1F682A8D59E20088802F /* SDKVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F672A8D59E20088802F /* SDKVersion.swift */; };
-		D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FD1F6D2A8D5D390088802F /* PList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,7 +163,6 @@
 		D773EAD32A897ED30049DDEE /* FlagError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagError.swift; sourceTree = "<group>"; };
 		D7FD1F672A8D59E20088802F /* SDKVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKVersion.swift; sourceTree = "<group>"; };
 		D7FD1F6C2A8D5CEC0088802F /* KindeSDK-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "KindeSDK-Info.plist"; sourceTree = "<group>"; };
-		D7FD1F6D2A8D5D390088802F /* PList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -314,7 +312,6 @@
 				3B41B1D52A0E5F9100EFD9E4 /* String+JWTTokenDecode.swift */,
 				3B41B1D62A0E5F9100EFD9E4 /* AtomicWrapper.swift */,
 				D7FD1F672A8D59E20088802F /* SDKVersion.swift */,
-				D7FD1F6D2A8D5D390088802F /* PList.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -530,7 +527,6 @@
 				3B41B1EB2A0E5F9100EFD9E4 /* CodableHelper.swift in Sources */,
 				8DC092222EFFB8DB00A59AE5 /* Role.swift in Sources */,
 				3B41B1EF2A0E5F9100EFD9E4 /* JSONDataEncoding.swift in Sources */,
-				D7FD1F6E2A8D5D390088802F /* PList.swift in Sources */,
 				8DC092212EFFB8DB00A59AE5 /* EntitlementsMetadata.swift in Sources */,
 				3B41B1E22A0E5F9100EFD9E4 /* Auth.swift in Sources */,
 			);

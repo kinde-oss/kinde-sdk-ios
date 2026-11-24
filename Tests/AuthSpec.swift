@@ -1,7 +1,156 @@
 import Quick
 import Nimble
-import KindeSDK
+import AppAuth
+@testable import KindeSDK
 import Foundation
+import XCTest
+
+private final class TokenRefreshTestRepository: AuthStateRepository {
+    private let testState: OIDAuthState
+
+    init(state: OIDAuthState) {
+        testState = state
+        super.init(key: "unused", logger: nil)
+    }
+
+    override var state: OIDAuthState? {
+        testState
+    }
+}
+
+private final class TokenRefreshTestURLProtocol: URLProtocol {
+    private static let lock = NSLock()
+    private static var recordedRequests: [URLRequest] = []
+
+    static var requests: [URLRequest] {
+        lock.lock()
+        defer { lock.unlock() }
+        return recordedRequests
+    }
+
+    static func reset() {
+        lock.lock()
+        defer { lock.unlock() }
+        recordedRequests = []
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        request.url?.host == "sdk-version.invalid"
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
+
+    override func startLoading() {
+        Self.lock.lock()
+        Self.recordedRequests.append(request)
+        Self.lock.unlock()
+
+        guard let url = request.url,
+              let response = HTTPURLResponse(
+                url: url,
+                statusCode: 200,
+                httpVersion: "HTTP/1.1",
+                headerFields: ["Content-Type": "application/json"]
+              ) else {
+            client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse))
+            return
+        }
+
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(
+            self,
+            didLoad: Data(#"{"access_token":"refreshed-token","token_type":"Bearer","expires_in":3600}"#.utf8)
+        )
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
+final class SDKVersionRefreshTests: XCTestCase {
+    func testRefreshSendsCurrentSDKVersionAndReturnsFreshToken() async throws {
+        let previousSession = OIDURLSessionProvider.session()
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [TokenRefreshTestURLProtocol.self]
+        sessionConfiguration.timeoutIntervalForRequest = 5
+        sessionConfiguration.timeoutIntervalForResource = 10
+        let session = URLSession(configuration: sessionConfiguration)
+        TokenRefreshTestURLProtocol.reset()
+        OIDURLSessionProvider.setSession(session)
+        defer {
+            OIDURLSessionProvider.setSession(previousSession)
+            session.invalidateAndCancel()
+            TokenRefreshTestURLProtocol.reset()
+        }
+
+        let issuer = URL(string: "https://sdk-version.invalid")!
+        let redirect = URL(string: "testapp:/callback")!
+        let service = OIDServiceConfiguration(
+            authorizationEndpoint: issuer.appendingPathComponent("authorize"),
+            tokenEndpoint: issuer.appendingPathComponent("token")
+        )
+        let authorizationRequest = OIDAuthorizationRequest(
+            configuration: service,
+            clientId: "test-client",
+            scopes: ["openid"],
+            redirectURL: redirect,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: nil
+        )
+        let authorizationResponse = OIDAuthorizationResponse(
+            request: authorizationRequest,
+            parameters: ["code": "test-code" as NSString]
+        )
+        let tokenRequest = try XCTUnwrap(authorizationResponse.tokenExchangeRequest())
+        let tokenResponse = OIDTokenResponse(
+            request: tokenRequest,
+            parameters: [
+                "access_token": "old-token" as NSString,
+                "token_type": "Bearer" as NSString,
+                "expires_in": NSNumber(value: 3600),
+                "refresh_token": "refresh-token" as NSString
+            ]
+        )
+        let state = OIDAuthState(authorizationResponse: authorizationResponse, tokenResponse: tokenResponse)
+        state.setNeedsTokenRefresh()
+
+        let config = Config(
+            issuer: issuer.absoluteString,
+            clientId: "test-client",
+            redirectUri: redirect.absoluteString,
+            postLogoutRedirectUri: redirect.absoluteString,
+            scope: "openid",
+            audience: nil
+        )
+        let auth = Auth(
+            config: config,
+            authStateRepository: TokenRefreshTestRepository(state: state),
+            logger: DefaultLogger()
+        )
+
+        let refreshedToken = try await auth.getToken(desiredToken: .accessToken)
+        XCTAssertEqual(refreshedToken, "refreshed-token")
+
+        let request = try XCTUnwrap(TokenRefreshTestURLProtocol.requests.first)
+        XCTAssertEqual(request.httpMethod, "POST")
+        let completedTokenRequest = try XCTUnwrap(state.lastTokenResponse?.request)
+        let serializedRequest = completedTokenRequest.urlRequest()
+        XCTAssertEqual(request.url, serializedRequest.url)
+        let body = try XCTUnwrap(serializedRequest.httpBody)
+        var components = URLComponents()
+        components.percentEncodedQuery = try XCTUnwrap(String(data: body, encoding: .utf8))
+        let parameters = try XCTUnwrap(components.queryItems)
+        XCTAssertEqual(parameters.first { $0.name == "grant_type" }?.value, "refresh_token")
+        XCTAssertEqual(parameters.first { $0.name == "refresh_token" }?.value, "refresh-token")
+        XCTAssertEqual(parameters.first { $0.name == "Kinde-SDK" }?.value, "Swift/2.0.0")
+
+        let cachedToken = try await auth.getToken(desiredToken: .accessToken)
+        XCTAssertEqual(cachedToken, "refreshed-token")
+        XCTAssertEqual(TokenRefreshTestURLProtocol.requests.count, 1)
+    }
+}
 
 class AuthSpec: QuickSpec {
     override class func spec() {

@@ -34,7 +34,6 @@ Sources/KindeSDK/Utils/JSONEncodingHelper.swift
 Sources/KindeSDK/Utils/Keychain.swift
 Sources/KindeSDK/Utils/Models.swift
 Sources/KindeSDK/Utils/OpenISO8601DateFormatter.swift
-Sources/KindeSDK/Utils/PList.swift
 Sources/KindeSDK/Utils/SDKVersion.swift
 Sources/KindeSDK/Utils/String+JWTTokenDecode.swift
 Sources/KindeSDK/Utils/URLSessionImplementations.swift

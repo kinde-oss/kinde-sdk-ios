@@ -18,7 +18,7 @@ For details on integrating this SDK into your project, head over to the [Kinde d
 
 ## Publishing
 
-The core team handles publishing.
+The core team handles publishing. Before a release, update the version in `KindeSDK.podspec`, `KindeSDK-Info.plist`, `SDKVersion.swift`, and the refresh regression test to match the release tag.
 
 ## Contributing
 
